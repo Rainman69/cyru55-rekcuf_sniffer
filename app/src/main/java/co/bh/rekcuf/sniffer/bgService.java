@@ -17,7 +17,7 @@ public class bgService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(getApplicationContext(),"onStartCommand",Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(),"onStartCommand",Toast.LENGTH_SHORT).show();
         return super.onStartCommand(intent, flags, startId);
     }
 }

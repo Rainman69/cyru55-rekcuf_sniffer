@@ -18,7 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        />
+        tools:ignore="DuplicateSpeakableTextCheck" />
 
     <LinearLayout
         android:id="@+id/row2"
@@ -43,8 +43,9 @@
             android:gravity="center_horizontal"
             android:inputType="number"
             android:maxLength="2"
-            android:text="8"
-            />
+            android:text="4"
+            android:importantForAutofill="no"
+            android:hint="conc"/>
 
         <TextView
             android:id="@+id/text_r1_1"
@@ -79,7 +80,7 @@
 
         <Button
             android:id="@+id/button1"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Button" />
@@ -92,9 +93,11 @@
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toTopOf="@+id/row7"
         app:layout_constraintTop_toBottomOf="@+id/row3"
+        android:contentDescription="logs"
         >
 
         <LinearLayout
+            android:id="@+id/logger"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -137,8 +140,11 @@
                 android:layout_weight="3"
                 android:gravity="center"
                 android:paddingRight="40dp"
+                android:paddingLeft="0dp"
                 android:scaleX="2"
                 android:scaleY="2"
+                android:paddingEnd="40dp"
+                android:paddingStart="0dp"
                 />
 
     </LinearLayout>

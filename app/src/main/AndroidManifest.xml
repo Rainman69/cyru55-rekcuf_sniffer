@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="co.bh.rekcuf.sniffer"
     android:versionName="0.0.1"
     >
@@ -13,10 +14,12 @@
         android:icon="@mipmap/icon"
         android:roundIcon="@mipmap/icon_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.one">
+        android:theme="@style/Theme.one"
+        >
         <activity
             android:name=".one"
-            android:exported="true">
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

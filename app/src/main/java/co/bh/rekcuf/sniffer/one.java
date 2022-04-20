@@ -1,5 +1,6 @@
 package co.bh.rekcuf.sniffer;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -14,9 +15,26 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -25,31 +43,7 @@ public class one extends AppCompatActivity {
 
     public Handler handler1 = new Handler();
 
-    public String[] urls={"https://ana.ir/","http://www.ipna.ir/","http://www.irna.ir/","http://www.isna.ir/","http://www.iscanews.ir/","http://www.ilna.ir/","http://www.iqna.ir/","http://www.tabnak.ir/","http://www.tasnimnews.com/","http://www.farsnews.ir/","http://www.shana.ir/","http://www.mehrnews.com/","https://www.abna24.com/","http://www.khabaronline.ir/","http://www.bornanews.ir/","http://alef.ir/","http://entekhab.ir/","http://www.eghtesadonline.com/","http://jahannews.com/","http://sahamnews.org/","http://www.asriran.com/","http://www.fararu.com/","http://www.aftabnews.ir/","http://www.kaleme.com/","http://www.mashreghnews.ir/","http://www.majzooban.org/","https://nournews.ir/Fa/"};
-    public int g_num1;
-
-    public int get_conc(){
-        EditText num1 = findViewById(R.id.num1);
-        String txt = num1.getText().toString();
-        if(txt.length()>0) {
-            Integer num = Integer.parseInt(txt);
-            if(num>0){
-                g_num1=num;
-            }
-        }
-        g_num1=0;
-        return g_num1;
-    }
-
-    private boolean isServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
+    boolean stat = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,19 +59,18 @@ public class one extends AppCompatActivity {
 
         NetworkChangeReceiver.setToggle(netstat);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-            registerNetworkCallback(this);
-        boolean stat = NetworkUtil.isConnected(getApplicationContext());
-        netstat.setChecked(stat);
-        //netstat.isChecked()
+            NetworkChangeReceiver.registerNetworkCallback(this);
 
         new Timer().scheduleAtFixedRate(new TimerTask(){
             @Override
             public void run(){
-                Boolean stat = isServiceRunning(bgService.class);
+                stat = (boolean) NetworkUtil.isConnected(getApplicationContext());
+                netstat.setChecked(stat);
+                boolean srv_stat = isServiceRunning(bgService.class);
                 handler1.post(new Runnable() {
                     @Override
                     public void run() {
-                        togglev1.setChecked(stat);
+                        togglev1.setChecked(srv_stat);
                     }
                 });
             }
@@ -114,9 +107,14 @@ public class one extends AppCompatActivity {
             public void onClick(View view) {
                 Intent srv = new Intent(getApplication(),bgService.class);
                 if(switch1.isChecked()) {
-                    num1.setEnabled(false);
-                    startService(srv);
-                    startThread(view);
+                    if(stat) {
+                        num1.setEnabled(false);
+                        startService(srv);
+                        startThread(view);
+                    }else{
+                        Toast.makeText(one.this,"Internet is not available",Toast.LENGTH_SHORT).show();
+                        switch1.setChecked(false);
+                    }
                 }else{
                     num1.setEnabled(true);
                     stopService(srv);
@@ -126,17 +124,71 @@ public class one extends AppCompatActivity {
         
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public void registerNetworkCallback(Context ac){
-        NetworkChangeReceiver.registerNetworkCallback(ac);
+    public int get_conc(){
+        EditText num1 = findViewById(R.id.num1);
+        String txt = num1.getText().toString();
+        if(txt.length()>0) {
+            Integer num = Integer.parseInt(txt);
+            if(num>0){
+                return num;
+            }else return 0;
+        }else return 0;
+    }
+
+    private boolean isServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String url2str(String targetURL){
+        try {
+            URL url = new URL(targetURL);
+            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+            String line;
+            String res="";
+            while ((line = in.readLine()) != null) {
+                res = res.concat(line+"\n");
+            }
+            in.close();
+            return res;
+        } catch (IOException e) {//todo solve android4 ssl1.3 error stackoverflow.com/a/30302235
+            return "";
+        }
     }
 
     public void startThread(View view){
-        bgThread thread1 = new bgThread(1);
-        thread1.start();
+        int num = get_conc();
+
+        /*for (int i=0; i<num; i++) {
+            new Thread(new Runner(), "Runner"+num).start();
+        }*/
+        new Thread(new Runner(), "Runner1").start();
     }
 
     public void stopThread(View view){}
+
+    class Runner implements Runnable{
+        public void run (){
+            String raw = url2str("https://9k.gg/rs2");
+            handler1.post(new Runnable() {
+                @Override
+                public void run() {
+                    LinearLayout ll = (LinearLayout)findViewById(R.id.logger);
+                    ll.removeAllViews();
+                    ll.invalidate();
+                    TextView txt = new TextView(one.this);
+                    String timeStamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
+                    txt.setText(timeStamp+"\n"+raw);
+                    ll.addView(txt);
+                }
+            });
+        }
+    }
 
     class bgThread extends Thread {
         int conc=4;
@@ -146,24 +198,70 @@ public class one extends AppCompatActivity {
         @Override
         public void run(){
             //Toast.makeText(getApplicationContext(),"onStartCommand",Toast.LENGTH_SHORT).show();
-            handler1.post(new Runnable() {
+            /*handler1.post(new Runnable() {
                 @Override
                 public void run() {
                     Toast.makeText(one.this,"bgThread.run()",Toast.LENGTH_SHORT).show();
                 }
             });
-            if(urls.length>0) {
-                int x = (int)(Math.random() * urls.length);
-                String url = urls[x];
-                handler1.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(one.this,url,Toast.LENGTH_SHORT).show();
-                    }
-                });
-                if(url.length()>0){}else{}
-            }else{}
+            Connection conn = null;
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:res/raw/hosts.db");
+            Statement stat = conn.createStatement();
+            ResultSet rs = stat.executeQuery("select host from host where rowid=(abs(random()) % 17890);");
+            //rs.next();
+            String host = rs.getString("name");
+            rs.close();
+            conn.close();
+            handler1.post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(one.this, "host: " + host, Toast.LENGTH_SHORT).show();
+                }
+            });*/
+
         }
+    }
+
+    public int Requester(String str){
+        InputStream in =null;
+        int responseCode = -1;
+        String content = "";
+        try{
+            URL url = new URL(str);
+            HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+            HttpURLConnection.setFollowRedirects(false);
+            urlConn.setConnectTimeout(9000);
+            urlConn.setReadTimeout(9000);
+            BufferedReader br = new BufferedReader( new InputStreamReader(urlConn.getInputStream()));
+            //urlConn.setAllowUserInteraction(false);
+            //urlConn.setDoInput(true);
+            urlConn.connect();
+            responseCode = urlConn.getResponseCode();
+            if(responseCode == HttpURLConnection.HTTP_OK) {
+                String q;
+                do{
+                    q = br.readLine();
+                    content += q;
+                }while (q != null);
+                br.close();
+            }
+            urlConn.disconnect();
+            int len = content.length();
+            if(len>0){
+                Toast.makeText(one.this,"content len: "+len,Toast.LENGTH_SHORT).show();
+            }
+        }
+        catch(Exception ex){
+            handler1.post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(one.this,"Requester Exception",Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        return responseCode;
+
     }
 
 }
