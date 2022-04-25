@@ -36,6 +36,7 @@ public class one extends AppCompatActivity{
 
 	public static Handler handler1=new Handler();
 	public static int conc=0;
+	public static boolean switch1=false;
 	public boolean stat=false;
 
 	@Override
@@ -47,9 +48,8 @@ public class one extends AppCompatActivity{
 		ToggleButton togglev1=findViewById(R.id.togglev1);
 		EditText num1=findViewById(R.id.num1);
 		EditText num2=findViewById(R.id.num2);
-		EditText num3=findViewById(R.id.num3);
 		SwitchMaterial switch1=findViewById(R.id.switch1);
-		Button button1=findViewById(R.id.button1);
+		//Button button1=findViewById(R.id.button1);
 		LinearLayout ll=findViewById(R.id.logger);
 		//Toast.makeText(one.this,"startService",Toast.LENGTH_SHORT).show();
 
@@ -118,14 +118,14 @@ public class one extends AppCompatActivity{
 			}
 		}
 
-		button1.setOnClickListener(new View.OnClickListener(){
+		/*button1.setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View view){
 				boolean stat=isServiceRunning(bgService.class);
 				String x=Boolean.toString(stat);
 				Toast.makeText(one.this,"stat: "+x,Toast.LENGTH_SHORT).show();
 			}
-		});
+		});*/
 
 		num1.setOnKeyListener(new View.OnKeyListener(){
 			@Override
@@ -147,12 +147,14 @@ public class one extends AppCompatActivity{
 		switch1.setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View view){
+				one.switch1=false;
 				Intent srv=new Intent(getApplication(),bgService.class);
 				if(switch1.isChecked()){
 					if(stat){
 						int conc=get_conc();
 						if(conc>0&&conc<17){
 							num1.setEnabled(false);
+							one.switch1=true;
 							startService(srv);
 						}else{
 							Toast.makeText(one.this,"Set concurrent number 1 ~ 16",Toast.LENGTH_SHORT).show();
@@ -243,14 +245,18 @@ public class one extends AppCompatActivity{
 		public void onReceive(Context context,Intent intent){
 			Bundle bundle=intent.getExtras();
 			if(bundle!=null){
-				String raw=bundle.getString("raw");
+				String stat=bundle.getString("stat");
+				String domain=bundle.getString("domain");
 				LinearLayout ll=findViewById(R.id.logger);
-				ll.removeAllViews();
-				ll.invalidate();
+				//ll.removeAllViews();
+				//ll.invalidate();
 				TextView txtv=new TextView(getApplicationContext());
-				String timeStamp=new SimpleDateFormat("HH:mm:ss").format(new Date());
-				txtv.setText(timeStamp+"\n"+raw);
+				txtv.setText(stat+"\t"+domain);
 				ll.addView(txtv);
+				EditText num3=findViewById(R.id.num3);
+				String num3_str=num3.getText().toString();
+				int num3_int=num3_str.length()>0?Integer.parseInt(num3_str):0;
+				num3.setText((num3_int+1)+"");
 			}
 		}
 	};

@@ -2,11 +2,10 @@ package co.bh.rekcuf.sniffer;
 
 import android.app.Service;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.IBinder;
 import android.widget.Toast;
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -30,56 +29,78 @@ public class bgService extends Service{
 	@Override
 	public void onCreate(){
 		int num=one.conc;
-        /*for (int i=0; i<num; i++) {
+        for (int i=0; i<num; i++) {
             new Thread(new Runner(), "Runner"+num).start();
-        }*/
+        }
 		new Thread(new Runner(),"Runner1").start();
 	}
 
 	class Runner implements Runnable{
 		public void run(){
-			String raw="x";
-			one.handler1.post(new Runnable(){
-				@Override
-				public void run(){
-					Intent i = new Intent("co.bh.rekcuf.sniffer");
-					i.putExtra("raw",raw);
-					sendBroadcast(i);
+			while(one.switch1){
+				Cursor res=SQLite.sel("select host from host order by random() limit 1;");
+				if(res.moveToNext()){
+					String domain=res.getString(0);
+					//toast(domain);
+					if(domain.length()>3){
+						String url="https://"+domain+"/?";
+						int stat_int=send_http_request(url);
+						String stat_str=Integer.toString(stat_int);
+						if(stat_str.equals("-1"))
+							stat_str="000";
+						final String stat=stat_str;
+						one.handler1.post(new Runnable(){
+							@Override
+							public void run(){
+								Intent i=new Intent("co.bh.rekcuf.sniffer");
+								i.putExtra("stat",stat);
+								i.putExtra("domain",domain);
+								sendBroadcast(i);
+							}
+						});
+					}
 				}
-			});
-
+			}
 		}
 	}
 
-	public int url2httpcode(String str){
-		InputStream in=null;
+	public void toast(String str){
+		one.handler1.post(new Runnable(){
+			@Override
+			public void run(){
+				Toast.makeText(getApplicationContext(),str,Toast.LENGTH_SHORT).show();
+			}
+		});
+	}
+	public int send_http_request(String str){
 		int responseCode=-1;
-		String content="";
+		//String content="";
 		try{
 			URL url=new URL(str);
 			HttpURLConnection urlConn=(HttpURLConnection)url.openConnection();
 			HttpURLConnection.setFollowRedirects(false);
-			urlConn.setConnectTimeout(9000);
-			urlConn.setReadTimeout(9000);
+			urlConn.setConnectTimeout(3000);
+			urlConn.setReadTimeout(3000);
 			BufferedReader br=new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
 			//urlConn.setAllowUserInteraction(false);
 			//urlConn.setDoInput(true);
 			urlConn.connect();
 			responseCode=urlConn.getResponseCode();
-			if(responseCode==HttpURLConnection.HTTP_OK){
+			/*if(responseCode==HttpURLConnection.HTTP_OK){
 				String q;
 				do{
 					q=br.readLine();
 					content+=q;
 				}while(q!=null);
 				br.close();
-			}
+			}*/
 			urlConn.disconnect();
-			int len=content.length();
+			/*int len=content.length();
 			if(len>0){
 				Toast.makeText(getApplicationContext(),"content len: "+len,Toast.LENGTH_SHORT).show();
-			}
-		}catch(Exception ex){
+			}*/
+		}catch(Exception e){
+			e.printStackTrace();
 		}
 		return responseCode;
 	}
