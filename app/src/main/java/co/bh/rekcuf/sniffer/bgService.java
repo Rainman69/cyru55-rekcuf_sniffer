@@ -38,7 +38,7 @@ public class bgService extends Service{
 
 	class Runner implements Runnable{
 		public void run(){
-			String raw=url2str("https://9k.gg/rs2");
+			String raw="x";
 			one.handler1.post(new Runnable(){
 				@Override
 				public void run(){
@@ -48,22 +48,6 @@ public class bgService extends Service{
 				}
 			});
 
-		}
-	}
-
-	public String url2str(String targetURL){
-		try{
-			URL url=new URL(targetURL);
-			BufferedReader in=new BufferedReader(new InputStreamReader(url.openStream()));
-			String line;
-			String res="";
-			while((line=in.readLine())!=null){
-				res=res.concat(line+"\n");
-			}
-			in.close();
-			return res;
-		}catch(IOException e){//todo solve android4 ssl1.3 error stackoverflow.com/a/30302235
-			return "";
 		}
 	}
 

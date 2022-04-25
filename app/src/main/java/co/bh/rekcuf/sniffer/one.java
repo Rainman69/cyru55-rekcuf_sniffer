@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Build;
@@ -21,6 +22,10 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
@@ -41,9 +46,36 @@ public class one extends AppCompatActivity{
 		ToggleButton netstat=findViewById(R.id.netstat);
 		ToggleButton togglev1=findViewById(R.id.togglev1);
 		EditText num1=findViewById(R.id.num1);
+		EditText num2=findViewById(R.id.num2);
+		EditText num3=findViewById(R.id.num3);
 		SwitchMaterial switch1=findViewById(R.id.switch1);
 		Button button1=findViewById(R.id.button1);
+		LinearLayout ll=findViewById(R.id.logger);
 		//Toast.makeText(one.this,"startService",Toast.LENGTH_SHORT).show();
+
+		SQLite db1=new SQLite(this);// init and create table
+		Cursor res=db1.sel("select count(*) as x from "+db1.tablename+";");
+		if(res.moveToNext()){
+			String counter=res.getString(0);
+			int count=Integer.parseInt(counter);
+			if(count>0){
+				num2.setText(Integer.toString(count));
+			}else{
+				ll.removeAllViews();
+				ll.invalidate();
+				TextView txtv=new TextView(getApplicationContext());
+				txtv.setText("DataBase is now Updating ...");
+				ll.addView(txtv);
+				new Thread(new Runnable(){
+					@Override
+					public void run(){
+						updatedb(getString(R.string.update_url));
+					}
+				}).start();
+			}
+		}else{
+			Toast.makeText(one.this,"have not next result",Toast.LENGTH_SHORT).show();
+		}
 
 		NetworkChangeReceiver.setToggle(netstat);
 		if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N)
@@ -149,6 +181,40 @@ public class one extends AppCompatActivity{
 			return 0;
 		}
 		return 0;
+	}
+
+	public void updatedb(String targetURL){
+		String line;
+		boolean res;
+		int i=0;
+		SQLite db2=new SQLite(one.this);
+		try{
+			URL url=new URL(targetURL);
+			BufferedReader in=new BufferedReader(new InputStreamReader(url.openStream()));
+			while((line=in.readLine())!=null){
+				++i;
+				if(line.length()>3){
+					do{// repeat insert if db file locked temporary
+						res=db2.ins(line);
+					}while(res==false);
+				}
+			}
+			in.close();
+			int finalI=i;
+			handler1.post(new Runnable(){
+				@Override
+				public void run(){
+					EditText num2=findViewById(R.id.num2);
+					num2.setText(Integer.toString(finalI));
+					LinearLayout ll=findViewById(R.id.logger);
+					TextView txtv=new TextView(getApplicationContext());
+					txtv.setText("DataBase Updated Successfuly\nyour DataBase have "+finalI+" domains\nLets Go");
+					ll.addView(txtv);
+				}
+			});
+		}catch(IOException e){//todo solve android4 ssl1.3 error stackoverflow.com/a/30302235
+			e.printStackTrace();
+		}
 	}
 
 	private BroadcastReceiver rcv=new BroadcastReceiver(){

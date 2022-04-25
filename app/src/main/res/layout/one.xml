@@ -57,12 +57,56 @@
             android:textStyle="bold"
             />
 
+        <EditText
+            android:id="@+id/num2"
+            android:layout_width="32dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:ems="3"
+            android:gravity="center_horizontal"
+            android:inputType="number"
+            android:maxLength="5"
+            android:importantForAutofill="no"
+            android:hint="0"
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            />
+
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/text_r1_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="8"
-            android:text=""
+            android:layout_weight="1"
+            android:text="Domain"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            />
+
+        <EditText
+            android:id="@+id/num3"
+            android:layout_width="32dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:ems="3"
+            android:gravity="center_horizontal"
+            android:inputType="number"
+            android:maxLength="2"
+            android:hint="0"
+            android:importantForAutofill="no"
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            />
+
+        <TextView
+            android:id="@+id/text_r1_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Sent"
+            android:textSize="16sp"
+            android:textStyle="bold"
             />
 
     </LinearLayout>
@@ -132,6 +176,8 @@
                 android:background="@drawable/togglev1"
                 android:enabled="false"
                 android:text="ToggleButton"
+                android:textOn="@cyru55"
+                android:textAllCaps="false"
                 />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
