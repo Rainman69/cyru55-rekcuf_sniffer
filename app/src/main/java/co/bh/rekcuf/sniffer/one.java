@@ -78,8 +78,8 @@ public class one extends AppCompatActivity{
 			@Override
 			public boolean onKey(View view,int i,KeyEvent keyEvent){
 				if(keyEvent.getAction()==KeyEvent.ACTION_UP){
-					int num=get_conc();
-					if(num>0&&num<17){
+					int conc=get_conc();
+					if(conc>0&&conc<17){
 						//num1.setBackgroundColor(Color.TRANSPARENT);
 						num1.getBackground().setColorFilter(getResources().getColor(R.color.teal_200),PorterDuff.Mode.SRC_IN);
 					}else{
@@ -97,8 +97,14 @@ public class one extends AppCompatActivity{
 				Intent srv=new Intent(getApplication(),bgService.class);
 				if(switch1.isChecked()){
 					if(stat){
-						num1.setEnabled(false);
-						startService(srv);
+						int conc=get_conc();
+						if(conc>0&&conc<17){
+							num1.setEnabled(false);
+							startService(srv);
+						}else{
+							Toast.makeText(one.this,"Set concurrent number 1 ~ 16",Toast.LENGTH_SHORT).show();
+							switch1.setChecked(false);
+						}
 					}else{
 						Toast.makeText(one.this,"Internet is not available",Toast.LENGTH_SHORT).show();
 						switch1.setChecked(false);
