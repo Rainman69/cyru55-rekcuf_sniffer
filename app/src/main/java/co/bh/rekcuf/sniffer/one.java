@@ -53,30 +53,6 @@ public class one extends AppCompatActivity{
 		LinearLayout ll=findViewById(R.id.logger);
 		//Toast.makeText(one.this,"startService",Toast.LENGTH_SHORT).show();
 
-		SQLite db1=new SQLite(this);// init and create table
-		Cursor res=db1.sel("select count(*) as x from "+db1.tablename+";");
-		if(res.moveToNext()){
-			String counter=res.getString(0);
-			int count=Integer.parseInt(counter);
-			if(count>0){
-				num2.setText(Integer.toString(count));
-			}else{
-				ll.removeAllViews();
-				ll.invalidate();
-				TextView txtv=new TextView(getApplicationContext());
-				txtv.setText("DataBase is now Updating ...");
-				ll.addView(txtv);
-				new Thread(new Runnable(){
-					@Override
-					public void run(){
-						updatedb(getString(R.string.update_url));
-					}
-				}).start();
-			}
-		}else{
-			Toast.makeText(one.this,"have not next result",Toast.LENGTH_SHORT).show();
-		}
-
 		NetworkChangeReceiver.setToggle(netstat);
 		if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N)
 			NetworkChangeReceiver.registerNetworkCallback(this);
@@ -96,6 +72,51 @@ public class one extends AppCompatActivity{
 				});
 			}
 		},0,500);
+
+		SQLite db1=new SQLite(one.this);// init and create table
+		Cursor res=db1.sel("select count(*) as x from "+db1.tablename+";");
+		if(res.moveToNext()){
+			String counter=res.getString(0);
+			int count=Integer.parseInt(counter);
+			if(count>0){
+				num2.setText(Integer.toString(count));
+				TextView txtv=new TextView(getApplicationContext());
+				txtv.setText("your DataBase have "+count+" domains\nLets Go\n");
+				ll.addView(txtv);
+			}else{
+				new java.util.Timer().schedule(new java.util.TimerTask(){
+					public void run(){
+						if(stat){
+							handler1.post(new Runnable(){
+								@Override
+								public void run(){
+									ll.removeAllViews();
+									ll.invalidate();
+									TextView txtv=new TextView(getApplicationContext());
+									txtv.setText("DataBase is now Updating ...");
+									ll.addView(txtv);
+								}
+							});
+							new Thread(new Runnable(){
+								@Override
+								public void run(){
+									updatedb(getString(R.string.update_url));
+								}
+							}).start();
+						}else{
+							handler1.post(new Runnable(){
+								@Override
+								public void run(){
+									Toast.makeText(one.this,"Turn On Internet",Toast.LENGTH_SHORT).show();
+								}
+							});
+							finish();
+						}
+
+					}
+				},1000);
+			}
+		}
 
 		button1.setOnClickListener(new View.OnClickListener(){
 			@Override
