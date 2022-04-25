@@ -31,7 +31,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     public static void registerNetworkCallback(Context context) {
         try {
             ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkRequest.Builder builder = new NetworkRequest.Builder();
+            //NetworkRequest.Builder builder = new NetworkRequest.Builder();
             connectivityManager.registerDefaultNetworkCallback(
                 new ConnectivityManager.NetworkCallback(){
                     @Override

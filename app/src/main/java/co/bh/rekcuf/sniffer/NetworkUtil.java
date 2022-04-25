@@ -14,6 +14,7 @@ public class NetworkUtil{
 			NetworkInfo nInfo=cm.getActiveNetworkInfo();
 			connected=nInfo!=null&&nInfo.isAvailable()&&nInfo.isConnected();
 		}catch(Exception e){
+			e.printStackTrace();
 		}
 		return connected;
 	}

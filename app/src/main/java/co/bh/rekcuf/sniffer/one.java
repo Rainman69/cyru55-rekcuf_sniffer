@@ -56,7 +56,7 @@ public class one extends AppCompatActivity{
 		new Timer().scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run(){
-				stat=(boolean)NetworkUtil.isConnected(getApplicationContext());
+				stat=NetworkUtil.isConnected(getApplicationContext());
 				netstat.setChecked(stat);
 				boolean srv_stat=isServiceRunning(bgService.class);
 				handler1.post(new Runnable(){
@@ -71,7 +71,7 @@ public class one extends AppCompatActivity{
 		button1.setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View view){
-				Boolean stat=isServiceRunning(bgService.class);
+				boolean stat=isServiceRunning(bgService.class);
 				String x=Boolean.toString(stat);
 				Toast.makeText(one.this,"stat: "+x,Toast.LENGTH_SHORT).show();
 			}
@@ -120,7 +120,7 @@ public class one extends AppCompatActivity{
 		EditText num1=findViewById(R.id.num1);
 		String txt=num1.getText().toString();
 		if(txt.length()>0){
-			Integer num=Integer.parseInt(txt);
+			int num=Integer.parseInt(txt);
 			if(num>0){
 				return num;
 			}else
@@ -173,7 +173,7 @@ public class one extends AppCompatActivity{
 			handler1.post(new Runnable(){
 				@Override
 				public void run(){
-					LinearLayout ll=(LinearLayout)findViewById(R.id.logger);
+					LinearLayout ll=findViewById(R.id.logger);
 					ll.removeAllViews();
 					ll.invalidate();
 					TextView txt=new TextView(one.this);
