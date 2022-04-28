@@ -46,8 +46,8 @@ public class one extends AppCompatActivity{
 
 		ToggleButton netstat=findViewById(R.id.netstat);
 		ToggleButton togglev1=findViewById(R.id.togglev1);
-		EditText num1=findViewById(R.id.num1);
-		EditText num2=findViewById(R.id.num2);
+		EditText inp4=findViewById(R.id.inp4);
+		EditText inp1=findViewById(R.id.inp1);
 		SwitchMaterial switch1=findViewById(R.id.switch1);
 		//Button button1=findViewById(R.id.button1);
 		LinearLayout ll=findViewById(R.id.logger);
@@ -79,7 +79,7 @@ public class one extends AppCompatActivity{
 			String counter=res.getString(0);
 			int count=Integer.parseInt(counter);
 			if(count>0){
-				num2.setText(Integer.toString(count));
+				inp1.setText(Integer.toString(count));
 				TextView txtv=new TextView(getApplicationContext());
 				txtv.setText("your DataBase have "+count+" domains\nLets Go\n");
 				ll.addView(txtv);
@@ -127,17 +127,17 @@ public class one extends AppCompatActivity{
 			}
 		});*/
 
-		num1.setOnKeyListener(new View.OnKeyListener(){
+		inp4.setOnKeyListener(new View.OnKeyListener(){
 			@Override
 			public boolean onKey(View view,int i,KeyEvent keyEvent){
 				if(keyEvent.getAction()==KeyEvent.ACTION_UP){
 					int conc=get_conc();
 					if(conc>0&&conc<17){
-						//num1.setBackgroundColor(Color.TRANSPARENT);
-						num1.getBackground().setColorFilter(getResources().getColor(R.color.teal_200),PorterDuff.Mode.SRC_IN);
+						//inp4.setBackgroundColor(Color.TRANSPARENT);
+						inp4.getBackground().setColorFilter(getResources().getColor(R.color.teal_200),PorterDuff.Mode.SRC_IN);
 					}else{
-						//num1.setBackgroundColor(Color.parseColor("#FFAAAA"));
-						num1.getBackground().setColorFilter(Color.RED,PorterDuff.Mode.SRC_IN);
+						//inp4.setBackgroundColor(Color.parseColor("#FFAAAA"));
+						inp4.getBackground().setColorFilter(Color.RED,PorterDuff.Mode.SRC_IN);
 					}
 				}
 				return false;
@@ -153,7 +153,7 @@ public class one extends AppCompatActivity{
 					if(stat){
 						int conc=get_conc();
 						if(conc>0&&conc<17){
-							num1.setEnabled(false);
+							inp4.setEnabled(false);
 							one.switch1=true;
 							startService(srv);
 						}else{
@@ -165,7 +165,7 @@ public class one extends AppCompatActivity{
 						switch1.setChecked(false);
 					}
 				}else{
-					num1.setEnabled(true);
+					inp4.setEnabled(true);
 					stopService(srv);
 				}
 			}
@@ -194,8 +194,8 @@ public class one extends AppCompatActivity{
 	}
 
 	public int get_conc(){
-		EditText num1=findViewById(R.id.num1);
-		String txt=num1.getText().toString();
+		EditText inp4=findViewById(R.id.inp4);
+		String txt=inp4.getText().toString();
 		if(txt.length()>0){
 			int num=Integer.parseInt(txt);
 			if(num>0){
@@ -227,8 +227,8 @@ public class one extends AppCompatActivity{
 			handler1.post(new Runnable(){
 				@Override
 				public void run(){
-					EditText num2=findViewById(R.id.num2);
-					num2.setText(Integer.toString(finalI));
+					EditText inp1=findViewById(R.id.inp1);
+					inp1.setText(Integer.toString(finalI));
 					LinearLayout ll=findViewById(R.id.logger);
 					TextView txtv=new TextView(getApplicationContext());
 					txtv.setText("DataBase Updated Successfuly\nyour DataBase have "+finalI+" domains\nLets Go");
@@ -253,10 +253,10 @@ public class one extends AppCompatActivity{
 				TextView txtv=new TextView(getApplicationContext());
 				txtv.setText(stat+"\t"+domain);
 				ll.addView(txtv);
-				EditText num3=findViewById(R.id.num3);
-				String num3_str=num3.getText().toString();
-				int num3_int=num3_str.length()>0?Integer.parseInt(num3_str):0;
-				num3.setText((num3_int+1)+"");
+				EditText inp2=findViewById(R.id.inp2);
+				String inp2_str=inp2.getText().toString();
+				int inp2_int=inp2_str.length()>0?Integer.parseInt(inp2_str):0;
+				inp2.setText((inp2_int+1)+"");
 			}
 		}
 	};
