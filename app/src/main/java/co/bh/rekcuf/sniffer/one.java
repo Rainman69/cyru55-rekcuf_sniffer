@@ -1,6 +1,8 @@
 package co.bh.rekcuf.sniffer;
 
 import android.app.ActivityManager;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,13 +12,13 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Handler;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -26,8 +28,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -38,7 +38,10 @@ public class one extends AppCompatActivity{
 	public static int conc=0;
 	public static int timeout=5000;
 	public static boolean switch1=false;
+	public static boolean notif=true;
 	public boolean stat=false;
+	public int db_count=0;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -51,7 +54,7 @@ public class one extends AppCompatActivity{
 		EditText inp4=findViewById(R.id.inp4);
 		EditText inp5=findViewById(R.id.inp5);
 		SwitchMaterial switch1=findViewById(R.id.switch1);
-		//Button button1=findViewById(R.id.button1);
+		CheckBox checkbox1=findViewById(R.id.checkbox1);
 		LinearLayout ll=findViewById(R.id.logger);
 		//Toast.makeText(one.this,"startService",Toast.LENGTH_SHORT).show();
 
@@ -64,6 +67,7 @@ public class one extends AppCompatActivity{
 			public void run(){
 				conc=get_conc();
 				timeout=get_timeout();
+				notif=checkbox1.isChecked();
 				stat=NetworkUtil.isConnected(getApplicationContext());
 				netstat.setChecked(stat);
 				boolean srv_stat=isServiceRunning(bgService.class);
@@ -80,11 +84,11 @@ public class one extends AppCompatActivity{
 		Cursor res=db1.sel("select count(*) as x from "+db1.tablename+";");
 		if(res.moveToNext()){
 			String counter=res.getString(0);
-			int count=Integer.parseInt(counter);
-			if(count>0){
-				inp1.setText(Integer.toString(count));
+			db_count=Integer.parseInt(counter);
+			if(db_count>0){
+				inp1.setText(Integer.toString(db_count));
 				TextView txtv=new TextView(getApplicationContext());
-				txtv.setText("your DataBase have "+count+" domains\nLets Go\n");
+				txtv.setText("your DataBase have "+db_count+" domains\nLets Go\n");
 				ll.addView(txtv);
 			}else{
 				new java.util.Timer().schedule(new java.util.TimerTask(){
@@ -158,9 +162,16 @@ public class one extends AppCompatActivity{
 						if(conc>0&&conc<17){
 							int timeout=get_timeout();
 							if(timeout>1000&&timeout<20000){
-								inp4.setEnabled(false);
-								one.switch1=true;
-								startService(srv);
+								if(db_count>0){
+									inp4.setEnabled(false);
+									inp5.setEnabled(false);
+									checkbox1.setEnabled(false);
+									one.switch1=true;
+									startService(srv);
+								}else{
+									Toast.makeText(one.this,"Wait until DataBase become updated",Toast.LENGTH_SHORT).show();
+									switch1.setChecked(false);
+								}
 							}else{
 								Toast.makeText(one.this,"Set Timeout 1000 ~ 20.000",Toast.LENGTH_SHORT).show();
 								switch1.setChecked(false);
@@ -175,6 +186,8 @@ public class one extends AppCompatActivity{
 					}
 				}else{
 					inp4.setEnabled(true);
+					inp5.setEnabled(true);
+					checkbox1.setEnabled(true);
 					stopService(srv);
 				}
 			}
@@ -245,15 +258,15 @@ public class one extends AppCompatActivity{
 				}
 			}
 			in.close();
-			int finalI=i;
+			db_count=i;
 			handler1.post(new Runnable(){
 				@Override
 				public void run(){
 					EditText inp1=findViewById(R.id.inp1);
-					inp1.setText(Integer.toString(finalI));
+					inp1.setText(Integer.toString(db_count));
 					LinearLayout ll=findViewById(R.id.logger);
 					TextView txtv=new TextView(getApplicationContext());
-					txtv.setText("DataBase Updated Successfuly\nyour DataBase have "+finalI+" domains\nLets Go");
+					txtv.setText("DataBase Updated Successfuly\nyour DataBase have "+db_count+" domains\nLets Go");
 					ll.addView(txtv);
 				}
 			});
@@ -261,6 +274,8 @@ public class one extends AppCompatActivity{
 			e.printStackTrace();
 		}
 	}
+
+
 
 	private BroadcastReceiver rcv=new BroadcastReceiver(){
 		@Override
