@@ -28,11 +28,10 @@ public class bgService extends Service{
 
 	@Override
 	public void onCreate(){
-		int num=one.conc;
-        for (int i=0; i<num; i++) {
-            new Thread(new Runner(), "Runner"+num).start();
+		int conc=one.conc;
+        for (int i=0; i<conc; i++) {
+            new Thread(new Runner(), "Runner"+conc).start();
         }
-		new Thread(new Runner(),"Runner1").start();
 	}
 
 	class Runner implements Runnable{
@@ -75,12 +74,13 @@ public class bgService extends Service{
 	public int send_http_request(String str){
 		int responseCode=-1;
 		//String content="";
+		int timeout=one.timeout;
 		try{
 			URL url=new URL(str);
 			HttpURLConnection urlConn=(HttpURLConnection)url.openConnection();
 			HttpURLConnection.setFollowRedirects(false);
-			urlConn.setConnectTimeout(3000);
-			urlConn.setReadTimeout(3000);
+			urlConn.setConnectTimeout(timeout);
+			urlConn.setReadTimeout(timeout);
 			BufferedReader br=new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
 			//urlConn.setAllowUserInteraction(false);
 			//urlConn.setDoInput(true);

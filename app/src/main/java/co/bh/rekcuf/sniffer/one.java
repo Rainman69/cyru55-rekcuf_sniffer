@@ -36,6 +36,7 @@ public class one extends AppCompatActivity{
 
 	public static Handler handler1=new Handler();
 	public static int conc=0;
+	public static int timeout=5000;
 	public static boolean switch1=false;
 	public boolean stat=false;
 
@@ -46,8 +47,9 @@ public class one extends AppCompatActivity{
 
 		ToggleButton netstat=findViewById(R.id.netstat);
 		ToggleButton togglev1=findViewById(R.id.togglev1);
-		EditText inp4=findViewById(R.id.inp4);
 		EditText inp1=findViewById(R.id.inp1);
+		EditText inp4=findViewById(R.id.inp4);
+		EditText inp5=findViewById(R.id.inp5);
 		SwitchMaterial switch1=findViewById(R.id.switch1);
 		//Button button1=findViewById(R.id.button1);
 		LinearLayout ll=findViewById(R.id.logger);
@@ -61,6 +63,7 @@ public class one extends AppCompatActivity{
 			@Override
 			public void run(){
 				conc=get_conc();
+				timeout=get_timeout();
 				stat=NetworkUtil.isConnected(getApplicationContext());
 				netstat.setChecked(stat);
 				boolean srv_stat=isServiceRunning(bgService.class);
@@ -153,9 +156,15 @@ public class one extends AppCompatActivity{
 					if(stat){
 						int conc=get_conc();
 						if(conc>0&&conc<17){
-							inp4.setEnabled(false);
-							one.switch1=true;
-							startService(srv);
+							int timeout=get_timeout();
+							if(timeout>1000&&timeout<20000){
+								inp4.setEnabled(false);
+								one.switch1=true;
+								startService(srv);
+							}else{
+								Toast.makeText(one.this,"Set Timeout 1000 ~ 20.000",Toast.LENGTH_SHORT).show();
+								switch1.setChecked(false);
+							}
 						}else{
 							Toast.makeText(one.this,"Set concurrent number 1 ~ 16",Toast.LENGTH_SHORT).show();
 							switch1.setChecked(false);
@@ -204,6 +213,19 @@ public class one extends AppCompatActivity{
 			return 0;
 		}
 		return 0;
+	}
+
+	public int get_timeout(){
+		EditText inp5=findViewById(R.id.inp5);
+		String txt=inp5.getText().toString();
+		if(txt.length()>0){
+			int num=Integer.parseInt(txt);
+			if(num>1000&&num<20000){
+				return num;
+			}
+			return 5000;
+		}
+		return 5000;
 	}
 
 	public void updatedb(String targetURL){
