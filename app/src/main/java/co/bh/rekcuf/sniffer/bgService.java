@@ -73,9 +73,12 @@ public class bgService extends Service{
 					if(domain.length()>3){
 						String url="https://"+domain+"/?";
 						int stat_int=send_http_request(url);
-						String stat_str=Integer.toString(stat_int);
-						if(stat_str.equals("-1"))
-							stat_str="000";
+						String stat_str;
+						if(stat_int==-1){
+							stat_str="000\t×\t";
+						}else{
+							stat_str=stat_int+"\t<\t";
+						}
 						final String stat=stat_str;
 						one.handler1.post(new Runnable(){
 							@Override

@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -285,6 +286,7 @@ public class one extends AppCompatActivity{
 				String stat=bundle.getString("stat");
 				String domain=bundle.getString("domain");
 				LinearLayout ll=findViewById(R.id.logger);
+				ScrollView scroll=findViewById(R.id.logger_parent);
 				//ll.removeAllViews();
 				//ll.invalidate();
 				TextView txtv=new TextView(getApplicationContext());
@@ -294,6 +296,12 @@ public class one extends AppCompatActivity{
 				String inp2_str=inp2.getText().toString();
 				int inp2_int=inp2_str.length()>0?Integer.parseInt(inp2_str):0;
 				inp2.setText((inp2_int+1)+"");
+				ll.post(new Runnable() {
+					@Override
+					public void run() {
+						scroll.fullScroll(ScrollView.FOCUS_DOWN);
+					}
+				});
 			}
 		}
 	};

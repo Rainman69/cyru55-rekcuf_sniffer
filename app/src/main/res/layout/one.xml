@@ -167,10 +167,12 @@
     </LinearLayout>
 
     <ScrollView
+        android:id="@+id/logger_parent"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
+        android:padding="16dp"
         app:layout_constraintBottom_toTopOf="@+id/row7"
         app:layout_constraintTop_toBottomOf="@+id/row3"
         android:contentDescription="logs"
@@ -182,9 +184,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:scrollbars="vertical"
-            android:layout_gravity="bottom"
-            android:gravity="bottom"
             />
+
     </ScrollView>
 
     <LinearLayout
