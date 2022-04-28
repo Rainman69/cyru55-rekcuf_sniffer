@@ -1,8 +1,6 @@
 package co.bh.rekcuf.sniffer;
 
 import android.app.ActivityManager;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -38,11 +36,10 @@ public class one extends AppCompatActivity{
 	public static Handler handler1=new Handler();
 	public static int conc=0;
 	public static int timeout=5000;
-	public static boolean switch1=false;
+	public static boolean switch_stat=false;
 	public static boolean notif=true;
 	public static boolean stat=false;
 	public int db_count=0;
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -53,10 +50,10 @@ public class one extends AppCompatActivity{
 		ToggleButton togglev1=findViewById(R.id.togglev1);
 		EditText inp1=findViewById(R.id.inp1);
 		EditText inp4=findViewById(R.id.inp4);
-		EditText inp5=findViewById(R.id.inp5);
 		SwitchMaterial switch1=findViewById(R.id.switch1);
 		CheckBox checkbox1=findViewById(R.id.checkbox1);
 		LinearLayout ll=findViewById(R.id.logger);
+
 		//Toast.makeText(one.this,"startService",Toast.LENGTH_SHORT).show();
 
 		NetworkChangeReceiver.setToggle(netstat);
@@ -75,10 +72,14 @@ public class one extends AppCompatActivity{
 					@Override
 					public void run(){
 						togglev1.setChecked(isServiceRunning(bgService.class));
+						if(!stat&&switch1.isChecked()){
+							switch1.setChecked(false);
+							service(false);
+						}
 					}
 				});
 			}
-		},0,800);
+		},0,600);
 
 		SQLite db1=new SQLite(one.this);// init and create table
 		Cursor res=db1.sel("select count(*) as x from "+db1.tablename+";");
@@ -145,8 +146,7 @@ public class one extends AppCompatActivity{
 		switch1.setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View view){
-				one.switch1=false;
-				Intent srv=new Intent(getApplication(),bgService.class);
+				one.switch_stat=false;
 				if(switch1.isChecked()){
 					if(stat){
 						int conc=get_conc();
@@ -154,11 +154,7 @@ public class one extends AppCompatActivity{
 							int timeout=get_timeout();
 							if(timeout>1000&&timeout<20000){
 								if(db_count>0){
-									inp4.setEnabled(false);
-									inp5.setEnabled(false);
-									checkbox1.setEnabled(false);
-									one.switch1=true;
-									startService(srv);
+									service(true);
 								}else{
 									Toast.makeText(one.this,"Wait until DataBase become updated",Toast.LENGTH_SHORT).show();
 									switch1.setChecked(false);
@@ -176,10 +172,7 @@ public class one extends AppCompatActivity{
 						switch1.setChecked(false);
 					}
 				}else{
-					inp4.setEnabled(true);
-					inp5.setEnabled(true);
-					checkbox1.setEnabled(true);
-					stopService(srv);
+					service(false);
 				}
 			}
 		});
@@ -232,6 +225,22 @@ public class one extends AppCompatActivity{
 		return 5000;
 	}
 
+	public void service(boolean turn){
+		one.switch_stat=turn;
+		EditText inp5=findViewById(R.id.inp5);
+		EditText inp4=findViewById(R.id.inp4);
+		CheckBox checkbox1=findViewById(R.id.checkbox1);
+		Intent srv=new Intent(getApplication(),bgService.class);
+		inp4.setEnabled(!turn);
+		inp5.setEnabled(!turn);
+		checkbox1.setEnabled(!turn);
+		if(turn){
+			startService(srv);
+		}else{
+			stopService(srv);
+		}
+	}
+
 	public void updatedb(String targetURL){
 		String line;
 		boolean res;
@@ -266,8 +275,6 @@ public class one extends AppCompatActivity{
 		}
 	}
 
-
-
 	private BroadcastReceiver rcv=new BroadcastReceiver(){
 		@Override
 		public void onReceive(Context context,Intent intent){
@@ -295,4 +302,5 @@ public class one extends AppCompatActivity{
 			}
 		}
 	};
+
 }

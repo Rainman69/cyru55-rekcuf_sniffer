@@ -50,6 +50,15 @@ public class bgService extends Service{
         }
 	}
 
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Intent broadcastIntent = new Intent();
+		broadcastIntent.setAction("restartservice");
+		broadcastIntent.setClass(this, NetworkChangeReceiver.class);
+		this.sendBroadcast(broadcastIntent);
+	}
+
 	@RequiresApi(Build.VERSION_CODES.O)
 	private void startNotif() {
 		String NOTIFICATION_CHANNEL_ID = "example.permanence";
@@ -65,7 +74,7 @@ public class bgService extends Service{
 
 	class Runner implements Runnable{
 		public void run(){
-			while(one.switch1){
+			while(one.switch_stat){
 				Cursor res=SQLite.sel("select host from host order by random() limit 1;");
 				if(res.moveToNext()){
 					String domain=res.getString(0);
