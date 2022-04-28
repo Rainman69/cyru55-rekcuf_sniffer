@@ -40,7 +40,7 @@ public class one extends AppCompatActivity{
 	public static int timeout=5000;
 	public static boolean switch1=false;
 	public static boolean notif=true;
-	public boolean stat=false;
+	public static boolean stat=false;
 	public int db_count=0;
 
 
@@ -71,15 +71,14 @@ public class one extends AppCompatActivity{
 				notif=checkbox1.isChecked();
 				stat=NetworkUtil.isConnected(getApplicationContext());
 				netstat.setChecked(stat);
-				boolean srv_stat=isServiceRunning(bgService.class);
 				handler1.post(new Runnable(){
 					@Override
 					public void run(){
-						togglev1.setChecked(srv_stat);
+						togglev1.setChecked(isServiceRunning(bgService.class));
 					}
 				});
 			}
-		},0,500);
+		},0,800);
 
 		SQLite db1=new SQLite(one.this);// init and create table
 		Cursor res=db1.sel("select count(*) as x from "+db1.tablename+";");
@@ -125,15 +124,6 @@ public class one extends AppCompatActivity{
 				},1000);
 			}
 		}
-
-		/*button1.setOnClickListener(new View.OnClickListener(){
-			@Override
-			public void onClick(View view){
-				boolean stat=isServiceRunning(bgService.class);
-				String x=Boolean.toString(stat);
-				Toast.makeText(one.this,"stat: "+x,Toast.LENGTH_SHORT).show();
-			}
-		});*/
 
 		inp4.setOnKeyListener(new View.OnKeyListener(){
 			@Override
