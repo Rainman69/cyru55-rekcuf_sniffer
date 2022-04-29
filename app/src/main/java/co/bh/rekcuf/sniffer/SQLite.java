@@ -46,17 +46,6 @@ public class SQLite extends SQLiteOpenHelper{
 		}
 		return true;
 	}
-	public static boolean del(String id){
-		int res=db1.delete("host","id=?",new String[]{id});
-		return res>0;
-	}
-	public static boolean upd(String id,String str){
-		ContentValues cv=new ContentValues();
-		cv.put("id",id);
-		cv.put("name",str);
-		int res=db1.update("host",cv,"id=?",new String[]{id});
-		return res>0;
-	}
 	public static Cursor sel(String query){
 		Cursor res=db1.rawQuery(query,null);
 		return res;

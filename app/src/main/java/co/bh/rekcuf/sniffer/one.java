@@ -208,7 +208,8 @@ public class one extends AppCompatActivity{
 		if(txt.length()>0){
 			int num=Integer.parseInt(txt);
 			if(num>0&&num<21){
-				return num*1000;
+				int res=num*1000;
+				return res;
 			}
 			return 5000;
 		}
@@ -236,7 +237,9 @@ public class one extends AppCompatActivity{
 		Cursor res=SQLite.sel("select oid,ts,stat,domain from log order by oid desc limit 32;");
 		if(res.getCount()>0){
 			String log="";
+			String oid="0";
 			while(res.moveToNext()){
+				oid=res.getString(0);
 				String ts=res.getString(1);
 				String stat=res.getString(2);
 				String domain=res.getString(3);
@@ -245,8 +248,9 @@ public class one extends AppCompatActivity{
 				SimpleDateFormat sdf=new SimpleDateFormat("HH:mm:ss");
 				String ts_str=sdf.format(time);
 				String stat_str=stat.equals("-1")?"000\t×":stat+"\t<";
-				log+=ts_str+"\t-\t"+stat_str+"\t"+domain+"\n";
+				log+=ts_str+" \t- \t"+stat_str+" \t\t"+domain+"\n";
 			}
+			SQLite.exe("delete from log where oid<"+oid+";");
 			ll.removeAllViews();
 			ll.invalidate();
 			TextView txtv=new TextView(getApplicationContext());
