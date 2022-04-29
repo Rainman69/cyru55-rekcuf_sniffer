@@ -3,6 +3,7 @@
 .gradle/
 .idea/
 build/
+built/
 /captures
 /app/build/
 /app/release/

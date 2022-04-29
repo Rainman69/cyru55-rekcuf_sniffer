@@ -1,6 +1,5 @@
 package co.bh.rekcuf.sniffer;
 
-import static android.content.Intent.ACTION_DELETE;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -8,7 +7,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
 import android.widget.Toast;
@@ -18,11 +16,12 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Date;
 
 
 public class bgService extends Service{
 
-	public static final String pn = "co.bh.rekcuf.sniffer";
+	public static final String pn="co.bh.rekcuf.sniffer";
 
 	@Override
 	public IBinder onBind(Intent intent){
@@ -45,58 +44,48 @@ public class bgService extends Service{
 				startForeground(1,new Notification());
 			}
 		}
-        for (int i=0; i<conc; i++) {
-            new Thread(new Runner(), "Runner"+conc).start();
-        }
+		for(int i=0;i<conc;i++){
+			new Thread(new Runner(),"Runner"+conc).start();
+		}
 	}
 
 	@Override
-	public void onDestroy() {
+	public void onDestroy(){//codespeedy.com/creating-persistent-notification-in-android-java/
 		super.onDestroy();
-		Intent broadcastIntent = new Intent();
+		Intent broadcastIntent=new Intent();
 		broadcastIntent.setAction("restartservice");
-		broadcastIntent.setClass(this, NetworkChangeReceiver.class);
+		broadcastIntent.setClass(this,BgSrvRestarter.class);
 		this.sendBroadcast(broadcastIntent);
 	}
 
 	@RequiresApi(Build.VERSION_CODES.O)
-	private void startNotif() {
-		String NOTIFICATION_CHANNEL_ID = "example.permanence";
-		NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "Background Service", NotificationManager.IMPORTANCE_NONE);
+	private void startNotif(){
+		String NOTIFICATION_CHANNEL_ID="example.permanence";
+		NotificationChannel chan=new NotificationChannel(NOTIFICATION_CHANNEL_ID,"Background Service",NotificationManager.IMPORTANCE_NONE);
 		chan.setLightColor(R.color.notif_blue);
-		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		assert manager != null;
+		NotificationManager manager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+		assert manager!=null;
 		manager.createNotificationChannel(chan);
-		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
-		Notification notification = notificationBuilder.setOngoing(true).setContentTitle("App is running in background").setPriority(NotificationManager.IMPORTANCE_HIGH).setCategory(Notification.CATEGORY_SERVICE).build();
-		startForeground(2, notification);
+		NotificationCompat.Builder notificationBuilder=new NotificationCompat.Builder(this,NOTIFICATION_CHANNEL_ID);
+		Notification notification=notificationBuilder.setOngoing(true).setContentTitle("App is running in background").setPriority(NotificationManager.IMPORTANCE_HIGH).setCategory(Notification.CATEGORY_SERVICE).build();
+		startForeground(2,notification);
 	}
 
 	class Runner implements Runnable{
 		public void run(){
 			while(one.switch_stat){
-				Cursor res=SQLite.sel("select host from host order by random() limit 1;");
+				Cursor res=SQLite.sel("select domain from host order by random() limit 1;");
 				if(res.moveToNext()){
 					String domain=res.getString(0);
 					//toast(domain);
 					if(domain.length()>3){
 						String url="https://"+domain+"/?";
 						int stat_int=send_http_request(url);
-						String stat_str;
-						if(stat_int==-1){
-							stat_str="000\t×\t";
-						}else{
-							stat_str=stat_int+"\t<\t";
-						}
-						final String stat=stat_str;
-						one.handler1.post(new Runnable(){
-							@Override
-							public void run(){
-								Intent i=new Intent("co.bh.rekcuf.sniffer");
-								i.putExtra("stat",stat);
-								i.putExtra("domain",domain);
-								sendBroadcast(i);
-							}
+						int ts=(int)(new Date().getTime()/1000);
+						SQLite.ins("log",new String[]{
+							"ts",Integer.toString(ts),
+							"stat",Integer.toString(stat_int),
+							"domain",domain
 						});
 					}
 				}

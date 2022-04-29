@@ -39,20 +39,17 @@
             android:id="@+id/inp1"
             android:layout_width="32dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:ems="3"
             android:gravity="center_horizontal"
             android:inputType="number"
             android:maxLength="6"
             android:importantForAutofill="no"
             android:hint="0"
-            android:clickable="false"
-            android:cursorVisible="false"
-            android:focusable="false"
+            android:enabled="false"
             />
 
         <TextView
-            android:id="@+id/text_r1_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -68,21 +65,41 @@
             android:layout_weight="1"
             android:ems="3"
             android:gravity="center_horizontal"
-            android:inputType="number"
-            android:maxLength="5"
             android:hint="0"
             android:importantForAutofill="no"
-            android:clickable="false"
-            android:cursorVisible="false"
-            android:focusable="false"
+            android:inputType="number"
+            android:maxLength="5"
+            android:enabled="false"
             />
 
         <TextView
-            android:id="@+id/text_r1_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Sent"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            />
+
+        <EditText
+            android:id="@+id/inp3"
+            android:layout_width="32dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:ems="3"
+            android:gravity="center_horizontal"
+            android:inputType="number"
+            android:maxLength="6"
+            android:hint="0"
+            android:importantForAutofill="no"
+            android:enabled="false"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Total"
             android:textSize="16sp"
             android:textStyle="bold"
             />
@@ -105,7 +122,7 @@
             android:layout_width="32dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:ems="3"
+            android:ems="2"
             android:gravity="center_horizontal"
             android:inputType="number"
             android:maxLength="2"
@@ -126,16 +143,17 @@
 
         <EditText
             android:id="@+id/inp5"
-            android:layout_width="60dp"
+            android:layout_width="32dp"
             android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:ems="5"
+            android:layout_weight="1"
+            android:ems="2"
             android:gravity="center_horizontal"
             android:inputType="number"
-            android:maxLength="5"
-            android:text="5000"
+            android:maxLength="2"
+            android:text="5"
             android:importantForAutofill="no"
-            android:hint="5000"/>
+            android:hint="5"
+            />
 
         <TextView
             android:id="@+id/text_r2_2"
@@ -154,6 +172,7 @@
             android:checked="true"
             android:scaleX="1.4"
             android:scaleY="1.4"
+            tools:ignore="TouchTargetSizeCheck"
             />
 
         <TextView

@@ -1,10 +1,8 @@
 package co.bh.rekcuf.sniffer;
 
 import android.app.ActivityManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -12,7 +10,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +24,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -76,13 +75,14 @@ public class one extends AppCompatActivity{
 							switch1.setChecked(false);
 							service(false);
 						}
+						reload_log();
 					}
 				});
 			}
 		},0,600);
 
-		SQLite db1=new SQLite(one.this);// init and create table
-		Cursor res=db1.sel("select count(*) as x from "+db1.tablename+";");
+		SQLite db1=new SQLite(one.this);// init and create tables
+		Cursor res=db1.sel("select count(*) as x from host;");
 		if(res.moveToNext()){
 			String counter=res.getString(0);
 			db_count=Integer.parseInt(counter);
@@ -178,16 +178,6 @@ public class one extends AppCompatActivity{
 		});
 
 	}
-	@Override
-	protected void onResume(){
-		super.onResume();
-		registerReceiver(rcv,new IntentFilter(bgService.pn));
-	}
-	@Override
-	protected void onPause(){
-		super.onPause();
-		unregisterReceiver(rcv);
-	}
 
 	private boolean isServiceRunning(Class<?> serviceClass){
 		ActivityManager manager=(ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
@@ -217,8 +207,8 @@ public class one extends AppCompatActivity{
 		String txt=inp5.getText().toString();
 		if(txt.length()>0){
 			int num=Integer.parseInt(txt);
-			if(num>1000&&num<20000){
-				return num;
+			if(num>0&&num<21){
+				return num*1000;
 			}
 			return 5000;
 		}
@@ -241,11 +231,35 @@ public class one extends AppCompatActivity{
 		}
 	}
 
+	public void reload_log(){
+		LinearLayout ll=findViewById(R.id.logger);
+		Cursor res=SQLite.sel("select oid,ts,stat,domain from log order by oid desc limit 32;");
+		if(res.getCount()>0){
+			String log="";
+			while(res.moveToNext()){
+				String ts=res.getString(1);
+				String stat=res.getString(2);
+				String domain=res.getString(3);
+				int ts_int=Integer.parseInt(ts);
+				Date time=new java.util.Date((long)ts_int*1000);
+				SimpleDateFormat sdf=new SimpleDateFormat("HH:mm:ss");
+				String ts_str=sdf.format(time);
+				String stat_str=stat.equals("-1")?"000\t×":stat+"\t<";
+				log+=ts_str+"\t-\t"+stat_str+"\t"+domain+"\n";
+			}
+			ll.removeAllViews();
+			ll.invalidate();
+			TextView txtv=new TextView(getApplicationContext());
+			txtv.setText(log);
+			ll.addView(txtv);
+		}
+	}
+
 	public void updatedb(String targetURL){
 		String line;
 		boolean res;
 		int i=0;
-		SQLite db2=new SQLite(one.this);
+		//SQLite db2=new SQLite(one.this);
 		try{
 			URL url=new URL(targetURL);
 			BufferedReader in=new BufferedReader(new InputStreamReader(url.openStream()));
@@ -253,7 +267,7 @@ public class one extends AppCompatActivity{
 				++i;
 				if(line.length()>3){
 					do{// repeat insert if db file locked temporary
-						res=db2.ins(line);
+						res=SQLite.ins("host",new String[]{"domain",line});
 					}while(res==false);
 				}
 			}
@@ -274,33 +288,5 @@ public class one extends AppCompatActivity{
 			e.printStackTrace();
 		}
 	}
-
-	private BroadcastReceiver rcv=new BroadcastReceiver(){
-		@Override
-		public void onReceive(Context context,Intent intent){
-			Bundle bundle=intent.getExtras();
-			if(bundle!=null){
-				String stat=bundle.getString("stat");
-				String domain=bundle.getString("domain");
-				LinearLayout ll=findViewById(R.id.logger);
-				ScrollView scroll=findViewById(R.id.logger_parent);
-				//ll.removeAllViews();
-				//ll.invalidate();
-				TextView txtv=new TextView(getApplicationContext());
-				txtv.setText(stat+"\t"+domain);
-				ll.addView(txtv);
-				EditText inp2=findViewById(R.id.inp2);
-				String inp2_str=inp2.getText().toString();
-				int inp2_int=inp2_str.length()>0?Integer.parseInt(inp2_str):0;
-				inp2.setText((inp2_int+1)+"");
-				ll.post(new Runnable() {
-					@Override
-					public void run() {
-						scroll.fullScroll(ScrollView.FOCUS_DOWN);
-					}
-				});
-			}
-		}
-	};
 
 }

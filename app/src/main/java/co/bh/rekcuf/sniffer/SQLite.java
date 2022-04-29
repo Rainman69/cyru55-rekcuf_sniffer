@@ -10,7 +10,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class SQLite extends SQLiteOpenHelper{
 
 	public static SQLiteDatabase db1;
-	public static String tablename="host";
 
 	public SQLite(Context cx){
 		super(cx,"host.db",null,1);
@@ -19,33 +18,43 @@ public class SQLite extends SQLiteOpenHelper{
 
 	@Override
 	public void onCreate(SQLiteDatabase db){
-		db.execSQL("create table if not exists "+tablename+" (id integer primary key autoincrement,host text unique);");
+		db.execSQL("create table if not exists host (domain text unique);");
+		db.execSQL("create table if not exists log (ts integer,stat integer,domain text);");
+		db.execSQL("create table if not exists data (k text unique,v text);");
+		db.execSQL("create index i_k on data(k);");
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion){
-		db.execSQL("drop table if exists "+tablename+";");
+		db.execSQL("drop table if exists host;");
+		db.execSQL("drop table if exists log;");
+		db.execSQL("drop table if exists counter;");
 		onCreate(db);
 	}
 
 	public static void exe(String query){
 		db1.execSQL(query);
 	}
-	public static boolean ins(String line){
-		ContentValues cv=new ContentValues();
-		cv.put("host",line);
-		long res=db1.insert(tablename,null,cv);
-		return res!=-1;
+	public static boolean ins(String table,String[] arr){
+		if(arr.length%2==0){
+			ContentValues cv=new ContentValues();
+			for(int i=0;i<arr.length;i++){
+				cv.put(arr[i],arr[++i]);
+			}
+			long res=db1.insert(table,null,cv);
+			return res!=-1;
+		}
+		return true;
 	}
 	public static boolean del(String id){
-		int res=db1.delete(tablename,"id=?",new String[]{id});
+		int res=db1.delete("host","id=?",new String[]{id});
 		return res>0;
 	}
 	public static boolean upd(String id,String str){
 		ContentValues cv=new ContentValues();
 		cv.put("id",id);
 		cv.put("name",str);
-		int res=db1.update(tablename,cv,"id=?",new String[]{id});
+		int res=db1.update("host",cv,"id=?",new String[]{id});
 		return res>0;
 	}
 	public static Cursor sel(String query){

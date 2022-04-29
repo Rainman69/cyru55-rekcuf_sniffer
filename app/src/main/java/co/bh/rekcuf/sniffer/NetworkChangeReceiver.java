@@ -21,15 +21,6 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
-        if(one.switch_stat){
-            Toast.makeText(context, "Service restarted", Toast.LENGTH_SHORT).show();
-            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(new Intent(context, bgService.class));
-            } else {
-                context.startService(new Intent(context, bgService.class));
-            }*/
-            context.startService(new Intent(context, bgService.class));
-        }
         boolean status = NetworkUtil.isConnected(context);
         if("android.net.conn.CONNECTIVITY_CHANGE".equals(intent.getAction())) {
             one.stat=status;
