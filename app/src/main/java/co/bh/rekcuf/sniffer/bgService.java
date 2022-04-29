@@ -50,7 +50,7 @@ public class bgService extends Service{
 	}
 
 	@Override
-	public void onDestroy(){//codespeedy.com/creating-persistent-notification-in-android-java/
+	public void onDestroy(){
 		super.onDestroy();
 		Intent broadcastIntent=new Intent();
 		broadcastIntent.setAction("restartservice");
@@ -91,15 +91,6 @@ public class bgService extends Service{
 				}
 			}
 		}
-	}
-
-	public void toast(String str){
-		one.handler1.post(new Runnable(){
-			@Override
-			public void run(){
-				Toast.makeText(getApplicationContext(),str,Toast.LENGTH_SHORT).show();
-			}
-		});
 	}
 
 	public int send_http_request(String str){

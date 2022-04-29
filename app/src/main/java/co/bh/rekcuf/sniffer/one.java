@@ -52,6 +52,7 @@ public class one extends AppCompatActivity{
 		SwitchMaterial switch1=findViewById(R.id.switch1);
 		CheckBox checkbox1=findViewById(R.id.checkbox1);
 		LinearLayout ll=findViewById(R.id.logger);
+		switch1.setChecked(switch_stat);
 
 		//Toast.makeText(one.this,"startService",Toast.LENGTH_SHORT).show();
 
@@ -146,7 +147,7 @@ public class one extends AppCompatActivity{
 		switch1.setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View view){
-				one.switch_stat=false;
+				switch_stat=false;
 				if(switch1.isChecked()){
 					if(stat){
 						int conc=get_conc();
@@ -217,7 +218,7 @@ public class one extends AppCompatActivity{
 	}
 
 	public void service(boolean turn){
-		one.switch_stat=turn;
+		switch_stat=turn;
 		EditText inp5=findViewById(R.id.inp5);
 		EditText inp4=findViewById(R.id.inp4);
 		CheckBox checkbox1=findViewById(R.id.checkbox1);
