@@ -43,10 +43,13 @@
             android:ems="3"
             android:gravity="center_horizontal"
             android:inputType="number"
-            android:maxLength="6"
+            android:maxLength="5"
             android:importantForAutofill="no"
             android:hint="0"
-            android:enabled="false"
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:textColor="@android:color/darker_gray"
             />
 
         <TextView
@@ -69,7 +72,10 @@
             android:importantForAutofill="no"
             android:inputType="number"
             android:maxLength="5"
-            android:enabled="false"
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:textColor="@android:color/darker_gray"
             />
 
         <TextView
@@ -92,7 +98,10 @@
             android:maxLength="6"
             android:hint="0"
             android:importantForAutofill="no"
-            android:enabled="false"
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:textColor="@android:color/darker_gray"
             />
 
         <TextView
