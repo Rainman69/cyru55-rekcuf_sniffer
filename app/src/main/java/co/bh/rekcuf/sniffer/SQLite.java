@@ -26,6 +26,7 @@ public class SQLite extends SQLiteOpenHelper{
 		db.execSQL("insert into data(k,v) values('last_conc',4);");
 		db.execSQL("insert into data(k,v) values('last_timeout',5000);");
 		db.execSQL("insert into data(k,v) values('last_notif',1);");
+		db.execSQL("insert into data(k,v) values('sent_total',0);");
 	}
 
 	@Override

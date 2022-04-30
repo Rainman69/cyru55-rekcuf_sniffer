@@ -83,7 +83,7 @@ public class bgService extends Service{
 							"stat",Integer.toString(stat_int),
 							"domain",domain
 						});
-						SQLite.exe("insert into data(k,v) values('sent_total',1) on conflict(k) do update set v=v+1;");
+						SQLite.exe("update data set v=v+1 where k='sent_total';");
 						Intent i=new Intent("co.bh.rekcuf.sniffer");
 						i.putExtra("haveExtra",1);
 						sendBroadcast(i);
