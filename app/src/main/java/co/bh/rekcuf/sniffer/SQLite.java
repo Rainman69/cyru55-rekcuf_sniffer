@@ -19,7 +19,6 @@ public class SQLite extends SQLiteOpenHelper{
 	@Override
 	public void onCreate(SQLiteDatabase db){
 		db.execSQL("create table if not exists host (domain text unique);");
-		db.execSQL("create table if not exists log (ts integer,stat integer,domain text);");
 		db.execSQL("create table if not exists data (k text unique,v text);");
 		db.execSQL("create index i_k on data(k);");
 		db.execSQL("insert into data(k,v) values('sent_total',0);");
@@ -31,7 +30,6 @@ public class SQLite extends SQLiteOpenHelper{
 	@Override
 	public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion){
 		db.execSQL("drop table if exists host;");
-		db.execSQL("drop table if exists log;");
 		db.execSQL("drop table if exists counter;");
 		onCreate(db);
 	}
