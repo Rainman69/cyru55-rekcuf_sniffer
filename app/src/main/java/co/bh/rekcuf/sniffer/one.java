@@ -52,10 +52,10 @@ public class one extends AppCompatActivity{
 		ToggleButton togglev1=findViewById(R.id.togglev1);
 		EditText inp1=findViewById(R.id.inp1);
 		EditText inp4=findViewById(R.id.inp4);
+		EditText inp5=findViewById(R.id.inp5);
 		SwitchMaterial switch1=findViewById(R.id.switch1);
 		CheckBox checkbox1=findViewById(R.id.checkbox1);
 		LinearLayout ll=findViewById(R.id.logger);
-		switch1.setChecked(switch_stat);
 
 		//Toast.makeText(one.this,"startService",Toast.LENGTH_SHORT).show();
 
@@ -129,6 +129,23 @@ public class one extends AppCompatActivity{
 			}
 		}
 
+		switch1.setChecked(switch_stat);
+		if(switch_stat){
+			inp4.setEnabled(false);
+			inp5.setEnabled(false);
+			checkbox1.setEnabled(false);
+		}
+		String last_conc=SQLite.se1("select v from data where k='last_conc';");
+		inp4.setText(last_conc);
+		String last_timeout=SQLite.se1("select v from data where k='last_timeout';");
+		int last_timeout_int=Integer.parseInt(last_timeout);
+		if(last_timeout_int>0){
+			last_timeout_int=Math.floorDiv(last_timeout_int,1000);
+			inp5.setText(Integer.toString(last_timeout_int));
+		}
+		String last_notif=SQLite.se1("select v from data where k='last_notif';");
+		checkbox1.setChecked(last_notif.equals("1"));
+
 		inp4.setOnKeyListener(new View.OnKeyListener(){
 			@Override
 			public boolean onKey(View view,int i,KeyEvent keyEvent){
@@ -157,6 +174,9 @@ public class one extends AppCompatActivity{
 							int timeout=get_timeout();
 							if(timeout>999&&timeout<20001){
 								if(db_count>0){
+									SQLite.exe("update data set v='"+conc+"' where k='last_conc';");
+									SQLite.exe("update data set v='"+timeout+"' where k='last_timeout';");
+									SQLite.exe("update data set v='"+(checkbox1.isChecked()?"1":"0")+"' where k='last_notif';");
 									service(true);
 								}else{
 									Toast.makeText(one.this,"Wait until DataBase become updated",Toast.LENGTH_SHORT).show();
@@ -230,8 +250,8 @@ public class one extends AppCompatActivity{
 
 	public void service(boolean turn){
 		switch_stat=turn;
-		EditText inp5=findViewById(R.id.inp5);
 		EditText inp4=findViewById(R.id.inp4);
+		EditText inp5=findViewById(R.id.inp5);
 		CheckBox checkbox1=findViewById(R.id.checkbox1);
 		Intent srv=new Intent(getApplication(),bgService.class);
 		inp4.setEnabled(!turn);
