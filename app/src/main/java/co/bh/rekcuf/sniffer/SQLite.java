@@ -50,5 +50,14 @@ public class SQLite extends SQLiteOpenHelper{
 		Cursor res=db1.rawQuery(query,null);
 		return res;
 	}
+	public static String se1(String query){
+		Cursor res=db1.rawQuery(query,null);
+		if(res.getCount()>0){
+			if(res.moveToNext()){
+				return res.getString(0);
+			}
+		}
+		return "";
+	}
 
 }

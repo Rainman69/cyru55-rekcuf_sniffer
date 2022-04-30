@@ -10,6 +10,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="togglev1bg_on">#A7FFAC</color>
     <color name="togglev1bg_off">#FFAAAA</color>
-    <color name="net_toggle_bg_dark">#DDDDDD</color>
+    <color name="net_toggle_bg_dark">#333333</color>
     <color name="notif_blue">#0000FF</color>
 </resources>

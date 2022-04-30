@@ -13,7 +13,7 @@ import android.widget.ToggleButton;
 
 public class NetworkChangeReceiver extends BroadcastReceiver {
 
-    private static ToggleButton netstat;
+    public static ToggleButton netstat;
 
     static void setToggle(ToggleButton one){
         netstat=one;

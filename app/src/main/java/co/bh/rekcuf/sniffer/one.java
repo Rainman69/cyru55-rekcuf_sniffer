@@ -1,8 +1,10 @@
 package co.bh.rekcuf.sniffer;
 
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -10,6 +12,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -83,10 +86,9 @@ public class one extends AppCompatActivity{
 		},0,600);
 
 		SQLite db1=new SQLite(one.this);// init and create tables
-		Cursor res=db1.sel("select count(*) as x from host;");
-		if(res.moveToNext()){
-			String counter=res.getString(0);
-			db_count=Integer.parseInt(counter);
+		String res=db1.se1("select count(*) as x from host;");
+		if(res.length()>0){
+			db_count=Integer.parseInt(res);
 			if(db_count>0){
 				inp1.setText(Integer.toString(db_count));
 				TextView txtv=new TextView(getApplicationContext());
@@ -131,7 +133,7 @@ public class one extends AppCompatActivity{
 			@Override
 			public boolean onKey(View view,int i,KeyEvent keyEvent){
 				if(keyEvent.getAction()==KeyEvent.ACTION_UP){
-					int conc=get_conc();
+					conc=get_conc();
 					if(conc>0&&conc<17){
 						//inp4.setBackgroundColor(Color.TRANSPARENT);
 						inp4.getBackground().setColorFilter(getResources().getColor(R.color.teal_200),PorterDuff.Mode.SRC_IN);
@@ -150,10 +152,10 @@ public class one extends AppCompatActivity{
 				switch_stat=false;
 				if(switch1.isChecked()){
 					if(stat){
-						int conc=get_conc();
-						if(conc>0&&conc<17){
+						conc=get_conc();
+						if(conc>0&&conc<33){
 							int timeout=get_timeout();
-							if(timeout>1000&&timeout<20000){
+							if(timeout>999&&timeout<20001){
 								if(db_count>0){
 									service(true);
 								}else{
@@ -161,7 +163,7 @@ public class one extends AppCompatActivity{
 									switch1.setChecked(false);
 								}
 							}else{
-								Toast.makeText(one.this,"Set Timeout 1000 ~ 20.000",Toast.LENGTH_SHORT).show();
+								Toast.makeText(one.this,"Set Timeout 1 ~ 20",Toast.LENGTH_SHORT).show();
 								switch1.setChecked(false);
 							}
 						}else{
@@ -179,8 +181,18 @@ public class one extends AppCompatActivity{
 		});
 
 	}
+	@Override
+	protected void onResume(){
+		super.onResume();
+		registerReceiver(rcv,new IntentFilter(bgService.pn));
+	}
+	@Override
+	protected void onPause(){
+		super.onPause();
+		unregisterReceiver(rcv);
+	}
 
-	private boolean isServiceRunning(Class<?> serviceClass){
+	public boolean isServiceRunning(Class<?> serviceClass){
 		ActivityManager manager=(ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
 		for(ActivityManager.RunningServiceInfo service: manager.getRunningServices(Integer.MAX_VALUE)){
 			if(serviceClass.getName().equals(service.service.getClassName())){
@@ -209,8 +221,7 @@ public class one extends AppCompatActivity{
 		if(txt.length()>0){
 			int num=Integer.parseInt(txt);
 			if(num>0&&num<21){
-				int res=num*1000;
-				return res;
+				return num*1000;
 			}
 			return 5000;
 		}
@@ -235,12 +246,19 @@ public class one extends AppCompatActivity{
 
 	public void reload_log(){
 		LinearLayout ll=findViewById(R.id.logger);
-		Cursor res=SQLite.sel("select oid,ts,stat,domain from log order by oid desc limit 32;");
+		String sent_total=SQLite.se1("select v from data where k='sent_total';");
+		if(sent_total.length()>0){
+			EditText inp3=findViewById(R.id.inp3);
+			inp3.setText(sent_total);
+		}
+		Cursor res=SQLite.sel("select * from (select oid,ts,stat,domain from log order by oid desc limit 32) as x order by oid asc;");
 		if(res.getCount()>0){
 			String log="";
 			String oid="0";
 			while(res.moveToNext()){
-				oid=res.getString(0);
+				if(oid.isEmpty()){
+					oid=res.getString(0);
+				}
 				String ts=res.getString(1);
 				String stat=res.getString(2);
 				String domain=res.getString(3);
@@ -248,8 +266,8 @@ public class one extends AppCompatActivity{
 				Date time=new java.util.Date((long)ts_int*1000);
 				SimpleDateFormat sdf=new SimpleDateFormat("HH:mm:ss");
 				String ts_str=sdf.format(time);
-				String stat_str=stat.equals("-1")?"000\t×":stat+"\t<";
-				log+=ts_str+" \t- \t"+stat_str+" \t\t"+domain+"\n";
+				String stat_str=stat.equals("-1")?"000 \u00a0 ×":stat+" \u00a0 <";
+				log+=ts_str+" \u00a0 - \u00a0 "+stat_str+" \u00a0 "+domain+"\n";
 			}
 			SQLite.exe("delete from log where oid<"+oid+";");
 			ll.removeAllViews();
@@ -257,6 +275,8 @@ public class one extends AppCompatActivity{
 			TextView txtv=new TextView(getApplicationContext());
 			txtv.setText(log);
 			ll.addView(txtv);
+			ScrollView scroll=findViewById(R.id.logger_parent);
+			scroll.fullScroll(ScrollView.FOCUS_DOWN);
 		}
 	}
 
@@ -293,5 +313,18 @@ public class one extends AppCompatActivity{
 			e.printStackTrace();
 		}
 	}
+
+	public BroadcastReceiver rcv=new BroadcastReceiver(){
+		@Override
+		public void onReceive(Context context,Intent intent){
+			Bundle bundle=intent.getExtras();
+			if(bundle!=null){
+				EditText inp2=findViewById(R.id.inp2);
+				String inp2_str=inp2.getText().toString();
+				int inp2_int=inp2_str.length()>0?Integer.parseInt(inp2_str):0;
+				inp2.setText((inp2_int+1)+"");
+			}
+		}
+	};
 
 }

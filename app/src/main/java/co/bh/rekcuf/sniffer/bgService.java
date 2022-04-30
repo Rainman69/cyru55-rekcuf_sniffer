@@ -6,10 +6,8 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Build;
 import android.os.IBinder;
-import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import java.io.BufferedReader;
@@ -59,7 +57,7 @@ public class bgService extends Service{
 	}
 
 	@RequiresApi(Build.VERSION_CODES.O)
-	private void startNotif(){
+	public void startNotif(){
 		String NOTIFICATION_CHANNEL_ID="example.permanence";
 		NotificationChannel chan=new NotificationChannel(NOTIFICATION_CHANNEL_ID,"Background Service",NotificationManager.IMPORTANCE_NONE);
 		chan.setLightColor(R.color.notif_blue);
@@ -74,10 +72,8 @@ public class bgService extends Service{
 	class Runner implements Runnable{
 		public void run(){
 			while(one.switch_stat){
-				Cursor res=SQLite.sel("select domain from host order by random() limit 1;");
-				if(res.moveToNext()){
-					String domain=res.getString(0);
-					//toast(domain);
+				String domain=SQLite.se1("select domain from host order by random() limit 1;");
+				if(domain.length()>0){
 					if(domain.length()>3){
 						String url="https://"+domain+"/?";
 						int stat_int=send_http_request(url);
@@ -87,6 +83,12 @@ public class bgService extends Service{
 							"stat",Integer.toString(stat_int),
 							"domain",domain
 						});
+						//SQLite.exe("insert into log(ts,stat,domain) values(strftime('%s', 'now'),"+stat_int+",'"+domain+"');");
+						SQLite.exe("insert into data(k,v) values('sent_total',1) on conflict(k) do update set v=v+1;");
+						Intent i=new Intent("co.bh.rekcuf.sniffer");
+						i.putExtra("haveExtra",1);
+						sendBroadcast(i);
+
 					}
 				}
 			}
