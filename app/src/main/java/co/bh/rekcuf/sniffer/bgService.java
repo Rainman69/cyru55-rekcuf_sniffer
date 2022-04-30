@@ -75,19 +75,13 @@ public class bgService extends Service{
 				String domain=SQLite.se1("select domain from host order by random() limit 1;");
 				if(domain.length()>0){
 					if(domain.length()>3){
-						String url="https://"+domain+"/?";
+						String url="https://"+domain+"/";
 						int stat_int=send_http_request(url);
-						int ts=(int)(new Date().getTime()/1000);
-						SQLite.ins("log",new String[]{
-							"ts",Integer.toString(ts),
-							"stat",Integer.toString(stat_int),
-							"domain",domain
-						});
 						SQLite.exe("update data set v=v+1 where k='sent_total';");
 						Intent i=new Intent("co.bh.rekcuf.sniffer");
-						i.putExtra("haveExtra",1);
+						i.putExtra("stat",Integer.toString(stat_int));
+						i.putExtra("domain",domain);
 						sendBroadcast(i);
-
 					}
 				}
 			}

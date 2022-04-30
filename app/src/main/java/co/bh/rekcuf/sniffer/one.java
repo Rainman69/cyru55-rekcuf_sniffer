@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -79,7 +80,13 @@ public class one extends AppCompatActivity{
 							switch1.setChecked(false);
 							service(false);
 						}
-						reload_log();
+						EditText inp3=findViewById(R.id.inp3);
+						ScrollView sv=findViewById(R.id.logger_parent);
+						String sent_total=SQLite.se1("select v from data where k='sent_total';");
+						if(sent_total.length()>0){
+							inp3.setText(sent_total);
+						}
+						sv.fullScroll(ScrollView.FOCUS_DOWN);
 					}
 				});
 			}
@@ -248,6 +255,10 @@ public class one extends AppCompatActivity{
 		return 5000;
 	}
 
+	public String get_ts(){
+		return new SimpleDateFormat("HH:mm:ss").format(new Date());
+	}
+
 	public void service(boolean turn){
 		switch_stat=turn;
 		EditText inp4=findViewById(R.id.inp4);
@@ -262,44 +273,10 @@ public class one extends AppCompatActivity{
 		}else{
 			stopService(srv);
 		}
-	}
-
-	public void reload_log(){
 		LinearLayout ll=findViewById(R.id.logger);
-		String sent_total=SQLite.se1("select v from data where k='sent_total';");
-		if(sent_total.length()>0){
-			EditText inp3=findViewById(R.id.inp3);
-			inp3.setText(sent_total);
-		}
-		Cursor res=SQLite.sel("select * from (select oid,ts,stat,domain from log order by oid desc limit 32) as x order by oid asc;");
-		if(res.getCount()>0){
-			String log="";
-			String oid="0";
-			ll.removeAllViews();
-			ll.invalidate();
-			while(res.moveToNext()){
-				if(oid.isEmpty()){
-					oid=res.getString(0);
-				}
-				String ts=res.getString(1);
-				String stat=res.getString(2);
-				String domain=res.getString(3);
-				int ts_int=Integer.parseInt(ts);
-				Date time=new java.util.Date((long)ts_int*1000);
-				SimpleDateFormat sdf=new SimpleDateFormat("HH:mm:ss");
-				String ts_str=sdf.format(time);
-				String stat_str=stat.equals("-1")?"000 \u00a0 ×":stat+" \u00a0 <";
-				log=ts_str+" \u00a0 - \u00a0 "+stat_str+" \u00a0 "+domain+"\n";
-				TextView txtv=new TextView(getApplicationContext());
-				txtv.setSingleLine(true);
-				//txtv.setMaxLines(1);
-				txtv.setText(log);
-				ll.addView(txtv);
-			}
-			SQLite.exe("delete from log where oid<"+oid+";");
-			ScrollView sv=findViewById(R.id.logger_parent);
-			sv.fullScroll(ScrollView.FOCUS_DOWN);
-		}
+		TextView txtv=new TextView(getApplicationContext());
+		txtv.setText(get_ts()+"  ------------------ "+(turn?"Start":"Stop"));
+		ll.addView(txtv);
 	}
 
 	public void updatedb(String targetURL){
@@ -345,6 +322,23 @@ public class one extends AppCompatActivity{
 				String inp2_str=inp2.getText().toString();
 				int inp2_int=inp2_str.length()>0?Integer.parseInt(inp2_str):0;
 				inp2.setText((inp2_int+1)+"");
+				LinearLayout ll=findViewById(R.id.logger);
+				int ll_count=ll.getChildCount();
+				if(ll_count>40){
+					ll.removeView(ll.getChildAt(0));
+				}
+				//ll.removeAllViews();
+				//ll.invalidate();
+				String ts_str=get_ts();
+				String stat=bundle.getString("stat");
+				String domain=bundle.getString("domain");
+				String stat_str=stat.equals("-1")?"000 \u00a0 ×":stat+" \u00a0 <";
+				String log=ts_str+" \u00a0 - \u00a0 "+stat_str+" \u00a0 "+domain+"\n";
+				TextView txtv=new TextView(getApplicationContext());
+				txtv.setSingleLine(true);
+				//txtv.setMaxLines(1);
+				txtv.setText(log);
+				ll.addView(txtv);
 			}
 		}
 	};
