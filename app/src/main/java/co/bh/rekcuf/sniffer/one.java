@@ -275,6 +275,8 @@ public class one extends AppCompatActivity{
 		if(res.getCount()>0){
 			String log="";
 			String oid="0";
+			ll.removeAllViews();
+			ll.invalidate();
 			while(res.moveToNext()){
 				if(oid.isEmpty()){
 					oid=res.getString(0);
@@ -287,16 +289,16 @@ public class one extends AppCompatActivity{
 				SimpleDateFormat sdf=new SimpleDateFormat("HH:mm:ss");
 				String ts_str=sdf.format(time);
 				String stat_str=stat.equals("-1")?"000 \u00a0 ×":stat+" \u00a0 <";
-				log+=ts_str+" \u00a0 - \u00a0 "+stat_str+" \u00a0 "+domain+"\n";
+				log=ts_str+" \u00a0 - \u00a0 "+stat_str+" \u00a0 "+domain+"\n";
+				TextView txtv=new TextView(getApplicationContext());
+				txtv.setSingleLine(true);
+				//txtv.setMaxLines(1);
+				txtv.setText(log);
+				ll.addView(txtv);
 			}
 			SQLite.exe("delete from log where oid<"+oid+";");
-			ll.removeAllViews();
-			ll.invalidate();
-			TextView txtv=new TextView(getApplicationContext());
-			txtv.setText(log);
-			ll.addView(txtv);
-			ScrollView scroll=findViewById(R.id.logger_parent);
-			scroll.fullScroll(ScrollView.FOCUS_DOWN);
+			ScrollView sv=findViewById(R.id.logger_parent);
+			sv.fullScroll(ScrollView.FOCUS_DOWN);
 		}
 	}
 
