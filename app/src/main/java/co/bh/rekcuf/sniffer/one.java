@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Build;
@@ -28,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -81,12 +79,10 @@ public class one extends AppCompatActivity{
 							service(false);
 						}
 						EditText inp3=findViewById(R.id.inp3);
-						ScrollView sv=findViewById(R.id.logger_parent);
 						String sent_total=SQLite.se1("select v from data where k='sent_total';");
 						if(sent_total.length()>0){
 							inp3.setText(sent_total);
 						}
-						sv.fullScroll(ScrollView.FOCUS_DOWN);
 					}
 				});
 			}
@@ -329,6 +325,7 @@ public class one extends AppCompatActivity{
 				}
 				//ll.removeAllViews();
 				//ll.invalidate();
+				ScrollView sv=findViewById(R.id.logger_parent);
 				String ts_str=get_ts();
 				String stat=bundle.getString("stat");
 				String domain=bundle.getString("domain");
@@ -339,6 +336,7 @@ public class one extends AppCompatActivity{
 				//txtv.setMaxLines(1);
 				txtv.setText(log);
 				ll.addView(txtv);
+				sv.fullScroll(ScrollView.FOCUS_DOWN);
 			}
 		}
 	};
