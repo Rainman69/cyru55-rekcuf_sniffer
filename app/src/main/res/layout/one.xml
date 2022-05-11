@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:layout_margin="40dp"
     android:background="@color/white"
-    tools:context=".one">
+    tools:context=".one"
+    android:layoutDirection="ltr">
 
     <ToggleButton
         android:id="@+id/netstat"

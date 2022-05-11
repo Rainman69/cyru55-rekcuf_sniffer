@@ -7,6 +7,7 @@
         <item name="colorAccent">@color/teal_200</item>
         <item name="windowNoTitle">true</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">true</item>
+        <item name="android:layoutDirection" tools:targetApi="jelly_bean_mr1">ltr</item>
         <!-- Customize your theme here. -->
     </style>
 </resources>
