@@ -214,6 +214,11 @@ public class one extends AppCompatActivity{
 		super.onPause();
 		unregisterReceiver(rcv);
 	}
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		//db1.close();
+	}
 
 	public boolean isServiceRunning(Class<?> serviceClass){
 		ActivityManager manager=(ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
@@ -279,7 +284,6 @@ public class one extends AppCompatActivity{
 		String line;
 		boolean res;
 		int i=0;
-		//SQLite db2=new SQLite(one.this);
 		try{
 			URL url=new URL(targetURL);
 			BufferedReader in=new BufferedReader(new InputStreamReader(url.openStream()));

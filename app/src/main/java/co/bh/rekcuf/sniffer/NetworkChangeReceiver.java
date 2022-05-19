@@ -40,12 +40,22 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                     @Override
                     public void onAvailable(Network network) {
                         one.stat=true;
-                        netstat.setChecked(true);
+                        one.handler1.post(new Runnable(){
+                            @Override
+                            public void run(){
+                                netstat.setChecked(true);
+                            }
+                        });
                     }
                     @Override
                     public void onLost(Network network) {
                         one.stat=false;
-                        netstat.setChecked(false);
+                        one.handler1.post(new Runnable(){
+                            @Override
+                            public void run(){
+                                netstat.setChecked(false);
+                            }
+                        });
                     }
                 }
             );

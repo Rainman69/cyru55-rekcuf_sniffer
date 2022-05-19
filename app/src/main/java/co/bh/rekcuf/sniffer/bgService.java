@@ -28,12 +28,33 @@ public class bgService extends Service{
 	@Override
 	public int onStartCommand(Intent intent,int flags,int startId){
 		//Toast.makeText(getApplicationContext(),"onStartCommand",Toast.LENGTH_SHORT).show();
+		srvStart();
 		return super.onStartCommand(intent,flags,startId);
 	}
 
 	@Override
 	public void onCreate(){
-		int conc=one.conc;
+	}
+
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		Intent broadcastIntent=new Intent();
+		broadcastIntent.setAction("restartservice");
+		broadcastIntent.setClass(this,BgSrvRestarter.class);
+		this.sendBroadcast(broadcastIntent);
+		//db1.close();
+	}
+
+	public void srvStart(){
+		int conc;
+		try{
+			conc=one.conc;
+		}catch(Exception e){
+			SQLite db1=new SQLite(bgService.this);// init and create tables
+			String last_conc=db1.se1("select v from data where k='last_conc';");
+			conc=Integer.parseInt(last_conc);
+		}
 		if(one.notif){
 			if(Build.VERSION.SDK_INT>Build.VERSION_CODES.O){
 				startNotif();
@@ -44,15 +65,6 @@ public class bgService extends Service{
 		for(int i=0;i<conc;i++){
 			new Thread(new Runner(),"Runner"+conc).start();
 		}
-	}
-
-	@Override
-	public void onDestroy(){
-		super.onDestroy();
-		Intent broadcastIntent=new Intent();
-		broadcastIntent.setAction("restartservice");
-		broadcastIntent.setClass(this,BgSrvRestarter.class);
-		this.sendBroadcast(broadcastIntent);
 	}
 
 	@RequiresApi(Build.VERSION_CODES.O)
