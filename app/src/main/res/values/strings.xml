@@ -11,11 +11,12 @@
     <string name="ui_one_bgservice">BgService</string>
     <string name="ui_one_togglev1_on">ON</string>
     <string name="ui_one_togglev1_off">OFF</string>
-    <string name="run_one_log_updating">dev:  @cyru55\nDataBase is now Updating ...</string>
-    <string name="run_one_log_updated1">dev:  @cyru55\nyour DataBase have </string>
-    <string name="run_one_log_updated2"> domains\nLets Go\n</string>
-    <string name="run_one_log_updated_now1">DataBase Updated Successfully\nyour DataBase have </string>
-    <string name="run_one_log_updated_now2"> domains\nLets Go</string>
+    <string name="run_one_log_dev">dev:\u00A0 @cyru55</string>
+    <string name="run_one_log_updating">DataBase is now Updating ...</string>
+    <string name="run_one_log_updated1">your DataBase have\u00A0</string>
+    <string name="run_one_log_updated2">\u00A0domains\nLets Go\n</string>
+    <string name="run_one_log_updated_now1">DataBase Updated Successfully\nyour DataBase have\u00A0</string>
+    <string name="run_one_log_updated_now2">\u00A0domains\nLets Go</string>
     <string name="run_one_log_line_start">Start</string>
     <string name="run_one_log_line_stop">Stop</string>
     <string name="run_tile_toast_turnon">Turn on Internet</string>
@@ -25,4 +26,14 @@
     <string name="run_one_toast_badconc">Set concurrent number 1 ~ 16</string>
     <string name="run_one_toast_badtimeout">Set Timeout 1 ~ 20</string>
     <string name="run_one_toast_waitupdating">Wait until DataBase become updated</string>
+    <string name="run_one_alert_notenough">Although you domain list is not empty, but you need a big list for nice result.\n\nso if you have not enough list, use Automatic list instead.</string>
+    <string name="run_one_confirm_empty1">Your domain list is empty now</string>
+    <string name="run_one_confirm_empty2">Select a method to add some</string>
+    <string name="run_one_confirm_empty_auto">Automatic</string>
+    <string name="run_one_confirm_empty_manual">Manually</string>
+    <string name="run_two_title_paste">Paste your domain list here :</string>
+    <string name="run_two_paste_hint" translatable="false">\nhttps://list.com/raw/file.txt\n\n\n\ndomain.com\nsample.ir\nwww.test.net\nhttps://site.co/</string>
+    <string name="run_one_log_updating_customurl">\nLoad URL: \u00A0</string>
+    <string name="run_one_toast_wait4customurl">Wait until load URL into database</string>
+    <string name="run_two_alert_addlistonly">Add more than 500 domain list\nif you dont have\ncan found here:\nhttps://rentry.co/rekcuf1/raw</string>
 </resources>

@@ -11,8 +11,9 @@
     <string name="ui_one_bgservice">فعالیت</string>
     <string name="ui_one_togglev1_on">روشن</string>
     <string name="ui_one_togglev1_off">خاموش</string>
-    <string name="run_one_log_updating">برنامه‌نویس:\u00A0 cyru55@\nپایگاه‌داده در حال آپدیت ...</string>
-    <string name="run_one_log_updated1">برنامه‌نویس:\u00A0 cyru55@\nپایگاه‌داده اکنون\u00A0</string>
+    <string name="run_one_log_dev">برنامه‌نویس:\u00A0 @cyru55</string>
+    <string name="run_one_log_updating">پایگاه‌داده در حال آپدیت ...</string>
+    <string name="run_one_log_updated1">پایگاه‌داده اکنون\u00A0</string>
     <string name="run_one_log_updated2">\u00A0دامین دارد\nروشن کن بریم\n</string>
     <string name="run_one_log_updated_now1">nپایگاه‌داده باموفقیت آپدیت شد\nاکنون شامل\u00A0</string>
     <string name="run_one_log_updated_now2">\u00A0دامین می‌باشد\nروشن کن بریم</string>
@@ -25,4 +26,13 @@
     <string name="run_one_toast_badconc">بازدید همزمان بین 1 الی 16 باشد</string>
     <string name="run_one_toast_badtimeout">انتظار پاسخگویی بین 1 الی 20 باشد</string>
     <string name="run_one_toast_waitupdating">صبر کنید تا پایگاه‌داده آپدیت شود</string>
+    <string name="run_one_alert_notenough">اگرچه لیست دامین‌های شما خالی نیست، اما برای عملکرد مناسب و مطلوب برنامه بهتره لیست خیلی بزرگتری استفاده کنید.\n\nاگه لیست مناسبی سراغ نداری، بهتره از لیست اتوماتیک استفاده کنید.</string>
+    <string name="run_one_confirm_empty1">لیست دامین‌های شما خالی است</string>
+    <string name="run_one_confirm_empty2">جهت افزودن لیست یکی از گزینه‌های زیر را انتخاب نمایید</string>
+    <string name="run_one_confirm_empty_auto">خودکار</string>
+    <string name="run_one_confirm_empty_manual">تنظیم‌دستی</string>
+    <string name="run_two_title_paste">لیست خود را اینجا چسباندن کنید :</string>
+    <string name="run_one_log_updating_customurl">\nدانلود از آدرس: \u00A0</string>
+    <string name="run_one_toast_wait4customurl">کمی صبر کنید تا لیست درخواستی دانلود و ذخیره شود</string>
+    <string name="run_two_alert_addlistonly">بیش از 500 دامین اضافه کنید\nاگر چییزی سراغ نداری\nمیتونی نمونه لیست اینجا پیدا کنی:\nhttps://rentry.co/rekcuf1/raw</string>
 </resources>

@@ -60,10 +60,15 @@ public class SQLite extends SQLiteOpenHelper{
 		return res;
 	}
 	public static String se1(String query){
-		Cursor res=db1.rawQuery(query,null);
-		if(res.getCount()>0){
-			if(res.moveToNext()){
-				return res.getString(0);
+		Cursor res=null;
+		try{res=db1.rawQuery(query,null);}catch(Exception e){}
+		if(res!=null){
+			int count=0;
+			try{count=res.getCount();}catch(Exception e){}
+			if(count>0){
+				if(res.moveToNext()){
+					return res.getString(0);
+				}
 			}
 		}
 		return "";

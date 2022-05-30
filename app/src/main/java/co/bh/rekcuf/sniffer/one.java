@@ -3,16 +3,20 @@ package co.bh.rekcuf.sniffer;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Handler;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -56,6 +60,8 @@ public class one extends AppCompatActivity{
 		CheckBox checkbox1=findViewById(R.id.checkbox1);
 		LinearLayout ll=findViewById(R.id.logger);
 		TextView text_r7_1=findViewById(R.id.text_r7_1);
+		Button two_btn_auto=findViewById(R.id.two_btn_auto);
+		Button two_btn_add=findViewById(R.id.two_btn_add);
 
 		NetworkChangeReceiver.setToggle(netstat);
 		if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N)
@@ -90,44 +96,20 @@ public class one extends AppCompatActivity{
 		SQLite db1=new SQLite(one.this);// init and create tables
 		String res=db1.se1("select count(*) as x from host;");
 		if(res.length()>0){
+			TextView txtv=new TextView(getApplicationContext());
+			txtv.setText(R.string.run_one_log_dev);
+			ll.addView(txtv);
 			db_count=Integer.parseInt(res);
 			if(db_count>0){
+				if(db_count<400){
+					alert_box(getString(R.string.run_one_alert_notenough));
+				}
 				inp1.setText(Integer.toString(db_count));
-				TextView txtv=new TextView(getApplicationContext());
+				txtv=new TextView(getApplicationContext());
 				txtv.setText(getString(R.string.run_one_log_updated1)+db_count+getString(R.string.run_one_log_updated2));
 				ll.addView(txtv);
 			}else{
-				new java.util.Timer().schedule(new java.util.TimerTask(){
-					public void run(){
-						if(net_stat){
-							handler1.post(new Runnable(){
-								@Override
-								public void run(){
-									ll.removeAllViews();
-									ll.invalidate();
-									TextView txtv=new TextView(getApplicationContext());
-									txtv.setText(R.string.run_one_log_updating);
-									ll.addView(txtv);
-								}
-							});
-							new Thread(new Runnable(){
-								@Override
-								public void run(){
-									updatedb(getString(R.string.update_url));
-								}
-							}).start();
-						}else{
-							handler1.post(new Runnable(){
-								@Override
-								public void run(){
-									Toast.makeText(one.this,R.string.run_one_toast_turnon,Toast.LENGTH_SHORT).show();
-								}
-							});
-							finish();
-						}
-
-					}
-				},1000);
+				do_updatedb();
 			}
 		}
 
@@ -216,6 +198,112 @@ public class one extends AppCompatActivity{
 			}
 		});
 
+		two_btn_auto.setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View view){
+				if(net_stat){
+					handler1.post(new Runnable(){
+						@Override
+						public void run(){
+							LinearLayout ll=findViewById(R.id.logger);
+							ll.removeAllViews();
+							ll.invalidate();
+							TextView txtv=new TextView(getApplicationContext());
+							txtv.setText(R.string.run_one_log_updating);
+							ll.addView(txtv);
+							findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
+						}
+					});
+					new Thread(new Runnable(){
+						@Override
+						public void run(){
+							updatedb(getString(R.string.update_url));
+						}
+					}).start();
+				}else{
+					Toast.makeText(getApplication(),R.string.run_one_toast_turnon,Toast.LENGTH_LONG).show();
+					finish();
+				}
+			}
+		});
+
+		two_btn_add.setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View view){
+				EditText two_paste_text=findViewById(R.id.two_paste_text);
+				String paste=two_paste_text.getText().toString();
+				String raw2=paste.replaceAll("\\s+","\n");
+				String raw=raw2.replaceAll("[^a-zA-Z0-9\\-\\.\\n:/]+","");
+				int count_lines=raw.length()-raw.replace("\n","").length();
+				int raw_len=raw.length();
+				if(count_lines<1){
+					if(raw_len>14&&raw.matches("^((http|https)://).+/.+")){
+						if(net_stat){
+							handler1.post(new Runnable(){
+								@Override
+								public void run(){
+									LinearLayout ll=findViewById(R.id.logger);
+									ll.removeAllViews();
+									ll.invalidate();
+									TextView txtv=new TextView(getApplicationContext());
+									txtv.setText(getString(R.string.run_one_log_updating)+getString(R.string.run_one_log_updating_customurl)+raw);
+									ll.addView(txtv);
+									Toast.makeText(getApplication(),R.string.run_one_toast_wait4customurl,Toast.LENGTH_LONG).show();
+									findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
+								}
+							});
+							new Thread(new Runnable(){
+								@Override
+								public void run(){
+									updatedb(raw);
+								}
+							}).start();
+						}else{
+							Toast.makeText(getApplication(),R.string.run_one_toast_turnon,Toast.LENGTH_LONG).show();
+							finish();
+						}
+					}
+				}else if(count_lines>99&&raw_len>600){
+					String domain2=raw.replaceAll("^((http|https)://)","");
+					String domain1=domain2.replaceAll("/.+","");
+					String[] lines=domain1.split("\n");
+					int i=0;
+					boolean res;
+					for(String line:lines){
+						if(line.length()>3){
+							if(!line.matches("(\\.|\\-){2,}")){
+								if(!line.matches("^[\\.\\-]|[\\.\\-]$")){
+									if(line.matches("^[a-zA-Z0-9\\-\\.]{2,32}\\.[a-zA-Z]{2,9}$")){
+										++i;
+										int j=9;
+										do{// repeat insert if db file locked temporary
+											res=SQLite.ins("host",new String[]{"domain",line.toLowerCase()});
+											if(res==false) --j;
+										}while(res==false&&j>0);// ignore insert after max try
+									}
+								}
+							}
+						}
+					}
+					db_count=i;
+					handler1.post(new Runnable(){
+						@Override
+						public void run(){
+							inp1.setText(Integer.toString(db_count));
+							TextView txtv=new TextView(getApplicationContext());
+							txtv.setText(getString(R.string.run_one_log_updated_now1)+db_count+getString(R.string.run_one_log_updated_now2));
+							ll.addView(txtv);
+							if(db_count>99){
+								findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
+							}
+						}
+					});
+				}else{
+					alert_box(getString(R.string.run_two_alert_addlistonly));
+				}
+			}
+		});
+
 	}
 	@Override
 	protected void onResume(){
@@ -273,6 +361,65 @@ public class one extends AppCompatActivity{
 		return new SimpleDateFormat("HH:mm:ss").format(new Date());
 	}
 
+	public void alert_box(String str){
+		new AlertDialog.Builder(one.this)
+			//.setTitle("Delete entry")
+			.setMessage(str)
+			.setPositiveButton(android.R.string.ok,null)
+			.setCancelable(false)
+			.setIcon(android.R.drawable.ic_dialog_alert)
+			.show();
+	}
+
+	public void do_updatedb(){
+		AlertDialog.Builder alert = new AlertDialog.Builder(one.this);
+		alert.setTitle(R.string.run_one_confirm_empty1);
+		alert.setMessage(R.string.run_one_confirm_empty2);
+		alert.setCancelable(false);
+		alert.setPositiveButton(R.string.run_one_confirm_empty_auto, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				if(net_stat){
+					dialog.dismiss();
+					handler1.post(new Runnable(){
+						@Override
+						public void run(){
+							LinearLayout ll=findViewById(R.id.logger);
+							ll.removeAllViews();
+							ll.invalidate();
+							TextView txtv=new TextView(getApplicationContext());
+							txtv.setText(R.string.run_one_log_updating);
+							ll.addView(txtv);
+						}
+					});
+					new Thread(new Runnable(){
+						@Override
+						public void run(){
+							updatedb(getString(R.string.update_url));
+						}
+					}).start();
+				}else{
+					Toast.makeText(getApplication(),R.string.run_one_toast_turnon,Toast.LENGTH_LONG).show();
+					finish();
+				}
+			}
+		});
+		alert.setNegativeButton(R.string.run_one_confirm_empty_manual, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				RelativeLayout two_layout=findViewById(R.id.two_layout);
+				two_layout.setVisibility(View.VISIBLE);
+				EditText two_paste_text=findViewById(R.id.two_paste_text);
+				two_paste_text.setHorizontallyScrolling(true);
+			}
+		});
+		AlertDialog dialog=alert.create();
+		dialog.show();
+		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setAllCaps(false);
+		dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setAllCaps(false);
+	}
+
 	public void service(boolean turn){
 		switch_stat=turn;
 		SQLite.exe("update data set v='"+(turn?"1":"0")+"' where k='last_switch_stat';");
@@ -307,10 +454,7 @@ public class one extends AppCompatActivity{
 					int j=9;
 					do{// repeat insert if db file locked temporary
 						res=SQLite.ins("host",new String[]{"domain",line});
-						if(res==false){
-							--j;
-							//TimeUnit.MILLISECONDS.wait((9-j)*4);// wait for unlock
-						}
+						if(res==false) --j;
 					}while(res==false&&j>0);// ignore insert after max try
 				}
 			}
@@ -352,8 +496,8 @@ public class one extends AppCompatActivity{
 				String ts_str=get_ts();
 				String stat=bundle.getString("stat");
 				String domain=bundle.getString("domain");
-				String stat_str=stat.equals("-1")?"000 \u00a0 ×":stat+" \u00a0 <";
-				String log=ts_str+" \u00a0 - \u00a0 "+stat_str+" \u00a0 "+domain+"\n";
+				String stat_str=stat.equals("-1")?"000 \u00A0 ×":stat+" \u00A0 <";
+				String log=ts_str+" \u00A0 - \u00A0 "+stat_str+" \u00A0 "+domain+"\n";
 				TextView txtv=new TextView(getApplicationContext());
 				txtv.setSingleLine(true);
 				//txtv.setMaxLines(1);
