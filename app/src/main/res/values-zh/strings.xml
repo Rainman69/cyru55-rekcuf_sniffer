@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">反间谍</string>
+    <string name="update_url">https://9k.gg/rs1ch</string>
+    <string name="ui_one_domain">领域</string>
+    <string name="ui_one_sent">发送</string>
+    <string name="ui_one_total">全部的</string>
+    <string name="ui_one_conc">同时</string>
+    <string name="ui_one_timeout">暂停</string>
+    <string name="ui_one_notif">通知</string>
+    <string name="ui_one_bgservice">地位</string>
+    <string name="ui_one_togglev1_on">上</string>
+    <string name="ui_one_togglev1_off">离</string>
+    <string name="run_one_log_updating">开发人员:  @cyru55\n数据库现在正在更新...</string>
+    <string name="run_one_log_updated1">开发人员:  @cyru55\n您的数据库有</string>
+    <string name="run_one_log_updated2">域\n我们走吧\n</string>
+    <string name="run_one_log_updated_now1">数据库成功更新\n您的数据库有</string>
+    <string name="run_one_log_updated_now2">个域\n我们走吧</string>
+    <string name="run_one_log_line_start">开始</string>
+    <string name="run_one_log_line_stop">停止</string>
+    <string name="run_tile_toast_turnon">打开互联网</string>
+    <string name="run_one_toast_turnon">打开互联网</string>
+    <string name="run_srvrestarter_toast_restarted">反间谍活动尚未活跃</string>
+    <string name="run_one_toast_nointernet">互联网不可用</string>
+    <string name="run_one_toast_badconc">设置1〜16之间的并发数字</string>
+    <string name="run_one_toast_badtimeout">将超时号设置在1〜20之间</string>
+    <string name="run_one_toast_waitupdating">等到数据库更新</string>
+</resources>

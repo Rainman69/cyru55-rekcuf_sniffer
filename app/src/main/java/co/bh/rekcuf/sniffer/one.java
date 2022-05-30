@@ -94,7 +94,7 @@ public class one extends AppCompatActivity{
 			if(db_count>0){
 				inp1.setText(Integer.toString(db_count));
 				TextView txtv=new TextView(getApplicationContext());
-				txtv.setText("dev:  @cyru55\nyour DataBase have "+db_count+" domains\nLets Go\n");
+				txtv.setText(getString(R.string.run_one_log_updated1)+db_count+getString(R.string.run_one_log_updated2));
 				ll.addView(txtv);
 			}else{
 				new java.util.Timer().schedule(new java.util.TimerTask(){
@@ -106,7 +106,7 @@ public class one extends AppCompatActivity{
 									ll.removeAllViews();
 									ll.invalidate();
 									TextView txtv=new TextView(getApplicationContext());
-									txtv.setText("dev:  @cyru55\nDataBase is now Updating ...");
+									txtv.setText(R.string.run_one_log_updating);
 									ll.addView(txtv);
 								}
 							});
@@ -120,7 +120,7 @@ public class one extends AppCompatActivity{
 							handler1.post(new Runnable(){
 								@Override
 								public void run(){
-									Toast.makeText(one.this,"Turn On Internet",Toast.LENGTH_SHORT).show();
+									Toast.makeText(one.this,R.string.run_one_toast_turnon,Toast.LENGTH_SHORT).show();
 								}
 							});
 							finish();
@@ -186,19 +186,19 @@ public class one extends AppCompatActivity{
 									SQLite.exe("update data set v='"+(checkbox1.isChecked()?"1":"0")+"' where k='last_notif';");
 									service(true);
 								}else{
-									Toast.makeText(one.this,"Wait until DataBase become updated",Toast.LENGTH_SHORT).show();
+									Toast.makeText(getApplicationContext(),R.string.run_one_toast_waitupdating,Toast.LENGTH_SHORT).show();
 									switch1.setChecked(false);
 								}
 							}else{
-								Toast.makeText(one.this,"Set Timeout 1 ~ 20",Toast.LENGTH_SHORT).show();
+								Toast.makeText(getApplicationContext(),R.string.run_one_toast_badtimeout,Toast.LENGTH_SHORT).show();
 								switch1.setChecked(false);
 							}
 						}else{
-							Toast.makeText(one.this,"Set concurrent number 1 ~ 16",Toast.LENGTH_SHORT).show();
+							Toast.makeText(getApplicationContext(),R.string.run_one_toast_badconc,Toast.LENGTH_SHORT).show();
 							switch1.setChecked(false);
 						}
 					}else{
-						Toast.makeText(one.this,"Internet is not available",Toast.LENGTH_SHORT).show();
+						Toast.makeText(getApplicationContext(),R.string.run_one_toast_nointernet,Toast.LENGTH_SHORT).show();
 						switch1.setChecked(false);
 					}
 				}else{
@@ -290,7 +290,7 @@ public class one extends AppCompatActivity{
 		}
 		LinearLayout ll=findViewById(R.id.logger);
 		TextView txtv=new TextView(getApplicationContext());
-		txtv.setText(get_ts()+"  ------------------ "+(turn?"Start":"Stop"));
+		txtv.setText(get_ts()+"  ------------------ "+(turn?getString(R.string.run_one_log_line_start):getString(R.string.run_one_log_line_stop)));
 		ll.addView(txtv);
 	}
 
@@ -326,7 +326,7 @@ public class one extends AppCompatActivity{
 				inp1.setText(Integer.toString(db_count));
 				LinearLayout ll=findViewById(R.id.logger);
 				TextView txtv=new TextView(getApplicationContext());
-				txtv.setText("DataBase Updated Successfuly\nyour DataBase have "+db_count+" domains\nLets Go");
+				txtv.setText(getString(R.string.run_one_log_updated_now1)+db_count+getString(R.string.run_one_log_updated_now2));
 				ll.addView(txtv);
 			}
 		});

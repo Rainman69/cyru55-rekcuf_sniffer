@@ -14,7 +14,7 @@ public class BgSrvRestarter extends BroadcastReceiver{
 		String last_switch_stat=db1.se1("select v from data where k='last_switch_stat';");
 		boolean switch_stat=last_switch_stat.equals("0")?false:true;
 		if(switch_stat){
-			Toast.makeText(context,"rekcuF Sniffer is ON",Toast.LENGTH_SHORT).show();
+			Toast.makeText(context.getApplicationContext(),R.string.run_srvrestarter_toast_restarted,Toast.LENGTH_SHORT).show();
 			if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
 				context.startForegroundService(new Intent(context,bgService.class));
 			}else{
