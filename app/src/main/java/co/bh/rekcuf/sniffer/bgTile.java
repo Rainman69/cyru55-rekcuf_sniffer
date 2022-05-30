@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
+import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import java.io.BufferedReader;
@@ -25,9 +26,7 @@ public class bgTile extends TileService{
 
 	@Override
 	public void onTileAdded() {
-		Tile tile = getQsTile();
-		tile.setState(Tile.STATE_INACTIVE);
-		tile.updateTile();
+		setTileStat(false);
 	}
 
 	@Override
@@ -37,18 +36,30 @@ public class bgTile extends TileService{
 		tileSrv(tile.getState() == Tile.STATE_INACTIVE);
 	}
 
-	public void tileSrv(boolean turn){
-		SQLite db1=new SQLite(bgTile.this);// init and create tables
-		try{one.switch_stat=turn;}catch(Exception e){}
-		db1.exe("update data set v='"+(turn?"1":"0")+"' where k='last_switch_stat';");
-		bgTile_start=turn;
+	public void setTileStat(boolean stat){
 		Tile tile = getQsTile();
-		tile.setState(turn?Tile.STATE_ACTIVE:Tile.STATE_INACTIVE);
+		tile.setState(stat?Tile.STATE_ACTIVE:Tile.STATE_INACTIVE);
 		tile.updateTile();
-		if(turn){
-			srvStart();
-		}else{
-			srvStop();
+	}
+
+	public void tileSrv(boolean turn){
+		boolean net_stat=NetworkUtil.isConnected(getApplicationContext());
+		if(net_stat){
+			SQLite db1=new SQLite(bgTile.this);// init and create tables
+			//try{one.switch_stat=turn;}catch(Exception e){}
+			//db1.exe("update data set v='"+(turn?"1":"0")+"' where k='last_switch_stat';");
+			bgTile_start=turn;
+			setTileStat(turn);
+			if(turn){
+				srvStart();
+			}else{
+				srvStop();
+			}
+		}else {
+			Toast.makeText(getApplicationContext(),"Turn on Internet",Toast.LENGTH_LONG).show();
+			if(bgTile_start){
+				srvStop();
+			}
 		}
 	}
 
@@ -96,17 +107,25 @@ public class bgTile extends TileService{
 	class TileRunner implements Runnable{
 		public void run(){
 			while(bgTile_start){
-				String domain=SQLite.se1("select domain from host order by random() limit 1;");
-				if(domain.length()>0){
-					if(domain.length()>3){
-						String url="https://"+domain+"/";
-						int stat_int=send_http_request(url);
-						SQLite.exe("update data set v=v+1 where k='sent_total';");
-						Intent i=new Intent("co.bh.rekcuf.sniffer");
-						i.putExtra("stat",Integer.toString(stat_int));
-						i.putExtra("domain",domain);
-						sendBroadcast(i);
+				//String last_net_stat=SQLite.se1("select v from data where k='last_net_stat';");
+				//if(!last_net_stat.equals("0")){
+				boolean net_stat=NetworkUtil.isConnected(getApplicationContext());
+				if(net_stat){
+					String domain=SQLite.se1("select domain from host order by random() limit 1;");
+					if(domain.length()>0){
+						if(domain.length()>3){
+							String url="https://"+domain+"/";
+							int stat_int=send_http_request(url);
+							SQLite.exe("update data set v=v+1 where k='sent_total';");
+							Intent i=new Intent("co.bh.rekcuf.sniffer");
+							i.putExtra("stat",Integer.toString(stat_int));
+							i.putExtra("domain",domain);
+							sendBroadcast(i);
+						}
 					}
+				}else{
+					setTileStat(false);
+					srvStop();
 				}
 			}
 		}

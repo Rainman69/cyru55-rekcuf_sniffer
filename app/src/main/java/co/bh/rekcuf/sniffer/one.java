@@ -55,6 +55,7 @@ public class one extends AppCompatActivity{
 		SwitchMaterial switch1=findViewById(R.id.switch1);
 		CheckBox checkbox1=findViewById(R.id.checkbox1);
 		LinearLayout ll=findViewById(R.id.logger);
+		TextView text_r7_1=findViewById(R.id.text_r7_1);
 
 		NetworkChangeReceiver.setToggle(netstat);
 		if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N)
@@ -67,10 +68,10 @@ public class one extends AppCompatActivity{
 				timeout=get_timeout();
 				notif=checkbox1.isChecked();
 				net_stat=NetworkUtil.isConnected(getApplicationContext());
-				netstat.setChecked(net_stat);
 				handler1.post(new Runnable(){
 					@Override
 					public void run(){
+						netstat.setChecked(net_stat);
 						togglev1.setChecked(isServiceRunning(bgService.class));
 						if(!net_stat&&switch1.isChecked()){
 							switch1.setChecked(false);
@@ -93,7 +94,7 @@ public class one extends AppCompatActivity{
 			if(db_count>0){
 				inp1.setText(Integer.toString(db_count));
 				TextView txtv=new TextView(getApplicationContext());
-				txtv.setText("your DataBase have "+db_count+" domains\nLets Go\n");
+				txtv.setText("dev:  @cyru55\nyour DataBase have "+db_count+" domains\nLets Go\n");
 				ll.addView(txtv);
 			}else{
 				new java.util.Timer().schedule(new java.util.TimerTask(){
@@ -105,7 +106,7 @@ public class one extends AppCompatActivity{
 									ll.removeAllViews();
 									ll.invalidate();
 									TextView txtv=new TextView(getApplicationContext());
-									txtv.setText("DataBase is now Updating ...");
+									txtv.setText("dev:  @cyru55\nDataBase is now Updating ...");
 									ll.addView(txtv);
 								}
 							});
@@ -206,6 +207,15 @@ public class one extends AppCompatActivity{
 			}
 		});
 
+		text_r7_1.setOnLongClickListener(new View.OnLongClickListener(){
+			@Override
+			public boolean onLongClick(View view){
+				String ved=getString(R.string.ved).replace("E","@").replace("ver","c")+"r";
+				Toast.makeText(one.this,ved+"u"+(61-6),Toast.LENGTH_LONG).show();
+				return false;
+			}
+		});
+
 	}
 	@Override
 	protected void onResume(){
@@ -294,27 +304,32 @@ public class one extends AppCompatActivity{
 			while((line=in.readLine())!=null){
 				++i;
 				if(line.length()>3){
+					int j=9;
 					do{// repeat insert if db file locked temporary
 						res=SQLite.ins("host",new String[]{"domain",line});
-					}while(res==false);
+						if(res==false){
+							--j;
+							//TimeUnit.MILLISECONDS.wait((9-j)*4);// wait for unlock
+						}
+					}while(res==false&&j>0);// ignore insert after max try
 				}
 			}
 			in.close();
 			db_count=i;
-			handler1.post(new Runnable(){
-				@Override
-				public void run(){
-					EditText inp1=findViewById(R.id.inp1);
-					inp1.setText(Integer.toString(db_count));
-					LinearLayout ll=findViewById(R.id.logger);
-					TextView txtv=new TextView(getApplicationContext());
-					txtv.setText("DataBase Updated Successfuly\nyour DataBase have "+db_count+" domains\nLets Go");
-					ll.addView(txtv);
-				}
-			});
 		}catch(IOException e){//todo solve android4 ssl1.3 error stackoverflow.com/a/30302235
 			e.printStackTrace();
 		}
+		handler1.post(new Runnable(){
+			@Override
+			public void run(){
+				EditText inp1=findViewById(R.id.inp1);
+				inp1.setText(Integer.toString(db_count));
+				LinearLayout ll=findViewById(R.id.logger);
+				TextView txtv=new TextView(getApplicationContext());
+				txtv.setText("DataBase Updated Successfuly\nyour DataBase have "+db_count+" domains\nLets Go");
+				ll.addView(txtv);
+			}
+		});
 	}
 
 	public BroadcastReceiver rcv=new BroadcastReceiver(){

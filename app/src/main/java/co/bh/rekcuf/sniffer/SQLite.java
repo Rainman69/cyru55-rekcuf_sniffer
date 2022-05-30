@@ -3,6 +3,8 @@ package co.bh.rekcuf.sniffer;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -45,7 +47,10 @@ public class SQLite extends SQLiteOpenHelper{
 			for(int i=0;i<arr.length;i++){
 				cv.put(arr[i],arr[++i]);
 			}
-			long res=db1.insert(table,null,cv);
+			long res=-2;
+			try{
+				res=db1.insert(table,String.valueOf(db1.CONFLICT_IGNORE),cv);
+			}catch(Exception e){}
 			return res!=-1;
 		}
 		return true;

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.os.Build;
-import android.util.Log;
 import androidx.annotation.RequiresApi;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -22,7 +21,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
-        SQLite db1=new SQLite(netstat.getContext());// init and create tables
+        SQLite db1=new SQLite(context);// init and create tables
         boolean status = NetworkUtil.isConnected(context);
         if("android.net.conn.CONNECTIVITY_CHANGE".equals(intent.getAction())) {
             try{one.net_stat=status;}catch(Exception e){}

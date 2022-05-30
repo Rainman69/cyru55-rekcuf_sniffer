@@ -247,7 +247,6 @@
                 android:background="@drawable/togglev1"
                 android:enabled="false"
                 android:text="ToggleButton"
-                android:textOn="@cyru55"
                 android:textAllCaps="false"
                 />
 
