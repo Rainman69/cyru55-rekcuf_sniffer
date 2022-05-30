@@ -14,11 +14,12 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 
 public class bgService extends Service{
 
-	public static final String pn="co.bh.rekcuf.sniffer";
+	ArrayList<Thread> T = new ArrayList<Thread>();
 
 	@Override
 	public IBinder onBind(Intent intent){
@@ -34,6 +35,7 @@ public class bgService extends Service{
 
 	@Override
 	public void onCreate(){
+		SQLite db1=new SQLite(bgService.this);// init and create tables
 	}
 
 	@Override
@@ -44,17 +46,11 @@ public class bgService extends Service{
 		broadcastIntent.setClass(this,BgSrvRestarter.class);
 		this.sendBroadcast(broadcastIntent);
 		//db1.close();
+		srvStop();
 	}
 
 	public void srvStart(){
-		int conc;
-		try{
-			conc=one.conc;
-		}catch(Exception e){
-			SQLite db1=new SQLite(bgService.this);// init and create tables
-			String last_conc=db1.se1("select v from data where k='last_conc';");
-			conc=Integer.parseInt(last_conc);
-		}
+		int conc=one.conc;
 		if(one.notif){
 			if(Build.VERSION.SDK_INT>Build.VERSION_CODES.O){
 				startNotif();
@@ -63,8 +59,17 @@ public class bgService extends Service{
 			}
 		}
 		for(int i=0;i<conc;i++){
-			new Thread(new Runner(),"Runner"+conc).start();
+			Thread t = new Thread(new ServiceRunner(),"Runner"+i);
+			T.add(t);
+			t.start();
 		}
+	}
+
+	public void srvStop(){
+		for (Thread t : T) {
+			t.interrupt();
+		}
+		stopForeground(true);
 	}
 
 	@RequiresApi(Build.VERSION_CODES.O)
@@ -80,7 +85,7 @@ public class bgService extends Service{
 		startForeground(2,notification);
 	}
 
-	class Runner implements Runnable{
+	class ServiceRunner implements Runnable{
 		public void run(){
 			while(one.switch_stat){
 				String domain=SQLite.se1("select domain from host order by random() limit 1;");

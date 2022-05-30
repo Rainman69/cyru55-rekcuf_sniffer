@@ -39,7 +39,7 @@ public class one extends AppCompatActivity{
 	public static int timeout=5000;
 	public static boolean switch_stat=false;
 	public static boolean notif=true;
-	public static boolean stat=false;
+	public static boolean net_stat=false;
 	public int db_count=0;
 
 	@Override
@@ -56,8 +56,6 @@ public class one extends AppCompatActivity{
 		CheckBox checkbox1=findViewById(R.id.checkbox1);
 		LinearLayout ll=findViewById(R.id.logger);
 
-		//Toast.makeText(one.this,"startService",Toast.LENGTH_SHORT).show();
-
 		NetworkChangeReceiver.setToggle(netstat);
 		if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N)
 			NetworkChangeReceiver.registerNetworkCallback(this);
@@ -68,13 +66,13 @@ public class one extends AppCompatActivity{
 				conc=get_conc();
 				timeout=get_timeout();
 				notif=checkbox1.isChecked();
-				stat=NetworkUtil.isConnected(getApplicationContext());
-				netstat.setChecked(stat);
+				net_stat=NetworkUtil.isConnected(getApplicationContext());
+				netstat.setChecked(net_stat);
 				handler1.post(new Runnable(){
 					@Override
 					public void run(){
 						togglev1.setChecked(isServiceRunning(bgService.class));
-						if(!stat&&switch1.isChecked()){
+						if(!net_stat&&switch1.isChecked()){
 							switch1.setChecked(false);
 							service(false);
 						}
@@ -100,7 +98,7 @@ public class one extends AppCompatActivity{
 			}else{
 				new java.util.Timer().schedule(new java.util.TimerTask(){
 					public void run(){
-						if(stat){
+						if(net_stat){
 							handler1.post(new Runnable(){
 								@Override
 								public void run(){
@@ -132,6 +130,9 @@ public class one extends AppCompatActivity{
 			}
 		}
 
+		String last_switch_stat=db1.se1("select v from data where k='last_switch_stat';");
+		int switch_stat_int=Integer.parseInt(last_switch_stat);
+		switch_stat=switch_stat_int>0?true:false;
 		switch1.setChecked(switch_stat);
 		if(switch_stat){
 			inp4.setEnabled(false);
@@ -148,6 +149,8 @@ public class one extends AppCompatActivity{
 		}
 		String last_notif=SQLite.se1("select v from data where k='last_notif';");
 		checkbox1.setChecked(last_notif.equals("1"));
+		String last_net_stat=SQLite.se1("select v from data where k='last_net_stat';");
+		netstat.setChecked(last_net_stat.equals("0")?false:true);
 
 		inp4.setOnKeyListener(new View.OnKeyListener(){
 			@Override
@@ -171,7 +174,7 @@ public class one extends AppCompatActivity{
 			public void onClick(View view){
 				switch_stat=false;
 				if(switch1.isChecked()){
-					if(stat){
+					if(net_stat){
 						conc=get_conc();
 						if(conc>0&&conc<33){
 							int timeout=get_timeout();
@@ -207,7 +210,7 @@ public class one extends AppCompatActivity{
 	@Override
 	protected void onResume(){
 		super.onResume();
-		registerReceiver(rcv,new IntentFilter(bgService.pn));
+		registerReceiver(rcv,new IntentFilter("co.bh.rekcuf.sniffer"));
 	}
 	@Override
 	protected void onPause(){
@@ -262,6 +265,7 @@ public class one extends AppCompatActivity{
 
 	public void service(boolean turn){
 		switch_stat=turn;
+		SQLite.exe("update data set v='"+(turn?"1":"0")+"' where k='last_switch_stat';");
 		EditText inp4=findViewById(R.id.inp4);
 		EditText inp5=findViewById(R.id.inp5);
 		CheckBox checkbox1=findViewById(R.id.checkbox1);

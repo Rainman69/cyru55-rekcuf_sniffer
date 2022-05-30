@@ -10,7 +10,10 @@ import android.widget.Toast;
 public class BgSrvRestarter extends BroadcastReceiver{
 	@Override
 	public void onReceive(Context context,Intent intent){
-		if(one.switch_stat){
+		SQLite db1=new SQLite(context.getApplicationContext());
+		String last_switch_stat=db1.se1("select v from data where k='last_switch_stat';");
+		boolean switch_stat=last_switch_stat.equals("0")?false:true;
+		if(switch_stat){
 			Toast.makeText(context,"rekcuF Sniffer is ON",Toast.LENGTH_SHORT).show();
 			if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
 				context.startForegroundService(new Intent(context,bgService.class));
