@@ -35,4 +35,6 @@
     <string name="run_one_log_updating_customurl">\n加载URL： \u00A0</string>
     <string name="run_one_toast_wait4customurl">等到将URL加载到数据库中</string>
     <string name="run_two_alert_addlistonly">添加500多个域列表\n如果你没有足够的\n你可以在这里找到:\nhttps://rentry.co/rekcuf1/raw</string>
+    <string name="ui_two_btn_auto">自动的</string>
+    <string name="ui_two_btn_add">添加</string>
 </resources>

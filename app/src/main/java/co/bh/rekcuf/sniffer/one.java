@@ -246,6 +246,9 @@ public class one extends AppCompatActivity{
 				int count_lines=raw.length()-raw.replace("\n","").length();
 				int raw_len=raw.length();
 				if(count_lines<1){
+					if(raw_len==0){
+						findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
+					}
 					if(raw_len>14&&raw.matches("^((http|https)://).+/.+")){
 						if(net_stat){
 							handler1.post(new Runnable(){
@@ -258,6 +261,7 @@ public class one extends AppCompatActivity{
 									txtv.setText(getString(R.string.run_one_log_updating)+getString(R.string.run_one_log_updating_customurl)+raw);
 									ll.addView(txtv);
 									Toast.makeText(getApplication(),R.string.run_one_toast_wait4customurl,Toast.LENGTH_LONG).show();
+									two_paste_text.setText("");
 									findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
 								}
 							});
@@ -303,9 +307,8 @@ public class one extends AppCompatActivity{
 							TextView txtv=new TextView(getApplicationContext());
 							txtv.setText(getString(R.string.run_one_log_updated_now1)+db_count+getString(R.string.run_one_log_updated_now2));
 							ll.addView(txtv);
-							if(db_count>99){
-								findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
-							}
+							two_paste_text.setText("");
+							findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
 						}
 					});
 				}else{

@@ -24,13 +24,13 @@
 
     <ImageButton
         android:id="@+id/one_add_btn"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:background="@android:drawable/ic_input_add"
         app:layout_constraintEnd_toStartOf="@+id/netstat"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/netstat"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         >
     </ImageButton>
 
@@ -339,7 +339,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textAllCaps="false"
-                    android:text="Automatic"
+                    android:text="@string/ui_two_btn_auto"
                     />
 
                 <Space
@@ -354,7 +354,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textAllCaps="false"
-                    android:text="Add"
+                    android:text="@string/ui_two_btn_add"
                     />
 
             </LinearLayout>

@@ -37,4 +37,6 @@
     <string name="run_one_log_updating_customurl">\nLoad URL: \u00A0</string>
     <string name="run_one_toast_wait4customurl">Wait until load URL into database</string>
     <string name="run_two_alert_addlistonly">Add more than 500 domain list\nif you dont have\ncan found here:\nhttps://rentry.co/rekcuf1/raw</string>
+    <string name="ui_two_btn_auto">Automatic</string>
+    <string name="ui_two_btn_add">Add</string>
 </resources>
