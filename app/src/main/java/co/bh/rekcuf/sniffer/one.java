@@ -264,8 +264,9 @@ public class one extends AppCompatActivity{
 						}
 					}
 				}else if(count_lines>99&&raw_len>600){
-					String domain2=raw.replaceAll("^((http|https)://)","");
-					String domain1=domain2.replaceAll("/.+","");
+					String domain3=raw.replaceAll("^((http|https)://)","");
+					String domain2=domain3.replaceAll("/.+","");
+					String domain1=domain2.replaceAll("[:/]","");
 					String[] lines=domain1.split("\n");
 					int i=0;
 					boolean res;

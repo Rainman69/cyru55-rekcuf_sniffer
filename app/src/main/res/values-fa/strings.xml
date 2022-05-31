@@ -15,7 +15,7 @@
     <string name="run_one_log_updating">پایگاه‌داده در حال آپدیت ...</string>
     <string name="run_one_log_updated1">پایگاه‌داده اکنون\u00A0</string>
     <string name="run_one_log_updated2">\u00A0دامین دارد\nروشن کن بریم\n</string>
-    <string name="run_one_log_updated_now1">nپایگاه‌داده باموفقیت آپدیت شد\nاکنون شامل\u00A0</string>
+    <string name="run_one_log_updated_now1">پایگاه‌داده باموفقیت آپدیت شد\nاکنون شامل\u00A0</string>
     <string name="run_one_log_updated_now2">\u00A0دامین می‌باشد\nروشن کن بریم</string>
     <string name="run_one_log_line_start">روشن شد</string>
     <string name="run_one_log_line_stop">خاموش شد</string>
