@@ -22,6 +22,18 @@
         tools:ignore="DuplicateSpeakableTextCheck"
         />
 
+    <ImageButton
+        android:id="@+id/one_add_btn"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@android:drawable/ic_input_add"
+        app:layout_constraintEnd_toStartOf="@+id/netstat"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/netstat"
+        android:layout_marginTop="24dp"
+        >
+    </ImageButton>
+
     <LinearLayout
         android:id="@+id/row2"
         android:layout_width="match_parent"

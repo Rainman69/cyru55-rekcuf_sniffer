@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -62,6 +63,7 @@ public class one extends AppCompatActivity{
 		TextView text_r7_1=findViewById(R.id.text_r7_1);
 		Button two_btn_auto=findViewById(R.id.two_btn_auto);
 		Button two_btn_add=findViewById(R.id.two_btn_add);
+		ImageButton one_add_btn=findViewById(R.id.one_add_btn);
 
 		NetworkChangeReceiver.setToggle(netstat);
 		if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N)
@@ -195,6 +197,13 @@ public class one extends AppCompatActivity{
 				String ved=getString(R.string.ved).replace("E","@").replace("ver","c")+"r";
 				Toast.makeText(one.this,ved+"u"+(61-6),Toast.LENGTH_LONG).show();
 				return false;
+			}
+		});
+
+		one_add_btn.setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View view){
+				findViewById(R.id.two_layout).setVisibility(View.VISIBLE);
 			}
 		});
 
