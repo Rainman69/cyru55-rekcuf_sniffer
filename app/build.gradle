@@ -9,7 +9,7 @@ android {
         applicationId "co.bh.rekcuf.sniffer"
         minSdk 16
         targetSdk 31
-        versionCode 31
+        versionCode 32
         versionName "5.0"
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'

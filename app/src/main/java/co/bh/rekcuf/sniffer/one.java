@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
@@ -35,6 +36,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -159,7 +161,7 @@ public class one extends AppCompatActivity{
 									SQLite.exe("update data set v='"+(checkbox1.isChecked()?"1":"0")+"' where k='last_notif';");
 									service(true);
 								}else{
-									toast_show(R.string.run_one_toast_waitupdating);
+									toast_show(R.string.run_one_toast_updatefirst);
 									switch1.setChecked(false);
 								}
 							}else{
@@ -354,14 +356,6 @@ public class one extends AppCompatActivity{
 	}
 
 	public void check_is_db_empty(){
-		if(!isIgnoreBatteryOptimize()){
-			String res2=SQLite.se1("select v from data where k='ask_ignore_battery';");
-			int ask_ignore_battery=Integer.parseInt(res2);
-			if(ask_ignore_battery>0){
-				SQLite.exe("update data set v="+(ask_ignore_battery-1)+" where k='ask_ignore_battery';");
-				reqIgnoreBatteryOptimize();
-			}
-		}
 		String res1=SQLite.se1("select count(*) as x from host;");
 		if(res1.length()>0){
 			LinearLayout ll=findViewById(R.id.logger);
@@ -379,7 +373,15 @@ public class one extends AppCompatActivity{
 				txtv2.setText(getString(R.string.run_one_log_updated1)+db_count+getString(R.string.run_one_log_updated2));
 				ll.addView(txtv2);
 			}else{
-				do_updatedb();
+				prompt_updatedb();
+				if(!isIgnoreBatteryOptimize()){
+					String res2=SQLite.se1("select v from data where k='ask_ignore_battery';");
+					int ask_ignore_battery=Integer.parseInt(res2);
+					if(ask_ignore_battery>0){
+						SQLite.exe("update data set v="+(ask_ignore_battery-1)+" where k='ask_ignore_battery';");
+						reqIgnoreBatteryOptimize();
+					}
+				}
 			}
 		}
 	}
@@ -428,12 +430,12 @@ public class one extends AppCompatActivity{
 			.show();
 	}
 
-	public void do_updatedb(){
-		AlertDialog.Builder alert = new AlertDialog.Builder(getApplicationContext());
-		alert.setTitle(R.string.run_one_confirm_empty1);
-		alert.setMessage(R.string.run_one_confirm_empty2);
-		alert.setCancelable(false);
-		alert.setPositiveButton(R.string.run_one_confirm_empty_auto, new DialogInterface.OnClickListener() {
+	public void prompt_updatedb(){
+		AlertDialog.Builder alert1 = new AlertDialog.Builder(one.this);
+		alert1.setTitle(R.string.run_one_confirm_empty1);
+		alert1.setMessage(R.string.run_one_confirm_empty2);
+		alert1.setCancelable(false);
+		alert1.setPositiveButton(R.string.run_one_confirm_empty_auto, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				if(net_stat){
@@ -461,7 +463,7 @@ public class one extends AppCompatActivity{
 				}
 			}
 		});
-		alert.setNegativeButton(R.string.run_one_confirm_empty_manual, new DialogInterface.OnClickListener() {
+		alert1.setNegativeButton(R.string.run_one_confirm_empty_manual, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
@@ -470,33 +472,37 @@ public class one extends AppCompatActivity{
 				two_paste_text.setHorizontallyScrolling(true);
 			}
 		});
-		AlertDialog dialog=alert.create();
+		AlertDialog dialog=alert1.create();
 		dialog.show();
 		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setAllCaps(false);
 		dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setAllCaps(false);
 	}
 
 	public void reqIgnoreBatteryOptimize(){
-		AlertDialog.Builder alert = new AlertDialog.Builder(getApplicationContext());
-		alert.setTitle(R.string.run_one_reqignoreoptimize1);
-		alert.setMessage(R.string.run_one_reqignoreoptimize2);
-		alert.setPositiveButton(R.string.run_one_reqignoreoptimize_y, new DialogInterface.OnClickListener() {
+		AlertDialog.Builder alert2 = new AlertDialog.Builder(one.this);
+		alert2.setTitle(R.string.run_one_reqignoreoptimize1);
+		alert2.setMessage(R.string.run_one_reqignoreoptimize2);
+		alert2.setPositiveButton(R.string.run_one_reqignoreoptimize_y, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
-				Intent int1=new Intent();
-				int1.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-				int1.setData(Uri.parse("package:"+app_pack_name));
-				startActivity(int1);
+				try{
+					Intent int2=new Intent();
+					int2.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+					int2.setData(Uri.parse("package:"+app_pack_name));
+					startActivity(int2);
+				}catch(Exception e){
+					toast_show(R.string.run_one_toast_nooptimization);
+				}
 			}
 		});
-		alert.setNegativeButton(R.string.run_one_reqignoreoptimize_n, new DialogInterface.OnClickListener() {
+		alert2.setNegativeButton(R.string.run_one_reqignoreoptimize_n, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
 			}
 		});
-		AlertDialog dialog=alert.create();
+		AlertDialog dialog=alert2.create();
 		dialog.show();
 		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setAllCaps(false);
 		dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setAllCaps(false);
@@ -548,11 +554,15 @@ public class one extends AppCompatActivity{
 		handler1.post(new Runnable(){
 			@Override
 			public void run(){
-				EditText inp1=findViewById(R.id.inp1);
-				inp1.setText(Integer.toString(db_count));
 				LinearLayout ll=findViewById(R.id.logger);
 				TextView txtv=new TextView(getApplicationContext());
-				txtv.setText(getString(R.string.run_one_log_updated_now1)+db_count+getString(R.string.run_one_log_updated_now2));
+				if(db_count>0){
+					EditText inp1=findViewById(R.id.inp1);
+					inp1.setText(Integer.toString(db_count));
+					txtv.setText(getString(R.string.run_one_log_updated_now1)+db_count+getString(R.string.run_one_log_updated_now2));
+				}else{
+					txtv.setText(R.string.run_one_log_update_error);
+				}
 				ll.addView(txtv);
 			}
 		});

@@ -25,7 +25,7 @@
     <string name="run_one_toast_nointernet">互联网不可用</string>
     <string name="run_one_toast_badconc">设置1〜16之间的并发数字</string>
     <string name="run_one_toast_badtimeout">将超时号设置在1〜20之间</string>
-    <string name="run_one_toast_waitupdating">等到数据库更新</string>
+    <string name="run_one_toast_updatefirst">在开始之前尝试更新应用数据库</string>
     <string name="run_one_alert_notenough">尽管您的域列表不是空的，但是您需要一个大列表才能获得不错的结果。\n\n因此，如果您没有足够的大列表，请改用“自动”列表。</string>
     <string name="run_one_confirm_empty1">您的域列表现在为空</string>
     <string name="run_one_confirm_empty2">选择一种添加一些数据的方法</string>
@@ -42,4 +42,6 @@
     <string name="run_one_reqignoreoptimize2">请在您的设备设置中标记为“未优化”</string>
     <string name="run_one_reqignoreoptimize_y">继续</string>
     <string name="run_one_reqignoreoptimize_n">不</string>
+    <string name="run_one_toast_nooptimization">设备中没有电池优化设置</string>
+    <string name="run_one_log_update_error">抱歉，更新未成功\n尝试使用手动模式添加列表</string>
 </resources>
