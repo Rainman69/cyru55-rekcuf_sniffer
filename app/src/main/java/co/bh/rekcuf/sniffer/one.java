@@ -98,18 +98,18 @@ public class one extends AppCompatActivity{
 		SQLite db1=new SQLite(one.this);// init and create tables
 		String res=db1.se1("select count(*) as x from host;");
 		if(res.length()>0){
-			TextView txtv=new TextView(getApplicationContext());
-			txtv.setText(R.string.run_one_log_dev);
-			ll.addView(txtv);
+			TextView txtv1=new TextView(getApplicationContext());
+			txtv1.setText(R.string.run_one_log_dev);
+			ll.addView(txtv1);
 			db_count=Integer.parseInt(res);
 			if(db_count>0){
 				if(db_count<400){
 					alert_box(getString(R.string.run_one_alert_notenough));
 				}
 				inp1.setText(Integer.toString(db_count));
-				txtv=new TextView(getApplicationContext());
-				txtv.setText(getString(R.string.run_one_log_updated1)+db_count+getString(R.string.run_one_log_updated2));
-				ll.addView(txtv);
+				TextView txtv2=new TextView(getApplicationContext());
+				txtv2.setText(getString(R.string.run_one_log_updated1)+db_count+getString(R.string.run_one_log_updated2));
+				ll.addView(txtv2);
 			}else{
 				do_updatedb();
 			}
@@ -230,7 +230,7 @@ public class one extends AppCompatActivity{
 						}
 					}).start();
 				}else{
-					Toast.makeText(getApplication(),R.string.run_one_toast_turnon,Toast.LENGTH_LONG).show();
+					Toast.makeText(getApplicationContext(),R.string.run_one_toast_turnon,Toast.LENGTH_LONG).show();
 					finish();
 				}
 			}
@@ -260,7 +260,7 @@ public class one extends AppCompatActivity{
 									TextView txtv=new TextView(getApplicationContext());
 									txtv.setText(getString(R.string.run_one_log_updating)+getString(R.string.run_one_log_updating_customurl)+raw);
 									ll.addView(txtv);
-									Toast.makeText(getApplication(),R.string.run_one_toast_wait4customurl,Toast.LENGTH_LONG).show();
+									Toast.makeText(getApplicationContext(),R.string.run_one_toast_wait4customurl,Toast.LENGTH_LONG).show();
 									two_paste_text.setText("");
 									findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
 								}
@@ -272,7 +272,7 @@ public class one extends AppCompatActivity{
 								}
 							}).start();
 						}else{
-							Toast.makeText(getApplication(),R.string.run_one_toast_turnon,Toast.LENGTH_LONG).show();
+							Toast.makeText(getApplicationContext(),R.string.run_one_toast_turnon,Toast.LENGTH_LONG).show();
 							finish();
 						}
 					}
@@ -376,7 +376,7 @@ public class one extends AppCompatActivity{
 
 	public void alert_box(String str){
 		new AlertDialog.Builder(one.this)
-			//.setTitle("Delete entry")
+			.setTitle("")
 			.setMessage(str)
 			.setPositiveButton(android.R.string.ok,null)
 			.setCancelable(false)
@@ -412,7 +412,7 @@ public class one extends AppCompatActivity{
 						}
 					}).start();
 				}else{
-					Toast.makeText(getApplication(),R.string.run_one_toast_turnon,Toast.LENGTH_LONG).show();
+					Toast.makeText(getApplicationContext(),R.string.run_one_toast_turnon,Toast.LENGTH_LONG).show();
 					finish();
 				}
 			}

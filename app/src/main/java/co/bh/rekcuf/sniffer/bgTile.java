@@ -56,7 +56,7 @@ public class bgTile extends TileService{
 				srvStop();
 			}
 		}else {
-			Toast.makeText(getApplication(),R.string.run_tile_toast_turnon,Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(),R.string.run_tile_toast_turnon,Toast.LENGTH_LONG).show();
 			if(bgTile_start){
 				srvStop();
 			}
