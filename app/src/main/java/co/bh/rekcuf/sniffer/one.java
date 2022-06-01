@@ -144,6 +144,7 @@ public class one extends AppCompatActivity{
 					if(conc>0&&conc<17){
 						//inp4.setBackgroundColor(Color.TRANSPARENT);
 						inp4.getBackground().setColorFilter(getResources().getColor(R.color.teal_200),PorterDuff.Mode.SRC_IN);
+						SQLite.exe("update data set v='"+conc+"' where k='last_conc';");
 					}else{
 						//inp4.setBackgroundColor(Color.parseColor("#FFAAAA"));
 						inp4.getBackground().setColorFilter(Color.RED,PorterDuff.Mode.SRC_IN);
