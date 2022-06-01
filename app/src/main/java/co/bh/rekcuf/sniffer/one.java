@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
@@ -170,19 +169,19 @@ public class one extends AppCompatActivity{
 									SQLite.exe("update data set v='"+(checkbox1.isChecked()?"1":"0")+"' where k='last_notif';");
 									service(true);
 								}else{
-									Toast.makeText(getApplicationContext(),R.string.run_one_toast_waitupdating,Toast.LENGTH_SHORT).show();
+									toast_show(R.string.run_one_toast_waitupdating);
 									switch1.setChecked(false);
 								}
 							}else{
-								Toast.makeText(getApplicationContext(),R.string.run_one_toast_badtimeout,Toast.LENGTH_SHORT).show();
+								toast_show(R.string.run_one_toast_badtimeout);
 								switch1.setChecked(false);
 							}
 						}else{
-							Toast.makeText(getApplicationContext(),R.string.run_one_toast_badconc,Toast.LENGTH_SHORT).show();
+							toast_show(R.string.run_one_toast_badconc);
 							switch1.setChecked(false);
 						}
 					}else{
-						Toast.makeText(getApplicationContext(),R.string.run_one_toast_nointernet,Toast.LENGTH_SHORT).show();
+						toast_show(R.string.run_one_toast_nointernet);
 						switch1.setChecked(false);
 					}
 				}else{
@@ -195,7 +194,7 @@ public class one extends AppCompatActivity{
 			@Override
 			public boolean onLongClick(View view){
 				String ved=getString(R.string.ved).replace("E","@").replace("ver","c")+"r";
-				Toast.makeText(one.this,ved+"u"+(61-6),Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(),ved+"u"+(61-6),Toast.LENGTH_LONG).show();
 				return false;
 			}
 		});
@@ -230,7 +229,7 @@ public class one extends AppCompatActivity{
 						}
 					}).start();
 				}else{
-					Toast.makeText(getApplicationContext(),R.string.run_one_toast_turnon,Toast.LENGTH_LONG).show();
+					toast_show(R.string.run_one_toast_turnon);
 					finish();
 				}
 			}
@@ -260,7 +259,7 @@ public class one extends AppCompatActivity{
 									TextView txtv=new TextView(getApplicationContext());
 									txtv.setText(getString(R.string.run_one_log_updating)+getString(R.string.run_one_log_updating_customurl)+raw);
 									ll.addView(txtv);
-									Toast.makeText(getApplicationContext(),R.string.run_one_toast_wait4customurl,Toast.LENGTH_LONG).show();
+									toast_show(R.string.run_one_toast_wait4customurl);
 									two_paste_text.setText("");
 									findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
 								}
@@ -272,7 +271,7 @@ public class one extends AppCompatActivity{
 								}
 							}).start();
 						}else{
-							Toast.makeText(getApplicationContext(),R.string.run_one_toast_turnon,Toast.LENGTH_LONG).show();
+							toast_show(R.string.run_one_toast_turnon);
 							finish();
 						}
 					}
@@ -299,7 +298,8 @@ public class one extends AppCompatActivity{
 							}
 						}
 					}
-					db_count=i;
+					int added=i;
+					db_count+=added;
 					handler1.post(new Runnable(){
 						@Override
 						public void run(){
@@ -308,10 +308,10 @@ public class one extends AppCompatActivity{
 							txtv.setText(getString(R.string.run_one_log_updated_now1)+db_count+getString(R.string.run_one_log_updated_now2));
 							ll.addView(txtv);
 							two_paste_text.setText("");
-							if(db_count>0){
+							if(added>0){
 								findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
 							}else{
-								Toast.makeText(getApplicationContext(),R.string.run_one_toast_nodomainfound,Toast.LENGTH_LONG).show();
+								toast_show(R.string.run_one_toast_nodomainfound);
 							}
 						}
 					});
@@ -336,6 +336,10 @@ public class one extends AppCompatActivity{
 	public void onDestroy(){
 		super.onDestroy();
 		//db1.close();
+	}
+
+	public void toast_show(int str){
+		Toast.makeText(getApplicationContext(),str,Toast.LENGTH_SHORT).show();
 	}
 
 	public boolean isServiceRunning(Class<?> serviceClass){
@@ -416,7 +420,7 @@ public class one extends AppCompatActivity{
 						}
 					}).start();
 				}else{
-					Toast.makeText(getApplicationContext(),R.string.run_one_toast_turnon,Toast.LENGTH_LONG).show();
+					toast_show(R.string.run_one_toast_turnon);
 					finish();
 				}
 			}

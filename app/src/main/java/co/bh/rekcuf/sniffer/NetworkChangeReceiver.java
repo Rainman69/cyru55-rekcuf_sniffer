@@ -27,8 +27,6 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             try{one.net_stat=status;}catch(Exception e){}
             db1.exe("update data set v='"+(status?"1":"0")+"' where k='last_net_stat';");
             netstat.setChecked(status);
-            String text="Internet "+(status?"Connected":"Disconnected");
-            Toast.makeText(context,text,Toast.LENGTH_LONG).show();
         }
     }
 
