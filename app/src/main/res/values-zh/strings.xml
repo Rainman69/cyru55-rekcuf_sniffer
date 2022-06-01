@@ -38,4 +38,8 @@
     <string name="ui_two_btn_auto">自动的</string>
     <string name="ui_two_btn_add">添加</string>
     <string name="run_one_toast_nodomainfound">找不到任何有效域数据</string>
+    <string name="run_one_reqignoreoptimize1">为了防止在背景中活跃的应用程序被杀死</string>
+    <string name="run_one_reqignoreoptimize2">请在您的设备设置中标记为“未优化”</string>
+    <string name="run_one_reqignoreoptimize_y">继续</string>
+    <string name="run_one_reqignoreoptimize_n">不</string>
 </resources>

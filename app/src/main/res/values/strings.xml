@@ -40,4 +40,8 @@
     <string name="ui_two_btn_auto">Automatic</string>
     <string name="ui_two_btn_add">Add</string>
     <string name="run_one_toast_nodomainfound">No any valid domain found</string>
+    <string name="run_one_reqignoreoptimize1">To prevent app being killed while that is active in background</string>
+    <string name="run_one_reqignoreoptimize2">Please mark it as "Not Optimized" in your device settings</string>
+    <string name="run_one_reqignoreoptimize_y">Continue</string>
+    <string name="run_one_reqignoreoptimize_n">No</string>
 </resources>

@@ -38,4 +38,8 @@
     <string name="ui_two_btn_auto">خودکار</string>
     <string name="ui_two_btn_add">افزودن</string>
     <string name="run_one_toast_nodomainfound">هیچ داده‌ای که حاوی دامین لیست باشه شناسایی نشد</string>
+    <string name="run_one_reqignoreoptimize1">جهت جلوگیری از بسته شدن اپلیکیشن در پس‌زمینه</string>
+    <string name="run_one_reqignoreoptimize2">بهتر است تنظیمات را به گونه‌ای اعمال کنید که برای این اپلیکیشن صرفه‌جویی اعمال نشود</string>
+    <string name="run_one_reqignoreoptimize_y">موافقم</string>
+    <string name="run_one_reqignoreoptimize_n">مایل نیستم</string>
 </resources>

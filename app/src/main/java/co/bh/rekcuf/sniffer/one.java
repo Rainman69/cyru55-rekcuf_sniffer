@@ -8,8 +8,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
@@ -38,6 +41,7 @@ import java.util.TimerTask;
 
 public class one extends AppCompatActivity{
 
+	public String app_pack_name="co.bh.rekcuf.sniffer";
 	public static Handler handler1=new Handler();
 	public static int conc=0;
 	public static int timeout=5000;
@@ -65,8 +69,11 @@ public class one extends AppCompatActivity{
 		ImageButton one_add_btn=findViewById(R.id.one_add_btn);
 
 		NetworkChangeReceiver.setToggle(netstat);
-		if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N)
+		if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
 			NetworkChangeReceiver.registerNetworkCallback(this);
+		}
+
+		SQLite db1=new SQLite(getApplicationContext());// init and create tables
 
 		new Timer().scheduleAtFixedRate(new TimerTask(){
 			@Override
@@ -94,25 +101,7 @@ public class one extends AppCompatActivity{
 			}
 		},0,600);
 
-		SQLite db1=new SQLite(one.this);// init and create tables
-		String res=db1.se1("select count(*) as x from host;");
-		if(res.length()>0){
-			TextView txtv1=new TextView(getApplicationContext());
-			txtv1.setText(R.string.run_one_log_dev);
-			ll.addView(txtv1);
-			db_count=Integer.parseInt(res);
-			if(db_count>0){
-				if(db_count<400){
-					alert_box(getString(R.string.run_one_alert_notenough));
-				}
-				inp1.setText(Integer.toString(db_count));
-				TextView txtv2=new TextView(getApplicationContext());
-				txtv2.setText(getString(R.string.run_one_log_updated1)+db_count+getString(R.string.run_one_log_updated2));
-				ll.addView(txtv2);
-			}else{
-				do_updatedb();
-			}
-		}
+		check_is_db_empty();
 
 		String last_switch_stat=db1.se1("select v from data where k='last_switch_stat';");
 		int switch_stat_int=Integer.parseInt(last_switch_stat);
@@ -326,7 +315,7 @@ public class one extends AppCompatActivity{
 	@Override
 	protected void onResume(){
 		super.onResume();
-		registerReceiver(rcv,new IntentFilter("co.bh.rekcuf.sniffer"));
+		registerReceiver(rcv,new IntentFilter(app_pack_name));
 	}
 	@Override
 	protected void onPause(){
@@ -339,10 +328,6 @@ public class one extends AppCompatActivity{
 		//db1.close();
 	}
 
-	public void toast_show(int str){
-		Toast.makeText(getApplicationContext(),str,Toast.LENGTH_SHORT).show();
-	}
-
 	public boolean isServiceRunning(Class<?> serviceClass){
 		ActivityManager manager=(ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
 		for(ActivityManager.RunningServiceInfo service: manager.getRunningServices(Integer.MAX_VALUE)){
@@ -351,6 +336,52 @@ public class one extends AppCompatActivity{
 			}
 		}
 		return false;
+	}
+
+	public boolean isIgnoreBatteryOptimize(){
+		boolean res;
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+			try{
+				PowerManager pm=(PowerManager)getApplicationContext().getSystemService(POWER_SERVICE);
+				res=pm.isIgnoringBatteryOptimizations(app_pack_name);
+			}catch(Exception e){
+				res=false;
+			}
+		}else{
+			res=true;
+		}
+		return res;
+	}
+
+	public void check_is_db_empty(){
+		if(!isIgnoreBatteryOptimize()){
+			String res2=SQLite.se1("select v from data where k='ask_ignore_battery';");
+			int ask_ignore_battery=Integer.parseInt(res2);
+			if(ask_ignore_battery>0){
+				SQLite.exe("update data set v="+(ask_ignore_battery-1)+" where k='ask_ignore_battery';");
+				reqIgnoreBatteryOptimize();
+			}
+		}
+		String res1=SQLite.se1("select count(*) as x from host;");
+		if(res1.length()>0){
+			LinearLayout ll=findViewById(R.id.logger);
+			TextView txtv1=new TextView(getApplicationContext());
+			txtv1.setText(R.string.run_one_log_dev);
+			ll.addView(txtv1);
+			db_count=Integer.parseInt(res1);
+			if(db_count>0){
+				if(db_count<400){
+					alert_box(getString(R.string.run_one_alert_notenough));
+				}
+				EditText inp1=findViewById(R.id.inp1);
+				inp1.setText(Integer.toString(db_count));
+				TextView txtv2=new TextView(getApplicationContext());
+				txtv2.setText(getString(R.string.run_one_log_updated1)+db_count+getString(R.string.run_one_log_updated2));
+				ll.addView(txtv2);
+			}else{
+				do_updatedb();
+			}
+		}
 	}
 
 	public int get_conc(){
@@ -383,8 +414,12 @@ public class one extends AppCompatActivity{
 		return new SimpleDateFormat("HH:mm:ss").format(new Date());
 	}
 
+	public void toast_show(int str){
+		Toast.makeText(getApplicationContext(),str,Toast.LENGTH_SHORT).show();
+	}
+
 	public void alert_box(String str){
-		new AlertDialog.Builder(one.this)
+		new AlertDialog.Builder(getApplicationContext())
 			.setTitle("")
 			.setMessage(str)
 			.setPositiveButton(android.R.string.ok,null)
@@ -394,7 +429,7 @@ public class one extends AppCompatActivity{
 	}
 
 	public void do_updatedb(){
-		AlertDialog.Builder alert = new AlertDialog.Builder(one.this);
+		AlertDialog.Builder alert = new AlertDialog.Builder(getApplicationContext());
 		alert.setTitle(R.string.run_one_confirm_empty1);
 		alert.setMessage(R.string.run_one_confirm_empty2);
 		alert.setCancelable(false);
@@ -433,6 +468,32 @@ public class one extends AppCompatActivity{
 				findViewById(R.id.two_layout).setVisibility(View.VISIBLE);
 				EditText two_paste_text=findViewById(R.id.two_paste_text);
 				two_paste_text.setHorizontallyScrolling(true);
+			}
+		});
+		AlertDialog dialog=alert.create();
+		dialog.show();
+		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setAllCaps(false);
+		dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setAllCaps(false);
+	}
+
+	public void reqIgnoreBatteryOptimize(){
+		AlertDialog.Builder alert = new AlertDialog.Builder(getApplicationContext());
+		alert.setTitle(R.string.run_one_reqignoreoptimize1);
+		alert.setMessage(R.string.run_one_reqignoreoptimize2);
+		alert.setPositiveButton(R.string.run_one_reqignoreoptimize_y, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				Intent int1=new Intent();
+				int1.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+				int1.setData(Uri.parse("package:"+app_pack_name));
+				startActivity(int1);
+			}
+		});
+		alert.setNegativeButton(R.string.run_one_reqignoreoptimize_n, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
 			}
 		});
 		AlertDialog dialog=alert.create();
