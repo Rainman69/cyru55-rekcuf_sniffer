@@ -308,7 +308,11 @@ public class one extends AppCompatActivity{
 							txtv.setText(getString(R.string.run_one_log_updated_now1)+db_count+getString(R.string.run_one_log_updated_now2));
 							ll.addView(txtv);
 							two_paste_text.setText("");
-							findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
+							if(db_count>0){
+								findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
+							}else{
+								Toast.makeText(getApplicationContext(),R.string.run_one_toast_nodomainfound,Toast.LENGTH_LONG).show();
+							}
 						}
 					});
 				}else{
@@ -421,8 +425,7 @@ public class one extends AppCompatActivity{
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
-				RelativeLayout two_layout=findViewById(R.id.two_layout);
-				two_layout.setVisibility(View.VISIBLE);
+				findViewById(R.id.two_layout).setVisibility(View.VISIBLE);
 				EditText two_paste_text=findViewById(R.id.two_paste_text);
 				two_paste_text.setHorizontallyScrolling(true);
 			}

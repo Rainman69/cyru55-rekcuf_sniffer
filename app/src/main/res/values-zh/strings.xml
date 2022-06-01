@@ -37,4 +37,5 @@
     <string name="run_two_alert_addlistonly">添加500多个域列表\n如果你没有足够的\n你可以在这里找到:\nhttps://rentry.co/rekcuf1/raw</string>
     <string name="ui_two_btn_auto">自动的</string>
     <string name="ui_two_btn_add">添加</string>
+    <string name="run_one_toast_nodomainfound">找不到任何有效域数据</string>
 </resources>

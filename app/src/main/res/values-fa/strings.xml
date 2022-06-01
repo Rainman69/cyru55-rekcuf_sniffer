@@ -37,4 +37,5 @@
     <string name="run_two_alert_addlistonly">بیش از 500 دامین اضافه کنید\nاگر چییزی سراغ نداری\nمیتونی نمونه لیست اینجا پیدا کنی:\nhttps://rentry.co/rekcuf1/raw</string>
     <string name="ui_two_btn_auto">خودکار</string>
     <string name="ui_two_btn_add">افزودن</string>
+    <string name="run_one_toast_nodomainfound">هیچ داده‌ای که حاوی دامین لیست باشه شناسایی نشد</string>
 </resources>
