@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
@@ -20,8 +19,10 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -30,13 +31,13 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -107,7 +108,7 @@ public class one extends AppCompatActivity{
 
 		String last_switch_stat=db1.se1("select v from data where k='last_switch_stat';");
 		int switch_stat_int=Integer.parseInt(last_switch_stat);
-		switch_stat=switch_stat_int>0?true:false;
+		switch_stat=switch_stat_int>0;
 		switch1.setChecked(switch_stat);
 		if(switch_stat){
 			inp4.setEnabled(false);
@@ -125,7 +126,7 @@ public class one extends AppCompatActivity{
 		String last_notif=SQLite.se1("select v from data where k='last_notif';");
 		checkbox1.setChecked(last_notif.equals("1"));
 		String last_net_stat=SQLite.se1("select v from data where k='last_net_stat';");
-		netstat.setChecked(last_net_stat.equals("0")?false:true);
+		netstat.setChecked(!last_net_stat.equals("0"));
 
 		inp4.setOnKeyListener(new View.OnKeyListener(){
 			@Override
@@ -274,7 +275,7 @@ public class one extends AppCompatActivity{
 					String[] lines=domain1.split("\n");
 					int i=0;
 					boolean res;
-					for(String line:lines){
+					for(String line: lines){
 						if(line.length()>3){
 							if(!line.matches("(\\.|\\-){2,}")){
 								if(!line.matches("^[\\.\\-]|[\\.\\-]$")){
@@ -342,7 +343,7 @@ public class one extends AppCompatActivity{
 
 	public boolean isIgnoreBatteryOptimize(){
 		boolean res;
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+		if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
 			try{
 				PowerManager pm=(PowerManager)getApplicationContext().getSystemService(POWER_SERVICE);
 				res=pm.isIgnoringBatteryOptimizations(app_pack_name);
@@ -421,23 +422,23 @@ public class one extends AppCompatActivity{
 	}
 
 	public void alert_box(String str){
-		new AlertDialog.Builder(getApplicationContext())
-			.setTitle("")
-			.setMessage(str)
-			.setPositiveButton(android.R.string.ok,null)
-			.setCancelable(false)
-			.setIcon(android.R.drawable.ic_dialog_alert)
-			.show();
+		new AlertDialog.Builder(this)
+				.setTitle("")
+				.setMessage(str)
+				.setPositiveButton(android.R.string.ok,null)
+				.setCancelable(false)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.show();
 	}
 
 	public void prompt_updatedb(){
-		AlertDialog.Builder alert1 = new AlertDialog.Builder(one.this);
+		AlertDialog.Builder alert1=new AlertDialog.Builder(this);
 		alert1.setTitle(R.string.run_one_confirm_empty1);
 		alert1.setMessage(R.string.run_one_confirm_empty2);
 		alert1.setCancelable(false);
-		alert1.setPositiveButton(R.string.run_one_confirm_empty_auto, new DialogInterface.OnClickListener() {
+		alert1.setPositiveButton(R.string.run_one_confirm_empty_auto,new DialogInterface.OnClickListener(){
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
+			public void onClick(DialogInterface dialog,int which){
 				if(net_stat){
 					dialog.dismiss();
 					handler1.post(new Runnable(){
@@ -463,9 +464,9 @@ public class one extends AppCompatActivity{
 				}
 			}
 		});
-		alert1.setNegativeButton(R.string.run_one_confirm_empty_manual, new DialogInterface.OnClickListener() {
+		alert1.setNegativeButton(R.string.run_one_confirm_empty_manual,new DialogInterface.OnClickListener(){
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
+			public void onClick(DialogInterface dialog,int which){
 				dialog.dismiss();
 				findViewById(R.id.two_layout).setVisibility(View.VISIBLE);
 				EditText two_paste_text=findViewById(R.id.two_paste_text);
@@ -479,12 +480,13 @@ public class one extends AppCompatActivity{
 	}
 
 	public void reqIgnoreBatteryOptimize(){
-		AlertDialog.Builder alert2 = new AlertDialog.Builder(one.this);
+		AlertDialog.Builder alert2=new AlertDialog.Builder(this);
 		alert2.setTitle(R.string.run_one_reqignoreoptimize1);
 		alert2.setMessage(R.string.run_one_reqignoreoptimize2);
-		alert2.setPositiveButton(R.string.run_one_reqignoreoptimize_y, new DialogInterface.OnClickListener() {
+		alert2.setPositiveButton(R.string.run_one_reqignoreoptimize_y,new DialogInterface.OnClickListener(){
+			@android.annotation.SuppressLint("BatteryLife")
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
+			public void onClick(DialogInterface dialog,int which){
 				dialog.dismiss();
 				try{
 					Intent int2=new Intent();
@@ -496,9 +498,9 @@ public class one extends AppCompatActivity{
 				}
 			}
 		});
-		alert2.setNegativeButton(R.string.run_one_reqignoreoptimize_n, new DialogInterface.OnClickListener() {
+		alert2.setNegativeButton(R.string.run_one_reqignoreoptimize_n,new DialogInterface.OnClickListener(){
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
+			public void onClick(DialogInterface dialog,int which){
 				dialog.dismiss();
 			}
 		});

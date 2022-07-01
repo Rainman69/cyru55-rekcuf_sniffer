@@ -9,8 +9,10 @@ import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import android.widget.Toast;
+
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -22,22 +24,22 @@ import java.util.ArrayList;
 public class bgTile extends TileService{
 
 	public static boolean bgTile_start=false;
-	ArrayList<Thread> T = new ArrayList<Thread>();
+	ArrayList<Thread> T=new ArrayList<Thread>();
 
 	@Override
-	public void onTileAdded() {
+	public void onTileAdded(){
 		setTileStat(false);
 	}
 
 	@Override
-	public void onClick() {
+	public void onClick(){
 		super.onClick();
-		Tile tile = getQsTile();
-		tileSrv(tile.getState() == Tile.STATE_INACTIVE);
+		Tile tile=getQsTile();
+		tileSrv(tile.getState()==Tile.STATE_INACTIVE);
 	}
 
 	public void setTileStat(boolean stat){
-		Tile tile = getQsTile();
+		Tile tile=getQsTile();
 		tile.setState(stat?Tile.STATE_ACTIVE:Tile.STATE_INACTIVE);
 		tile.updateTile();
 	}
@@ -55,7 +57,7 @@ public class bgTile extends TileService{
 			}else{
 				srvStop();
 			}
-		}else {
+		}else{
 			Toast.makeText(getApplicationContext(),R.string.run_tile_toast_turnon,Toast.LENGTH_LONG).show();
 			if(bgTile_start){
 				srvStop();
@@ -75,17 +77,18 @@ public class bgTile extends TileService{
 				}else{
 					startForeground(1,new Notification());
 				}
-			}catch(Exception e){}
+			}catch(Exception e){
+			}
 		}
 		for(int i=0;i<conc;i++){
-			Thread t = new Thread(new TileRunner(),"Runner"+i);
+			Thread t=new Thread(new TileRunner(),"Runner"+i);
 			T.add(t);
 			t.start();
 		}
 	}
 
 	public void srvStop(){
-		for (Thread t : T) {
+		for(Thread t: T){
 			t.interrupt();
 		}
 		stopForeground(true);
@@ -105,6 +108,7 @@ public class bgTile extends TileService{
 	}
 
 	class TileRunner implements Runnable{
+
 		public void run(){
 			while(bgTile_start){
 				//String last_net_stat=SQLite.se1("select v from data where k='last_net_stat';");
@@ -129,6 +133,7 @@ public class bgTile extends TileService{
 				}
 			}
 		}
+
 	}
 
 	public int send_http_request(String str){

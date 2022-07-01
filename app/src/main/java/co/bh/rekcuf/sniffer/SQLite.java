@@ -33,7 +33,7 @@ public class SQLite extends SQLiteOpenHelper{
 	@Override
 	public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion){
 		db.execSQL("drop table if exists host;");
-		db.execSQL("drop table if exists counter;");
+		db.execSQL("drop table if exists data;");
 		onCreate(db);
 	}
 
@@ -49,7 +49,8 @@ public class SQLite extends SQLiteOpenHelper{
 			long res=-2;
 			try{
 				res=db1.insert(table,String.valueOf(db1.CONFLICT_IGNORE),cv);
-			}catch(Exception e){}
+			}catch(Exception e){
+			}
 			return res!=-1;
 		}
 		return true;
@@ -60,10 +61,16 @@ public class SQLite extends SQLiteOpenHelper{
 	}
 	public static String se1(String query){
 		Cursor res=null;
-		try{res=db1.rawQuery(query,null);}catch(Exception e){}
+		try{
+			res=db1.rawQuery(query,null);
+		}catch(Exception e){
+		}
 		if(res!=null){
 			int count=0;
-			try{count=res.getCount();}catch(Exception e){}
+			try{
+				count=res.getCount();
+			}catch(Exception e){
+			}
 			if(count>0){
 				if(res.moveToNext()){
 					return res.getString(0);

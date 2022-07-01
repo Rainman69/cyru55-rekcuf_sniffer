@@ -8,8 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -19,7 +21,7 @@ import java.util.ArrayList;
 
 public class bgService extends Service{
 
-	ArrayList<Thread> T = new ArrayList<Thread>();
+	ArrayList<Thread> T=new ArrayList<Thread>();
 
 	@Override
 	public IBinder onBind(Intent intent){
@@ -59,14 +61,14 @@ public class bgService extends Service{
 			}
 		}
 		for(int i=0;i<conc;i++){
-			Thread t = new Thread(new ServiceRunner(),"Runner"+i);
+			Thread t=new Thread(new ServiceRunner(),"Runner"+i);
 			T.add(t);
 			t.start();
 		}
 	}
 
 	public void srvStop(){
-		for (Thread t : T) {
+		for(Thread t: T){
 			t.interrupt();
 		}
 		stopForeground(true);
@@ -86,6 +88,7 @@ public class bgService extends Service{
 	}
 
 	class ServiceRunner implements Runnable{
+
 		public void run(){
 			while(one.switch_stat){
 				String domain=SQLite.se1("select domain from host order by random() limit 1;");
@@ -102,6 +105,7 @@ public class bgService extends Service{
 				}
 			}
 		}
+
 	}
 
 	public int send_http_request(String str){

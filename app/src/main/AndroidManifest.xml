@@ -1,68 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="co.bh.rekcuf.sniffer" android:versionName="5.0">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="5.1">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
+	<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
-    <application
-        android:allowBackup="true"
-        android:label="@string/app_name"
-        android:icon="@mipmap/icon"
-        android:supportsRtl="false"
-        android:theme="@style/Theme.one"
-        >
+	<application
+		android:allowBackup="true"
+		android:icon="@mipmap/icon"
+		android:label="@string/app_name"
+		android:supportsRtl="false"
+		android:theme="@style/Theme.one"
+		>
 
-        <activity android:name=".one" android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
+		<activity
+			android:name=".one"
+			android:exported="true"
+			>
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
 
-        <receiver android:name="NetworkChangeReceiver" android:label="NetworkChangeReceiver" android:exported="true">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED"/>
-            </intent-filter>
-        </receiver>
+		<receiver
+			android:name="NetworkChangeReceiver"
+			android:exported="true"
+			android:label="NetworkChangeReceiver"
+			>
+			<intent-filter>
+				<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+				<action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+			</intent-filter>
+		</receiver>
 
-        <service android:name=".bgService"/>
+		<service android:name=".bgService" />
 
-        <service
-            android:name=".bgTile"
-            android:icon="@drawable/ic_tile"
-            android:label="@string/app_name"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
-            android:exported="true"
-            >
-            <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE"/>
-            </intent-filter>
-        </service>
+		<service
+			android:name=".bgTile"
+			android:exported="true"
+			android:icon="@drawable/ic_tile"
+			android:label="@string/app_name"
+			android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+			>
+			<intent-filter>
+				<action android:name="android.service.quicksettings.action.QS_TILE" />
+			</intent-filter>
+		</service>
 
-        <receiver
-            android:name=".BgSrvRestarter"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.REBOOT"/>
-                <action android:name="android.intent.action.SCREEN_ON"/>
-                <action android:name="android.intent.action.SCREEN_OFF"/>
-                <action android:name="android.intent.action.USER_PRESENT"/>
-                <action android:name="android.intent.action.PACKAGE_DATA_CLEARED"/>
-                <action android:name="android.intent.action.PACKAGE_REPLACED"/>
-                <action android:name="android.intent.action.PACKAGE_RESTARTED"/>
-                <action android:name="android.intent.action.MY_PACKAGE_SUSPENDED"/>
-                <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED"/>
-                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
-                <action android:name="android.intent.action.MY_PACKAGE_SUSPENDED"/>
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
-            </intent-filter>
-        </receiver>
+		<receiver
+			android:name=".BgSrvRestarter"
+			android:enabled="true"
+			android:exported="true"
+			>
+			<intent-filter>
+				<action android:name="android.intent.action.REBOOT" />
+				<action android:name="android.intent.action.SCREEN_ON" />
+				<action android:name="android.intent.action.SCREEN_OFF" />
+				<action android:name="android.intent.action.USER_PRESENT" />
+				<action android:name="android.intent.action.PACKAGE_DATA_CLEARED" />
+				<action android:name="android.intent.action.PACKAGE_REPLACED" />
+				<action android:name="android.intent.action.PACKAGE_RESTARTED" />
+				<action android:name="android.intent.action.MY_PACKAGE_SUSPENDED" />
+				<action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
+				<action android:name="android.intent.action.PACKAGE_REMOVED" />
+				<action android:name="android.intent.action.MY_PACKAGE_SUSPENDED" />
+				<action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+			</intent-filter>
+		</receiver>
 
-    </application>
+	</application>
 
 </manifest>

@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 
 public class BgSrvRestarter extends BroadcastReceiver{
+
 	@Override
 	public void onReceive(Context context,Intent intent){
 		SQLite db1=new SQLite(context.getApplicationContext());
@@ -22,4 +23,5 @@ public class BgSrvRestarter extends BroadcastReceiver{
 			}
 		}
 	}
+
 }
