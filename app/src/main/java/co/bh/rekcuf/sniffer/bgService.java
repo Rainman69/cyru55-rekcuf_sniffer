@@ -30,7 +30,6 @@ public class bgService extends Service{
 
 	@Override
 	public int onStartCommand(Intent intent,int flags,int startId){
-		//Toast.makeText(getApplicationContext(),"onStartCommand",Toast.LENGTH_SHORT).show();
 		srvStart();
 		return super.onStartCommand(intent,flags,startId);
 	}
@@ -110,7 +109,6 @@ public class bgService extends Service{
 
 	public int send_http_request(String str){
 		int responseCode=-1;
-		//String content="";
 		int timeout=one.timeout;
 		try{
 			URL url=new URL(str);
@@ -119,23 +117,9 @@ public class bgService extends Service{
 			urlConn.setConnectTimeout(timeout);
 			urlConn.setReadTimeout(timeout);
 			BufferedReader br=new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
-			//urlConn.setAllowUserInteraction(false);
-			//urlConn.setDoInput(true);
 			urlConn.connect();
 			responseCode=urlConn.getResponseCode();
-			/*if(responseCode==HttpURLConnection.HTTP_OK){
-				String q;
-				do{
-					q=br.readLine();
-					content+=q;
-				}while(q!=null);
-				br.close();
-			}*/
 			urlConn.disconnect();
-			/*int len=content.length();
-			if(len>0){
-				Toast.makeText(getApplicationContext(),"content len: "+len,Toast.LENGTH_SHORT).show();
-			}*/
 		}catch(Exception e){
 			e.printStackTrace();
 		}
