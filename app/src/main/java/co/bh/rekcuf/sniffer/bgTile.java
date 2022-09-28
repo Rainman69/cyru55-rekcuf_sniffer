@@ -40,8 +40,10 @@ public class bgTile extends TileService{
 
 	public void setTileStat(boolean stat){
 		Tile tile=getQsTile();
-		tile.setState(stat?Tile.STATE_ACTIVE:Tile.STATE_INACTIVE);
-		tile.updateTile();
+		if(tile!=null){
+			tile.setState(stat?Tile.STATE_ACTIVE:Tile.STATE_INACTIVE);
+			tile.updateTile();
+		}
 	}
 
 	public void tileSrv(boolean turn){

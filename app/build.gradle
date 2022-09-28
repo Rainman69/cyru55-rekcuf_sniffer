@@ -9,8 +9,8 @@ android {
 		applicationId "co.bh.rekcuf.sniffer"
 		minSdk 16
 		targetSdk 32
-		versionCode 33
-		versionName "5.1"
+		versionCode 34
+		versionName "5.2"
 	}
 
 	buildTypes {
@@ -28,7 +28,7 @@ android {
 }
 
 dependencies {
-	implementation 'androidx.appcompat:appcompat:1.4.2'
+	implementation 'androidx.appcompat:appcompat:1.5.1'
 	implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 	implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
 	implementation 'com.google.android.material:material:1.6.1'
