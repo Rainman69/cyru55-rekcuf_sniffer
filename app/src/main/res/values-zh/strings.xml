@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">反间谍</string>
+	<string name="app_tile_name">反间谍</string>
 	<string name="update_url">https://9k.gg/rs1zh</string>
 	<string name="ui_one_domain">领域</string>
 	<string name="ui_one_sent">发送</string>
@@ -11,6 +12,9 @@
 	<string name="ui_one_bgservice">地位</string>
 	<string name="ui_one_togglev1_on">上</string>
 	<string name="ui_one_togglev1_off">离</string>
+	<string name="tile_title">应用程序正在运行</string>
+	<string name="tile_txt_sent">发送</string>
+	<string name="tile_txt_dl">下载</string>
 	<string name="run_one_log_dev">开发人员:\u00A0 @cyru55</string>
 	<string name="run_one_log_updating">数据库现在正在更新...</string>
 	<string name="run_one_log_updated1">您的数据库有</string>

@@ -5,19 +5,21 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @RequiresApi(api=Build.VERSION_CODES.N)
@@ -25,17 +27,47 @@ public class bgTile extends TileService{
 
 	public static boolean bgTile_start=false;
 	ArrayList<Thread> T=new ArrayList<Thread>();
+	SQLite db1=null;
+	NotificationCompat.Builder nb=null;
+	NotificationManager manager=null;
+	int session_counter=0;
+	int session_download=0;
 
 	@Override
 	public void onTileAdded(){
 		setTileStat(false);
+		super.onTileAdded();
+	}
+
+	@Override
+	public void onStartListening() {
+		db1=need_db();
+		String res1=db1.se1("select count(*) as x from host;");
+		int db_count=Integer.parseInt(res1);
+		if(db_count<1){
+			Tile tile=getQsTile();
+			if(tile!=null){
+				tile.setState(Tile.STATE_UNAVAILABLE);
+				tile.updateTile();
+			}
+		}
+		super.onStartListening();
 	}
 
 	@Override
 	public void onClick(){
 		super.onClick();
 		Tile tile=getQsTile();
-		tileSrv(tile.getState()==Tile.STATE_INACTIVE);
+		if(tile!=null){
+			tileSrv(tile.getState()==Tile.STATE_INACTIVE);
+		}
+	}
+
+	public SQLite need_db(){
+		if(db1==null){
+			db1=new SQLite(bgTile.this);// init and create tables
+		}
+		return db1;
 	}
 
 	public void setTileStat(boolean stat){
@@ -49,7 +81,7 @@ public class bgTile extends TileService{
 	public void tileSrv(boolean turn){
 		boolean net_stat=NetworkUtil.isConnected(getApplicationContext());
 		if(net_stat){
-			SQLite db1=new SQLite(bgTile.this);// init and create tables
+			db1=need_db();
 			//try{one.switch_stat=turn;}catch(Exception e){}
 			//db1.exe("update data set v='"+(turn?"1":"0")+"' where k='last_switch_stat';");
 			bgTile_start=turn;
@@ -68,8 +100,8 @@ public class bgTile extends TileService{
 	}
 
 	public void srvStart(){
-		String last_conc=SQLite.se1("select v from data where k='last_conc';");
-		String last_notif=SQLite.se1("select v from data where k='last_notif';");
+		String last_conc=db1.se1("select v from data where k='last_conc';");
+		String last_notif=db1.se1("select v from data where k='last_notif';");
 		int conc=Integer.parseInt(last_conc);
 		int notif=Integer.parseInt(last_notif);
 		if(notif>0){
@@ -79,8 +111,7 @@ public class bgTile extends TileService{
 				}else{
 					startForeground(1,new Notification());
 				}
-			}catch(Exception e){
-			}
+			}catch(Exception e){}
 		}
 		for(int i=0;i<conc;i++){
 			Thread t=new Thread(new TileRunner(),"Runner"+i);
@@ -94,35 +125,54 @@ public class bgTile extends TileService{
 			t.interrupt();
 		}
 		stopForeground(true);
+		if(manager!=null){
+			try{
+				manager.cancel(2);
+			}catch(Exception e){}
+		}
 	}
 
 	@RequiresApi(Build.VERSION_CODES.O)
 	public void startNotif(){
-		String NOTIFICATION_CHANNEL_ID="example.permanence";
-		NotificationChannel chan=new NotificationChannel(NOTIFICATION_CHANNEL_ID,"Background Service",NotificationManager.IMPORTANCE_NONE);
-		chan.setLightColor(R.color.notif_blue);
-		NotificationManager manager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+		String CHANNEL_ID="rekcuf.notif2";
+		NotificationChannel chan=new NotificationChannel(CHANNEL_ID,"BgTileService",NotificationManager.IMPORTANCE_DEFAULT);
+		chan.enableLights(false);
+		chan.setSound(null, null);
+		manager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
 		assert manager!=null;
 		manager.createNotificationChannel(chan);
-		NotificationCompat.Builder notificationBuilder=new NotificationCompat.Builder(this,NOTIFICATION_CHANNEL_ID);
-		Notification notification=notificationBuilder.setOngoing(true).setContentTitle("App is running in background").setPriority(NotificationManager.IMPORTANCE_HIGH).setCategory(Notification.CATEGORY_SERVICE).build();
-		startForeground(2,notification);
+		nb=new NotificationCompat.Builder(this,CHANNEL_ID)
+			.setOngoing(true)
+			.setContentTitle(getString(R.string.tile_title))
+			.setContentText("Starting ...")
+			.setSmallIcon(R.drawable.ic_tile)
+			.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_tile))
+			.setPriority(NotificationManager.IMPORTANCE_HIGH)
+			.setCategory(Notification.CATEGORY_SERVICE);
+		startForeground(12,nb.build());
 	}
 
 	class TileRunner implements Runnable{
 
 		public void run(){
 			while(bgTile_start){
-				//String last_net_stat=SQLite.se1("select v from data where k='last_net_stat';");
+				//String last_net_stat=db1.se1("select v from data where k='last_net_stat';");
 				//if(!last_net_stat.equals("0")){
 				boolean net_stat=NetworkUtil.isConnected(getApplicationContext());
 				if(net_stat){
-					String domain=SQLite.se1("select domain from host order by random() limit 1;");
+					String domain=db1.se1("select domain from host order by random() limit 1;");
 					if(domain.length()>0){
 						if(domain.length()>3){
 							String url="https://"+domain+"/";
 							int stat_int=send_http_request(url);
-							SQLite.exe("update data set v=v+1 where k='sent_total';");
+							++session_counter;
+							db1.exe("update data set v=v+1 where k='sent_total';");
+							if(bgTile_start && nb!=null && manager!=null){
+								int dl_size=session_download/10240;
+								float dl_mb=(float)dl_size/100;
+								nb.setContentText(getString(R.string.tile_txt_sent)+": "+session_counter+"  "+getString(R.string.tile_txt_dl)+": "+dl_mb+"MB");
+								manager.notify(12, nb.build());
+							}
 							Intent i=new Intent("co.bh.rekcuf.sniffer");
 							i.putExtra("stat",Integer.toString(stat_int));
 							i.putExtra("domain",domain);
@@ -141,19 +191,36 @@ public class bgTile extends TileService{
 	public int send_http_request(String str){
 		int responseCode=-1;
 		//String content="";
-		String last_timeout=SQLite.se1("select v from data where k='last_timeout';");
+		String last_timeout=db1.se1("select v from data where k='last_timeout';");
 		int timeout=Integer.parseInt(last_timeout);
 		try{
 			URL url=new URL(str);
 			HttpURLConnection urlConn=(HttpURLConnection)url.openConnection();
-			HttpURLConnection.setFollowRedirects(false);
+			urlConn.setFollowRedirects(false);
 			urlConn.setConnectTimeout(timeout);
 			urlConn.setReadTimeout(timeout);
-			BufferedReader br=new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
-			//urlConn.setAllowUserInteraction(false);
-			//urlConn.setDoInput(true);
+			//BufferedReader br=new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
 			urlConn.connect();
 			responseCode=urlConn.getResponseCode();
+			Log.println(Log.ERROR,"","--------> "+responseCode);
+			int http_status=0;
+			String headerValue="";
+			for(String headerKey: urlConn.getHeaderFields().keySet()){
+				headerValue=urlConn.getHeaderField(headerKey);
+				break;
+			}
+			Pattern p=Pattern.compile("HTTP/.+\\s(\\d+)");
+			Matcher m=p.matcher(headerValue);
+			if(m.find()){
+				http_status=Integer.parseInt(m.group(1));
+			}
+			Log.println(Log.ERROR,"","=====> "+http_status);
+
+			if(responseCode==200){
+				int cl=urlConn.getContentLength();
+				if(cl>0) session_download+=cl;
+			}
+
 			/*if(responseCode==HttpURLConnection.HTTP_OK){
 				String q;
 				do{
@@ -163,10 +230,7 @@ public class bgTile extends TileService{
 				br.close();
 			}*/
 			urlConn.disconnect();
-			/*int len=content.length();
-			if(len>0){
-				Toast.makeText(getApplicationContext(),"content len: "+len,Toast.LENGTH_SHORT).show();
-			}*/
+			//Toast.makeText(getApplicationContext(),"content len: "+len,Toast.LENGTH_SHORT).show();
 		}catch(Exception e){
 			e.printStackTrace();
 		}

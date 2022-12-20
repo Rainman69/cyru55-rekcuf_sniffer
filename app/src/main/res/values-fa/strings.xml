@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">ضد شنود</string>
+	<string name="app_tile_name">ضدشنود</string>
 	<string name="update_url">https://9k.gg/rs1fa</string>
 	<string name="ui_one_domain">دامین</string>
 	<string name="ui_one_sent">ارسالی</string>
@@ -11,6 +12,9 @@
 	<string name="ui_one_bgservice">فعالیت</string>
 	<string name="ui_one_togglev1_on">روشن</string>
 	<string name="ui_one_togglev1_off">خاموش</string>
+	<string name="tile_title">ضدشنود روشن است</string>
+	<string name="tile_txt_sent">ارسالی</string>
+	<string name="tile_txt_dl">دانلود</string>
 	<string name="run_one_log_dev">برنامه‌نویس:\u00A0 cyru55@</string>
 	<string name="run_one_log_updating">پایگاه‌داده در حال آپدیت ...</string>
 	<string name="run_one_log_updated1">پایگاه‌داده اکنون\u00A0</string>

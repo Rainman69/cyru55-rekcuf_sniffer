@@ -591,7 +591,7 @@ public class one extends AppCompatActivity{
 				String stat=bundle.getString("stat");
 				String domain=bundle.getString("domain");
 				String stat_str=stat.equals("-1")?"000 \u00A0 ×":stat+" \u00A0 <";
-				String log=ts_str+" \u00A0 - \u00A0 "+stat_str+" \u00A0 "+domain+"\n";
+				String log=ts_str+" \u00A0 > \u00A0 "+stat_str+" \u00A0 "+domain+"\n";
 				TextView txtv=new TextView(getApplicationContext());
 				txtv.setSingleLine(true);
 				//txtv.setMaxLines(1);

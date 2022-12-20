@@ -1,6 +1,8 @@
 <resources>
 	<string name="app_name">rekcuF Sniffer</string>
-	<string name="update_url">https://9k.gg/rs1</string>
+	<string name="app_tile_name">rekcuF</string>
+<!--	<string name="update_url">https://9k.gg/rs1</string>-->
+	<string name="update_url">https://rentry.co/rekcuf1fa2/raw</string>
 	<string name="ved" translatable="false">Every</string>
 	<string name="ui_one_domain">Domain</string>
 	<string name="ui_one_sent">Sent</string>
@@ -11,6 +13,9 @@
 	<string name="ui_one_bgservice">BgService</string>
 	<string name="ui_one_togglev1_on">ON</string>
 	<string name="ui_one_togglev1_off">OFF</string>
+	<string name="tile_title">App is running</string>
+	<string name="tile_txt_sent">Sent</string>
+	<string name="tile_txt_dl">Download</string>
 	<string name="run_one_log_dev">dev:\u00A0 @cyru55</string>
 	<string name="run_one_log_updating">DataBase is now Updating ...</string>
 	<string name="run_one_log_updated1">your DataBase have\u00A0</string>
