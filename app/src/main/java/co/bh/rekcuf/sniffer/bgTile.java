@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import android.util.Log;
@@ -107,9 +108,10 @@ public class bgTile extends TileService{
 		if(notif>0){
 			try{
 				if(Build.VERSION.SDK_INT>Build.VERSION_CODES.O){
-					startNotif();
+					startNotif26();
 				}else{
-					startForeground(1,new Notification());
+					startNotif();
+					//startForeground(12,new Notification());
 				}
 			}catch(Exception e){}
 		}
@@ -127,13 +129,27 @@ public class bgTile extends TileService{
 		stopForeground(true);
 		if(manager!=null){
 			try{
-				manager.cancel(2);
+				manager.cancel(12);
 			}catch(Exception e){}
 		}
 	}
 
-	@RequiresApi(Build.VERSION_CODES.O)
 	public void startNotif(){
+		manager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+		nb=new NotificationCompat.Builder(this,"rekcuf.notif2")
+			.setOngoing(true)
+			.setContentTitle(getString(R.string.tile_title))
+			.setContentText("Starting ...")
+			.setSmallIcon(R.drawable.ic_tile);
+		if(Build.VERSION.SDK_INT>Build.VERSION_CODES.N){
+			nb.setPriority(NotificationManager.IMPORTANCE_HIGH)
+			.setCategory(Notification.CATEGORY_SERVICE);
+		}
+		startForeground(12,nb.build());
+	}
+
+	@RequiresApi(Build.VERSION_CODES.O)
+	public void startNotif26(){
 		String CHANNEL_ID="rekcuf.notif2";
 		NotificationChannel chan=new NotificationChannel(CHANNEL_ID,"BgTileService",NotificationManager.IMPORTANCE_DEFAULT);
 		chan.enableLights(false);
@@ -199,6 +215,10 @@ public class bgTile extends TileService{
 			urlConn.setFollowRedirects(false);
 			urlConn.setConnectTimeout(timeout);
 			urlConn.setReadTimeout(timeout);
+			urlConn.setUseCaches(false);
+			if(Build.VERSION.SDK_INT<Build.VERSION_CODES.O){
+				urlConn.setRequestProperty("Accept-Encoding","identity");
+			}
 			//BufferedReader br=new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
 			urlConn.connect();
 			responseCode=urlConn.getResponseCode();
@@ -214,11 +234,14 @@ public class bgTile extends TileService{
 			if(m.find()){
 				http_status=Integer.parseInt(m.group(1));
 			}
-			Log.println(Log.ERROR,"","=====> "+http_status);
+			Log.println(Log.ERROR,"","--------> "+http_status);
 
 			if(responseCode==200){
 				int cl=urlConn.getContentLength();
-				if(cl>0) session_download+=cl;
+				if(cl<0 && Build.VERSION.SDK_INT>VERSION_CODES.M)
+					cl=(int)urlConn.getHeaderFieldLong("Content-Length",-1);
+				if(cl>0)
+					session_download+=cl;
 			}
 
 			/*if(responseCode==HttpURLConnection.HTTP_OK){

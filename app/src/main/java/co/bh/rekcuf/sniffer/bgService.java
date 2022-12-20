@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.EditText;
@@ -66,9 +67,10 @@ public class bgService extends Service{
 		if(one.notif){
 			try{
 				if(Build.VERSION.SDK_INT>Build.VERSION_CODES.O){
-					startNotif();
+					startNotif26();
 				}else{
-					startForeground(1,new Notification());
+					startNotif();
+					//startForeground(12,new Notification());
 				}
 			}catch(Exception e){}
 		}
@@ -86,13 +88,27 @@ public class bgService extends Service{
 		stopForeground(true);
 		if(manager!=null){
 			try{
-				manager.cancel(2);
+				manager.cancel(11);
 			}catch(Exception e){}
 		}
 	}
 
-	@RequiresApi(Build.VERSION_CODES.O)
 	public void startNotif(){
+		manager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+		nb=new NotificationCompat.Builder(this,"rekcuf.notif1")
+			.setOngoing(true)
+			.setContentTitle(getString(R.string.tile_title))
+			.setContentText("Starting ...")
+			.setSmallIcon(R.drawable.ic_tile);
+		if(Build.VERSION.SDK_INT>Build.VERSION_CODES.N){
+			nb.setPriority(NotificationManager.IMPORTANCE_HIGH)
+			.setCategory(Notification.CATEGORY_SERVICE);
+		}
+		startForeground(11,nb.build());
+	}
+
+	@RequiresApi(Build.VERSION_CODES.O)
+	public void startNotif26(){
 		String CHANNEL_ID="rekcuf.notif1";
 		NotificationChannel chan=new NotificationChannel(CHANNEL_ID,"BgTileService",NotificationManager.IMPORTANCE_NONE);
 		chan.enableLights(false);
@@ -153,6 +169,10 @@ public class bgService extends Service{
 			urlConn.setFollowRedirects(false);
 			urlConn.setConnectTimeout(timeout);
 			urlConn.setReadTimeout(timeout);
+			urlConn.setUseCaches(false);
+			if(Build.VERSION.SDK_INT<Build.VERSION_CODES.O){
+				urlConn.setRequestProperty("Accept-Encoding","identity");
+			}
 			//BufferedReader br=new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
 			urlConn.connect();
 			responseCode=urlConn.getResponseCode();
@@ -172,7 +192,10 @@ public class bgService extends Service{
 
 			if(responseCode==200){
 				int cl=urlConn.getContentLength();
-				if(cl>0) session_download+=cl;
+				if(cl<0 && Build.VERSION.SDK_INT>VERSION_CODES.M)
+					cl=(int)urlConn.getHeaderFieldLong("Content-Length",-1);
+				if(cl>0)
+					session_download+=cl;
 			}
 			urlConn.disconnect();
 		}catch(Exception e){
