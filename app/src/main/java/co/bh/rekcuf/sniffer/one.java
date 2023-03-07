@@ -96,6 +96,8 @@ public class one extends AppCompatActivity{
 				TextView txtv2=new TextView(getApplicationContext());
 				txtv2.setText(getString(R.string.run_one_log_updated1)+db_count+getString(R.string.run_one_log_updated2));
 				ll.addView(txtv2);
+			}else{
+				prompt_updatedb();
 			}
 		}
 
@@ -193,7 +195,6 @@ public class one extends AppCompatActivity{
 			db_count=Integer.parseInt(res1);
 			inp1.setText(Integer.toString(db_count));
 			if(db_count<1){
-				prompt_updatedb();
 				if(!isIgnoreBatteryOptimize()){
 					String res2=SQLite.se1("select v from data where k='ask_ignore_battery';");
 					int ask_ignore_battery=Integer.parseInt(res2);

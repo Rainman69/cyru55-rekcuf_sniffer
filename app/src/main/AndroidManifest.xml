@@ -28,8 +28,8 @@
 
 		<receiver
 			android:name="NetworkChangeReceiver"
-			android:exported="true"
 			android:label="NetworkChangeReceiver"
+			android:exported="true"
 			>
 			<intent-filter>
 				<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
@@ -41,10 +41,10 @@
 
 		<service
 			android:name=".bgTile"
-			android:exported="true"
 			android:icon="@drawable/ic_tile"
 			android:label="@string/app_tile_name"
 			android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+			android:exported="true"
 			>
 			<meta-data android:name="android.service.quicksettings.TOGGLEABLE_TILE" android:value="true" />
 			<intent-filter>
