@@ -2,7 +2,7 @@
 <resources>
 	<string name="app_name">反间谍</string>
 	<string name="app_tile_name">反间谍</string>
-	<string name="update_url">https://9k.gg/rs1zh</string>
+	<string name="update_url">https://bitly.lc/rs1zh</string>
 	<string name="ui_one_domain">领域</string>
 	<string name="ui_one_sent">发送</string>
 	<string name="ui_one_total">全部的</string>

@@ -10,16 +10,12 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
-import android.widget.EditText;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
-import com.google.android.material.switchmaterial.SwitchMaterial;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,6 +25,8 @@ import java.util.regex.Pattern;
 
 public class bgService extends Service{
 
+	public SQLite db1=null;
+	public PowerManager.WakeLock wl1=null;
 	ArrayList<Thread> T=new ArrayList<Thread>();
 	NotificationCompat.Builder nb=null;
 	NotificationManager manager=null;
@@ -48,7 +46,17 @@ public class bgService extends Service{
 
 	@Override
 	public void onCreate(){
-		SQLite db1=new SQLite(bgService.this);// init and create tables
+		super.onCreate();
+		if(db1==null){
+			Log.e("__L","bgService > onCreate: Try Open DB");
+			try{
+				db1=new SQLite(getApplicationContext());
+			}catch(Exception e){e.printStackTrace();}
+		}
+		try{
+			PowerManager pm1=(PowerManager)getSystemService(Context.POWER_SERVICE);
+			wl1=pm1.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK,"pm:wake1");
+		}catch(Exception e){e.printStackTrace();}
 	}
 
 	@Override
@@ -58,11 +66,11 @@ public class bgService extends Service{
 		broadcastIntent.setAction("restartservice");
 		broadcastIntent.setClass(this,BgSrvRestarter.class);
 		this.sendBroadcast(broadcastIntent);
-		//db1.close();
 		srvStop();
 	}
 
 	public void srvStart(){
+		if(wl1!=null) wl1.acquire();
 		int conc=one.conc;
 		if(one.notif){
 			try{
@@ -82,6 +90,7 @@ public class bgService extends Service{
 	}
 
 	public void srvStop(){
+		if(wl1!=null&&wl1.isHeld()) wl1.release();
 		for(Thread t: T){
 			t.interrupt();
 		}

@@ -2,7 +2,7 @@
 <resources>
 	<string name="app_name">ضد شنود</string>
 	<string name="app_tile_name">ضدشنود</string>
-	<string name="update_url">https://9k.gg/rs1fa</string>
+	<string name="update_url">https://bitly.lc/rs1fa</string>
 	<string name="ui_one_domain">دامین</string>
 	<string name="ui_one_sent">ارسالی</string>
 	<string name="ui_one_total">جمعا</string>

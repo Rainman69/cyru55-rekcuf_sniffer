@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
@@ -46,6 +47,7 @@ public class one extends AppCompatActivity{
 
 	public String app_pack_name="co.bh.rekcuf.sniffer";
 	public static Handler handler1=new Handler();
+	public SQLite db1=null;
 	public static int conc=0;
 	public static int timeout=5000;
 	public static boolean switch_stat=false;
@@ -56,27 +58,46 @@ public class one extends AppCompatActivity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		Log.e("__A","onCreate");
 		setContentView(R.layout.one);
 
+		try{
+			registerReceiver(rcv,new IntentFilter(app_pack_name));
+		}catch(Exception e){e.printStackTrace();}
+
+		if(db1==null){
+			Log.e("__L","onCreate: Try Open DB");
+			try{
+				db1=new SQLite(getApplicationContext());
+			}catch(Exception e){e.printStackTrace();}
+		}
+
+		CheckBox checkbox1=findViewById(R.id.checkbox1);
 		ToggleButton netstat=findViewById(R.id.netstat);
 		ToggleButton togglev1=findViewById(R.id.togglev1);
-		EditText inp1=findViewById(R.id.inp1);
-		EditText inp4=findViewById(R.id.inp4);
-		EditText inp5=findViewById(R.id.inp5);
 		SwitchMaterial switch1=findViewById(R.id.switch1);
-		CheckBox checkbox1=findViewById(R.id.checkbox1);
 		LinearLayout ll=findViewById(R.id.logger);
-		TextView text_r7_1=findViewById(R.id.text_r7_1);
-		Button two_btn_auto=findViewById(R.id.two_btn_auto);
-		Button two_btn_add=findViewById(R.id.two_btn_add);
-		ImageButton one_add_btn=findViewById(R.id.one_add_btn);
 
 		NetworkChangeReceiver.setToggle(netstat);
 		if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
 			NetworkChangeReceiver.registerNetworkCallback(this);
 		}
 
-		SQLite db1=new SQLite(getApplicationContext());// init and create tables
+		String res1=SQLite.se1("select count(*) as x from host;");
+		if(res1.length()>0){
+			db_count=Integer.parseInt(res1);
+			TextView txtv1=new TextView(getApplicationContext());
+			txtv1.setText(R.string.run_one_log_dev);
+			ll.addView(txtv1);
+			if(db_count>0){
+				if(db_count<400){
+					alert_box(getString(R.string.run_one_alert_notenough));
+				}
+				TextView txtv2=new TextView(getApplicationContext());
+				txtv2.setText(getString(R.string.run_one_log_updated1)+db_count+getString(R.string.run_one_log_updated2));
+				ll.addView(txtv2);
+			}
+		}
 
 		new Timer().scheduleAtFixedRate(new TimerTask(){
 			@Override
@@ -104,9 +125,87 @@ public class one extends AppCompatActivity{
 			}
 		},0,600);
 
-		check_is_db_empty();
+	}
+	@Override
+	public void onStart(){
+		super.onStart();
+		Log.e("__A","onStart");
 
-		String last_switch_stat=db1.se1("select v from data where k='last_switch_stat';");
+		try{
+			registerReceiver(rcv,new IntentFilter(app_pack_name));
+		}catch(Exception e){e.printStackTrace();}
+
+		if(db1==null){
+			Log.e("__L","onCreate: Try Open DB");
+			try{
+				db1=new SQLite(getApplicationContext());
+			}catch(Exception e){e.printStackTrace();}
+		}
+
+	}
+	@Override
+	public void onRestart(){
+		super.onRestart();
+		Log.e("__A","onRestart");
+
+		try{
+			registerReceiver(rcv,new IntentFilter(app_pack_name));
+		}catch(Exception e){e.printStackTrace();}
+
+		if(db1==null){
+			Log.e("__L","onRestart: Try Open DB");
+			try{
+				db1=new SQLite(getApplicationContext());
+			}catch(Exception e){e.printStackTrace();}
+		}
+
+	}
+	@Override
+	protected void onResume(){
+		super.onResume();
+		Log.e("__A","onResume");
+
+		try{
+			registerReceiver(rcv,new IntentFilter(app_pack_name));
+		}catch(Exception e){e.printStackTrace();}
+
+		if(db1==null){
+			Log.e("__L","onResume: Try Open DB");
+			try{
+				db1=new SQLite(getApplicationContext());
+			}catch(Exception e){e.printStackTrace();}
+		}
+
+		ToggleButton netstat=findViewById(R.id.netstat);
+		EditText inp1=findViewById(R.id.inp1);
+		EditText inp4=findViewById(R.id.inp4);
+		EditText inp5=findViewById(R.id.inp5);
+		SwitchMaterial switch1=findViewById(R.id.switch1);
+		CheckBox checkbox1=findViewById(R.id.checkbox1);
+		LinearLayout ll=findViewById(R.id.logger);
+		TextView text_r7_1=findViewById(R.id.text_r7_1);
+		Button two_btn_auto=findViewById(R.id.two_btn_auto);
+		Button two_btn_add=findViewById(R.id.two_btn_add);
+		ImageButton one_add_btn=findViewById(R.id.one_add_btn);
+
+		String res1=SQLite.se1("select count(*) as x from host;");
+		if(res1.length()>0){
+			db_count=Integer.parseInt(res1);
+			inp1.setText(Integer.toString(db_count));
+			if(db_count<1){
+				prompt_updatedb();
+				if(!isIgnoreBatteryOptimize()){
+					String res2=SQLite.se1("select v from data where k='ask_ignore_battery';");
+					int ask_ignore_battery=Integer.parseInt(res2);
+					if(ask_ignore_battery>0){
+						SQLite.exe("update data set v="+(ask_ignore_battery-1)+" where k='ask_ignore_battery';");
+						reqIgnoreBatteryOptimize();
+					}
+				}
+			}
+		}
+
+		String last_switch_stat=SQLite.se1("select v from data where k='last_switch_stat';");
 		int switch_stat_int=Integer.parseInt(last_switch_stat);
 		switch_stat=switch_stat_int>0;
 		switch1.setChecked(switch_stat);
@@ -115,16 +214,20 @@ public class one extends AppCompatActivity{
 			inp5.setEnabled(false);
 			checkbox1.setEnabled(false);
 		}
+
 		String last_conc=SQLite.se1("select v from data where k='last_conc';");
 		inp4.setText(last_conc);
+
 		String last_timeout=SQLite.se1("select v from data where k='last_timeout';");
 		int last_timeout_int=Integer.parseInt(last_timeout);
 		if(last_timeout_int>0){
 			last_timeout_int=Math.floorDiv(last_timeout_int,1000);
 			inp5.setText(Integer.toString(last_timeout_int));
 		}
+
 		String last_notif=SQLite.se1("select v from data where k='last_notif';");
 		checkbox1.setChecked(last_notif.equals("1"));
+
 		String last_net_stat=SQLite.se1("select v from data where k='last_net_stat';");
 		netstat.setChecked(!last_net_stat.equals("0"));
 
@@ -316,20 +419,38 @@ public class one extends AppCompatActivity{
 
 	}
 	@Override
-	protected void onResume(){
-		super.onResume();
-		registerReceiver(rcv,new IntentFilter(app_pack_name));
-	}
-	@Override
 	protected void onPause(){
 		super.onPause();
-		unregisterReceiver(rcv);
+		Log.e("__A","onPause");
+		try{
+			unregisterReceiver(rcv);
+		}catch(Exception e){e.printStackTrace();}
+	}
+	@Override
+	protected void onStop(){
+		super.onStop();
+		Log.e("__A","onStop");
+		try{
+			unregisterReceiver(rcv);
+		}catch(Exception e){e.printStackTrace();}
 	}
 	@Override
 	public void onDestroy(){
 		super.onDestroy();
-		//db1.close();
+		Log.e("__A","onDestroy");
+		try{
+			unregisterReceiver(rcv);
+		}catch(Exception e){e.printStackTrace();}
+		/*if(db1!=null){
+			Log.e("__L","onDestroy: Try Close DB");
+			try{
+				db1.close();
+				db1=null;
+			}catch(Exception e){e.printStackTrace();}
+		}*/
 	}
+
+
 
 	public boolean isServiceRunning(Class<?> serviceClass){
 		ActivityManager manager=(ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
@@ -356,35 +477,35 @@ public class one extends AppCompatActivity{
 		return res;
 	}
 
-	public void check_is_db_empty(){
-		String res1=SQLite.se1("select count(*) as x from host;");
-		if(res1.length()>0){
-			LinearLayout ll=findViewById(R.id.logger);
-			TextView txtv1=new TextView(getApplicationContext());
-			txtv1.setText(R.string.run_one_log_dev);
-			ll.addView(txtv1);
-			db_count=Integer.parseInt(res1);
-			if(db_count>0){
-				if(db_count<400){
-					alert_box(getString(R.string.run_one_alert_notenough));
-				}
-				EditText inp1=findViewById(R.id.inp1);
-				inp1.setText(Integer.toString(db_count));
-				TextView txtv2=new TextView(getApplicationContext());
-				txtv2.setText(getString(R.string.run_one_log_updated1)+db_count+getString(R.string.run_one_log_updated2));
-				ll.addView(txtv2);
-			}else{
-				prompt_updatedb();
-				if(!isIgnoreBatteryOptimize()){
-					String res2=SQLite.se1("select v from data where k='ask_ignore_battery';");
-					int ask_ignore_battery=Integer.parseInt(res2);
-					if(ask_ignore_battery>0){
-						SQLite.exe("update data set v="+(ask_ignore_battery-1)+" where k='ask_ignore_battery';");
-						reqIgnoreBatteryOptimize();
-					}
+	public void reqIgnoreBatteryOptimize(){
+		AlertDialog.Builder alert2=new AlertDialog.Builder(this);
+		alert2.setTitle(R.string.run_one_reqignoreoptimize1);
+		alert2.setMessage(R.string.run_one_reqignoreoptimize2);
+		alert2.setPositiveButton(R.string.run_one_reqignoreoptimize_y,new DialogInterface.OnClickListener(){
+			@android.annotation.SuppressLint("BatteryLife")
+			@Override
+			public void onClick(DialogInterface dialog,int which){
+				dialog.dismiss();
+				try{
+					Intent int2=new Intent();
+					int2.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+					int2.setData(Uri.parse("package:"+app_pack_name));
+					startActivity(int2);
+				}catch(Exception e){
+					toast_show(R.string.run_one_toast_nooptimization);
 				}
 			}
-		}
+		});
+		alert2.setNegativeButton(R.string.run_one_reqignoreoptimize_n,new DialogInterface.OnClickListener(){
+			@Override
+			public void onClick(DialogInterface dialog,int which){
+				dialog.dismiss();
+			}
+		});
+		AlertDialog dialog=alert2.create();
+		dialog.show();
+		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setAllCaps(false);
+		dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setAllCaps(false);
 	}
 
 	public int get_conc(){
@@ -479,37 +600,6 @@ public class one extends AppCompatActivity{
 		dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setAllCaps(false);
 	}
 
-	public void reqIgnoreBatteryOptimize(){
-		AlertDialog.Builder alert2=new AlertDialog.Builder(this);
-		alert2.setTitle(R.string.run_one_reqignoreoptimize1);
-		alert2.setMessage(R.string.run_one_reqignoreoptimize2);
-		alert2.setPositiveButton(R.string.run_one_reqignoreoptimize_y,new DialogInterface.OnClickListener(){
-			@android.annotation.SuppressLint("BatteryLife")
-			@Override
-			public void onClick(DialogInterface dialog,int which){
-				dialog.dismiss();
-				try{
-					Intent int2=new Intent();
-					int2.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-					int2.setData(Uri.parse("package:"+app_pack_name));
-					startActivity(int2);
-				}catch(Exception e){
-					toast_show(R.string.run_one_toast_nooptimization);
-				}
-			}
-		});
-		alert2.setNegativeButton(R.string.run_one_reqignoreoptimize_n,new DialogInterface.OnClickListener(){
-			@Override
-			public void onClick(DialogInterface dialog,int which){
-				dialog.dismiss();
-			}
-		});
-		AlertDialog dialog=alert2.create();
-		dialog.show();
-		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setAllCaps(false);
-		dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setAllCaps(false);
-	}
-
 	public void service(boolean turn){
 		switch_stat=turn;
 		SQLite.exe("update data set v='"+(turn?"1":"0")+"' where k='last_switch_stat';");
@@ -573,31 +663,36 @@ public class one extends AppCompatActivity{
 	public BroadcastReceiver rcv=new BroadcastReceiver(){
 		@Override
 		public void onReceive(Context context,Intent intent){
-			Bundle bundle=intent.getExtras();
-			if(bundle!=null){
-				EditText inp2=findViewById(R.id.inp2);
-				String inp2_str=inp2.getText().toString();
-				int inp2_int=inp2_str.length()>0?Integer.parseInt(inp2_str):0;
-				inp2.setText((inp2_int+1)+"");
-				LinearLayout ll=findViewById(R.id.logger);
-				int ll_count=ll.getChildCount();
-				if(ll_count>40){
-					ll.removeView(ll.getChildAt(0));
+			try{
+				Bundle bundle=intent.getExtras();
+				if(bundle!=null){
+					EditText inp2=findViewById(R.id.inp2);
+					String inp2_str=inp2.getText().toString();
+					int inp2_int=inp2_str.length()>0?Integer.parseInt(inp2_str):0;
+					inp2.setText((inp2_int+1)+"");
+					LinearLayout ll=findViewById(R.id.logger);
+					int ll_count=ll.getChildCount();
+					if(ll_count>40){
+						ll.removeView(ll.getChildAt(0));
+					}
+					//ll.removeAllViews();
+					//ll.invalidate();
+					ScrollView sv=findViewById(R.id.logger_parent);
+					String ts_str=get_ts();
+					String stat=bundle.getString("stat");
+					String domain=bundle.getString("domain");
+					String stat_str=stat.equals("-1")?"000 \u00A0 ×":stat+" \u00A0 <";
+					String log=ts_str+" \u00A0 > \u00A0 "+stat_str+" \u00A0 "+domain+"\n";
+					TextView txtv=new TextView(getApplicationContext());
+					txtv.setSingleLine(true);
+					//txtv.setMaxLines(1);
+					txtv.setText(log);
+					ll.addView(txtv);
+					sv.fullScroll(ScrollView.FOCUS_DOWN);
 				}
-				//ll.removeAllViews();
-				//ll.invalidate();
-				ScrollView sv=findViewById(R.id.logger_parent);
-				String ts_str=get_ts();
-				String stat=bundle.getString("stat");
-				String domain=bundle.getString("domain");
-				String stat_str=stat.equals("-1")?"000 \u00A0 ×":stat+" \u00A0 <";
-				String log=ts_str+" \u00A0 > \u00A0 "+stat_str+" \u00A0 "+domain+"\n";
-				TextView txtv=new TextView(getApplicationContext());
-				txtv.setSingleLine(true);
-				//txtv.setMaxLines(1);
-				txtv.setText(log);
-				ll.addView(txtv);
-				sv.fullScroll(ScrollView.FOCUS_DOWN);
+			}catch(Exception e){
+				e.printStackTrace();
+				Log.e("__L","catch @ BroadcastReceiver");
 			}
 		}
 	};

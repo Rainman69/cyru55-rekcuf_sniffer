@@ -26,9 +26,9 @@ import java.util.regex.Pattern;
 @RequiresApi(api=Build.VERSION_CODES.N)
 public class bgTile extends TileService{
 
+	public SQLite db1=null;
 	public static boolean bgTile_start=false;
 	ArrayList<Thread> T=new ArrayList<Thread>();
-	SQLite db1=null;
 	NotificationCompat.Builder nb=null;
 	NotificationManager manager=null;
 	int session_counter=0;
@@ -42,7 +42,15 @@ public class bgTile extends TileService{
 
 	@Override
 	public void onStartListening() {
-		db1=need_db();
+		super.onStartListening();
+
+		if(db1==null){
+			Log.e("__L","bgTile > onStartListening: Try Open DB");
+			try{
+				db1=new SQLite(getApplicationContext());
+			}catch(Exception e){e.printStackTrace();}
+		}
+
 		String res1=db1.se1("select count(*) as x from host;");
 		int db_count=Integer.parseInt(res1);
 		if(db_count<1){
@@ -52,23 +60,36 @@ public class bgTile extends TileService{
 				tile.updateTile();
 			}
 		}
-		super.onStartListening();
+
 	}
 
 	@Override
 	public void onClick(){
 		super.onClick();
-		Tile tile=getQsTile();
-		if(tile!=null){
-			tileSrv(tile.getState()==Tile.STATE_INACTIVE);
-		}
-	}
 
-	public SQLite need_db(){
-		if(db1==null){
-			db1=new SQLite(bgTile.this);// init and create tables
+		Tile tile=getQsTile();
+		int tileStat=tile.getState();
+		if(tile!=null){
+			tileSrv(tileStat==Tile.STATE_INACTIVE);
 		}
-		return db1;
+
+		if(db1==null){
+			Log.e("__L","bgTile > onClick: Try Open DB");
+			try{
+				db1=new SQLite(getApplicationContext());
+			}catch(Exception e){e.printStackTrace();}
+		}
+
+		if(tileStat==Tile.STATE_ACTIVE){
+			if(db1!=null){
+				Log.e("__L","bgTile > onClick: Try Close DB");
+				try{
+					db1.close();
+					db1=null;
+				}catch(Exception e){e.printStackTrace();}
+			}
+		}
+
 	}
 
 	public void setTileStat(boolean stat){
@@ -82,7 +103,6 @@ public class bgTile extends TileService{
 	public void tileSrv(boolean turn){
 		boolean net_stat=NetworkUtil.isConnected(getApplicationContext());
 		if(net_stat){
-			db1=need_db();
 			//try{one.switch_stat=turn;}catch(Exception e){}
 			//db1.exe("update data set v='"+(turn?"1":"0")+"' where k='last_switch_stat';");
 			bgTile_start=turn;

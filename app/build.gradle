@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-	compileSdk 32
+	compileSdk 33
 	defaultConfig {
 		applicationId "co.bh.rekcuf.sniffer"
 		minSdk 16
-		targetSdk 32
-		versionCode 35
-		versionName "6.0"
+		targetSdk 33
+		versionCode 37
+		versionName "7.0"
 	}
 	buildTypes {
 		release {
@@ -27,8 +27,8 @@ android {
 }
 
 dependencies {
-	implementation 'androidx.appcompat:appcompat:1.5.1'
+	implementation 'androidx.appcompat:appcompat:1.6.1'
 	implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 	implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
-	implementation 'com.google.android.material:material:1.7.0'
+	implementation 'com.google.android.material:material:1.8.0'
 }
