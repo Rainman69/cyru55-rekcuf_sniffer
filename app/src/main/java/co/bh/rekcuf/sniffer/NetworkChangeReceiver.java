@@ -6,11 +6,10 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import androidx.annotation.RequiresApi;
 
 
 public class NetworkChangeReceiver extends BroadcastReceiver{
