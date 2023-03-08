@@ -10,27 +10,28 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
