@@ -21,6 +21,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -99,6 +101,13 @@ public class one extends AppCompatActivity{
 			}else{
 				prompt_updatedb();
 			}
+		}
+
+		if (Build.VERSION.SDK_INT >= 32){ // Android 13+
+			ActivityResultLauncher<String> launcher = registerForActivityResult(
+				new ActivityResultContracts.RequestPermission(),isGranted -> {}
+			);
+			launcher.launch(android.Manifest.permission.POST_NOTIFICATIONS);
 		}
 
 		new Timer().scheduleAtFixedRate(new TimerTask(){
