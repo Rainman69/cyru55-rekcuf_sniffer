@@ -80,7 +80,7 @@ public class bgTile extends TileService{
 			}catch(Exception e){e.printStackTrace();}
 		}
 
-		if(tileStat==Tile.STATE_ACTIVE){
+		/*if(tileStat==Tile.STATE_ACTIVE){
 			if(db1!=null){
 				Log.e("__L","bgTile > onClick: Try Close DB");
 				try{
@@ -88,7 +88,7 @@ public class bgTile extends TileService{
 					db1=null;
 				}catch(Exception e){e.printStackTrace();}
 			}
-		}
+		}*/
 
 	}
 
