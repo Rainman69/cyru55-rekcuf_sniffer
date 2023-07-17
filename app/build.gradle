@@ -8,8 +8,8 @@ android {
 		applicationId "co.bh.rekcuf.sniffer"
 		minSdk 16
 		targetSdk 33
-		versionCode 42
-		versionName "7.5"
+		versionCode 44
+		versionName "7.7"
 	}
 	buildTypes {
 		release {
@@ -35,5 +35,5 @@ dependencies {
 	implementation 'androidx.appcompat:appcompat:1.6.1'
 	implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 	implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
-	implementation 'com.google.android.material:material:1.8.0'
+	implementation 'com.google.android.material:material:1.9.0'
 }
