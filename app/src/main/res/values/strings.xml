@@ -1,7 +1,7 @@
 <resources>
 	<string name="app_name">rekcuF Sniffer</string>
 	<string name="app_tile_name">rekcuF</string>
-	<string name="update_url">https://bitly.lc/rs1en</string>
+	<string name="update_url">https://9k.gg/rs1en</string>
 <!--	<string name="update_url">https://rentry.co/rekcuf1fa2/raw</string>-->
 	<string name="ved" translatable="false">Every</string>
 	<string name="ui_one_domain">Domain</string>

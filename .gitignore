@@ -4,9 +4,9 @@
 .idea/
 build/
 built/
-/captures
-/app/build/
-/app/release/
+app/build/
+app/release/
 local.properties
 .externalNativeBuild
 .cxx
+
