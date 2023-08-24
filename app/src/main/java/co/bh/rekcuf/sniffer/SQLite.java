@@ -38,7 +38,20 @@ public class SQLite extends SQLiteOpenHelper{
 	}
 
 	public static void exe(String query){
-		db1.execSQL(query);
+		int retry=6;
+		boolean executed=false;
+		while(!executed && --retry>0){
+			try{
+				db1.execSQL(query);
+				executed=true;
+			}catch(Exception e){// SQLiteDatabase.SQLITE_BUSY || SQLiteDatabase.SQLITE_LOCKED
+				try{
+					Thread.sleep(200);
+				}catch(InterruptedException ex){
+					Thread.currentThread().interrupt();
+				}
+			}
+		}
 	}
 	public static boolean ins(String table,String[] arr){
 		if(arr.length%2==0){

@@ -554,12 +554,12 @@ public class one extends AppCompatActivity{
 
 	public void alert_box(String str){
 		new AlertDialog.Builder(this)
-				.setTitle("")
-				.setMessage(str)
-				.setPositiveButton(android.R.string.ok,null)
-				.setCancelable(false)
-				.setIcon(android.R.drawable.ic_dialog_alert)
-				.show();
+			.setTitle("")
+			.setMessage(str)
+			.setPositiveButton(android.R.string.ok,null)
+			.setCancelable(false)
+			.setIcon(android.R.drawable.ic_dialog_alert)
+			.show();
 	}
 
 	public void prompt_updatedb(){
