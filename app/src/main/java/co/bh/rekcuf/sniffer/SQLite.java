@@ -62,28 +62,21 @@ public class SQLite extends SQLiteOpenHelper{
 			long res=-2;
 			try{
 				res=db1.insert(table,String.valueOf(db1.CONFLICT_IGNORE),cv);
-			}catch(Exception e){
-			}
+			}catch(Exception ignored){}
 			return res!=-1;
 		}
-		return true;
-	}
-	public static Cursor sel(String query){
-		Cursor res=db1.rawQuery(query,null);
-		return res;
+		return false;
 	}
 	public static String se1(String query){
 		Cursor res=null;
 		try{
 			res=db1.rawQuery(query,null);
-		}catch(Exception e){
-		}
+		}catch(Exception ignored){}
 		if(res!=null){
 			int count=0;
 			try{
 				count=res.getCount();
-			}catch(Exception e){
-			}
+			}catch(Exception ignored){}
 			if(count>0){
 				if(res.moveToNext()){
 					return res.getString(0);
