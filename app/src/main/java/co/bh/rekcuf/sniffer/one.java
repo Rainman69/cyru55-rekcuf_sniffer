@@ -266,7 +266,7 @@ public class one extends AppCompatActivity{
 						conc=get_conc();
 						if(conc>0&&conc<33){
 							int timeout=get_timeout();
-							if(timeout>999&&timeout<20001){
+							if(timeout>999&&timeout<12001){
 								if(db_count>0){
 									SQLite.exe("update data set v='"+conc+"' where k='last_conc';");
 									SQLite.exe("update data set v='"+timeout+"' where k='last_timeout';");

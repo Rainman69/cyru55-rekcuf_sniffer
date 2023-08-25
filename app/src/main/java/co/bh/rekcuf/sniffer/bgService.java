@@ -180,7 +180,7 @@ public class bgService extends Service{
 
 	public int send_http_request(String str){
 		int responseCode=-1;
-		int timeout=one.timeout;
+		int timeout=Math.floorDiv(one.timeout,2);
 		try{
 			URL url=new URL(str);
 			HttpURLConnection urlConn=(HttpURLConnection)url.openConnection();

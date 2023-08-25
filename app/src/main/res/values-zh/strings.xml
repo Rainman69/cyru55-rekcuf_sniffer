@@ -28,7 +28,7 @@
 	<string name="run_srvrestarter_toast_restarted">反间谍活动尚未活跃</string>
 	<string name="run_one_toast_nointernet">互联网不可用</string>
 	<string name="run_one_toast_badconc">设置1〜16之间的并发数字</string>
-	<string name="run_one_toast_badtimeout">将超时号设置在1〜20之间</string>
+	<string name="run_one_toast_badtimeout">将超时号设置在1〜12之间</string>
 	<string name="run_one_toast_updatefirst">在开始之前尝试更新应用数据库</string>
 	<string name="run_one_alert_notenough">尽管您的域列表不是空的，但是您需要一个大列表才能获得不错的结果。\n\n因此，如果您没有足够的大列表，请改用“自动”列表。</string>
 	<string name="run_one_confirm_empty1">您的域列表现在为空</string>

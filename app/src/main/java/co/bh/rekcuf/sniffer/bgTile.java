@@ -233,6 +233,7 @@ public class bgTile extends TileService{
 		//String content="";
 		String last_timeout=db1.se1("select v from data where k='last_timeout';");
 		int timeout=Integer.parseInt(last_timeout);
+		timeout=Math.floorDiv(timeout,2);
 		try{
 			URL url=new URL(str);
 			HttpURLConnection urlConn=(HttpURLConnection)url.openConnection();

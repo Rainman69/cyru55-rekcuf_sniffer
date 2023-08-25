@@ -8,8 +8,8 @@ android {
 		applicationId "co.bh.rekcuf.sniffer"
 		minSdk 16
 		targetSdk 33
-		versionCode 47
-		versionName "8.2"
+		versionCode 48
+		versionName "8.3"
 	}
 	buildTypes {
 		release {

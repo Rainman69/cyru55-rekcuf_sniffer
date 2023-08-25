@@ -28,7 +28,7 @@
 	<string name="run_srvrestarter_toast_restarted">ضدشنود هنوز فعال است</string>
 	<string name="run_one_toast_nointernet">اینترنت روشن نیست</string>
 	<string name="run_one_toast_badconc">بازدید همزمان بین 1 الی 16 باشد</string>
-	<string name="run_one_toast_badtimeout">انتظار پاسخگویی بین 1 الی 20 باشد</string>
+	<string name="run_one_toast_badtimeout">انتظار پاسخگویی بین 1 الی 12 باشد</string>
 	<string name="run_one_toast_updatefirst">ابتدا پایگاه‌داده را آپدیت کنید</string>
 	<string name="run_one_alert_notenough">اگرچه لیست دامین‌های شما خالی نیست، اما برای عملکرد مناسب و مطلوب برنامه بهتره لیست خیلی بزرگتری استفاده کنید.\n\nاگه لیست مناسبی سراغ نداری، بهتره از لیست اتوماتیک استفاده کنید.</string>
 	<string name="run_one_confirm_empty1">لیست دامین‌های شما خالی است</string>
