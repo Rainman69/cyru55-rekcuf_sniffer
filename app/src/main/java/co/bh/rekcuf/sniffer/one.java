@@ -57,8 +57,7 @@ public class one extends AppCompatActivity{
 	public static boolean net_stat=false;
 	public int db_count=0;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState){
+	@Override protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		Log.e("__A","onCreate");
 		setContentView(R.layout.one);
@@ -117,15 +116,13 @@ public class one extends AppCompatActivity{
 		}
 
 		new Timer().scheduleAtFixedRate(new TimerTask(){
-			@Override
-			public void run(){
+			@Override public void run(){
 				conc=get_conc();
 				timeout=get_timeout();
 				notif=checkbox1.isChecked();
 				net_stat=NetworkUtil.isConnected(getApplicationContext());
 				handler1.post(new Runnable(){
-					@Override
-					public void run(){
+					@Override public void run(){
 						netstat.setChecked(net_stat);
 						togglev1.setChecked(isServiceRunning(bgService.class));
 						if(!net_stat&&switch1.isChecked()){
@@ -143,8 +140,7 @@ public class one extends AppCompatActivity{
 		},0,600);
 
 	}
-	@Override
-	public void onStart(){
+	@Override public void onStart(){
 		super.onStart();
 		Log.e("__A","onStart");
 
@@ -160,8 +156,7 @@ public class one extends AppCompatActivity{
 		}
 
 	}
-	@Override
-	public void onRestart(){
+	@Override public void onRestart(){
 		super.onRestart();
 		Log.e("__A","onRestart");
 
@@ -177,8 +172,7 @@ public class one extends AppCompatActivity{
 		}
 
 	}
-	@Override
-	protected void onResume(){
+	@Override protected void onResume(){
 		super.onResume();
 		Log.e("__A","onResume");
 
@@ -248,8 +242,7 @@ public class one extends AppCompatActivity{
 		netstat.setChecked(!last_net_stat.equals("0"));
 
 		inp4.setOnKeyListener(new View.OnKeyListener(){
-			@Override
-			public boolean onKey(View view,int i,KeyEvent keyEvent){
+			@Override public boolean onKey(View view,int i,KeyEvent keyEvent){
 				if(keyEvent.getAction()==KeyEvent.ACTION_UP){
 					conc=get_conc();
 					if(conc>0&&conc<17){
@@ -266,8 +259,7 @@ public class one extends AppCompatActivity{
 		});
 
 		switch1.setOnClickListener(new View.OnClickListener(){
-			@Override
-			public void onClick(View view){
+			@Override public void onClick(View view){
 				switch_stat=false;
 				if(switch1.isChecked()){
 					if(net_stat){
@@ -303,8 +295,7 @@ public class one extends AppCompatActivity{
 		});
 
 		text_r7_1.setOnLongClickListener(new View.OnLongClickListener(){
-			@Override
-			public boolean onLongClick(View view){
+			@Override public boolean onLongClick(View view){
 				String ved=getString(R.string.ved).replace("E","@").replace("ver","c")+"r";
 				Toast.makeText(getApplicationContext(),ved+"u"+(61-6),Toast.LENGTH_LONG).show();
 				return false;
@@ -312,19 +303,16 @@ public class one extends AppCompatActivity{
 		});
 
 		one_add_btn.setOnClickListener(new View.OnClickListener(){
-			@Override
-			public void onClick(View view){
+			@Override public void onClick(View view){
 				findViewById(R.id.two_layout).setVisibility(View.VISIBLE);
 			}
 		});
 
 		two_btn_auto.setOnClickListener(new View.OnClickListener(){
-			@Override
-			public void onClick(View view){
+			@Override public void onClick(View view){
 				if(net_stat){
 					handler1.post(new Runnable(){
-						@Override
-						public void run(){
+						@Override public void run(){
 							LinearLayout ll=findViewById(R.id.logger);
 							ll.removeAllViews();
 							ll.invalidate();
@@ -335,8 +323,7 @@ public class one extends AppCompatActivity{
 						}
 					});
 					new Thread(new Runnable(){
-						@Override
-						public void run(){
+						@Override public void run(){
 							updatedb(getString(R.string.update_url));
 						}
 					}).start();
@@ -348,8 +335,7 @@ public class one extends AppCompatActivity{
 		});
 
 		two_btn_add.setOnClickListener(new View.OnClickListener(){
-			@Override
-			public void onClick(View view){
+			@Override public void onClick(View view){
 				EditText two_paste_text=findViewById(R.id.two_paste_text);
 				String paste=two_paste_text.getText().toString();
 				String raw2=paste.replaceAll("\\s+","\n");
@@ -363,8 +349,7 @@ public class one extends AppCompatActivity{
 					if(raw_len>14&&raw.matches("^((http|https)://).+/.+")){
 						if(net_stat){
 							handler1.post(new Runnable(){
-								@Override
-								public void run(){
+								@Override public void run(){
 									LinearLayout ll=findViewById(R.id.logger);
 									ll.removeAllViews();
 									ll.invalidate();
@@ -377,8 +362,7 @@ public class one extends AppCompatActivity{
 								}
 							});
 							new Thread(new Runnable(){
-								@Override
-								public void run(){
+								@Override public void run(){
 									updatedb(raw);
 								}
 							}).start();
@@ -410,8 +394,7 @@ public class one extends AppCompatActivity{
 					int added=i;
 					db_count+=added;
 					handler1.post(new Runnable(){
-						@Override
-						public void run(){
+						@Override public void run(){
 							inp1.setText(Integer.toString(db_count));
 							TextView txtv=new TextView(getApplicationContext());
 							txtv.setText(getString(R.string.run_one_log_updated_now1)+db_count+getString(R.string.run_one_log_updated_now2));
@@ -431,24 +414,21 @@ public class one extends AppCompatActivity{
 		});
 
 	}
-	@Override
-	protected void onPause(){
+	@Override protected void onPause(){
 		super.onPause();
 		Log.e("__A","onPause");
 		try{
 			unregisterReceiver(rcv);
 		}catch(Exception e){e.printStackTrace();}
 	}
-	@Override
-	protected void onStop(){
+	@Override protected void onStop(){
 		super.onStop();
 		Log.e("__A","onStop");
 		try{
 			unregisterReceiver(rcv);
 		}catch(Exception e){e.printStackTrace();}
 	}
-	@Override
-	public void onDestroy(){
+	@Override public void onDestroy(){
 		super.onDestroy();
 		Log.e("__A","onDestroy");
 		try{
@@ -496,8 +476,7 @@ public class one extends AppCompatActivity{
 		alert2.setMessage(R.string.run_one_reqignoreoptimize2);
 		alert2.setPositiveButton(R.string.run_one_reqignoreoptimize_y,new DialogInterface.OnClickListener(){
 			@android.annotation.SuppressLint("BatteryLife")
-			@Override
-			public void onClick(DialogInterface dialog,int which){
+			@Override public void onClick(DialogInterface dialog,int which){
 				dialog.dismiss();
 				try{
 					Intent int2=new Intent();
@@ -510,8 +489,7 @@ public class one extends AppCompatActivity{
 			}
 		});
 		alert2.setNegativeButton(R.string.run_one_reqignoreoptimize_n,new DialogInterface.OnClickListener(){
-			@Override
-			public void onClick(DialogInterface dialog,int which){
+			@Override public void onClick(DialogInterface dialog,int which){
 				dialog.dismiss();
 			}
 		});
@@ -568,13 +546,11 @@ public class one extends AppCompatActivity{
 		alert1.setMessage(R.string.run_one_confirm_empty2);
 		alert1.setCancelable(false);
 		alert1.setPositiveButton(R.string.run_one_confirm_empty_auto,new DialogInterface.OnClickListener(){
-			@Override
-			public void onClick(DialogInterface dialog,int which){
+			@Override public void onClick(DialogInterface dialog,int which){
 				if(net_stat){
 					dialog.dismiss();
 					handler1.post(new Runnable(){
-						@Override
-						public void run(){
+						@Override public void run(){
 							LinearLayout ll=findViewById(R.id.logger);
 							ll.removeAllViews();
 							ll.invalidate();
@@ -584,8 +560,7 @@ public class one extends AppCompatActivity{
 						}
 					});
 					new Thread(new Runnable(){
-						@Override
-						public void run(){
+						@Override public void run(){
 							updatedb(getString(R.string.update_url));
 						}
 					}).start();
@@ -596,8 +571,7 @@ public class one extends AppCompatActivity{
 			}
 		});
 		alert1.setNegativeButton(R.string.run_one_confirm_empty_manual,new DialogInterface.OnClickListener(){
-			@Override
-			public void onClick(DialogInterface dialog,int which){
+			@Override public void onClick(DialogInterface dialog,int which){
 				dialog.dismiss();
 				findViewById(R.id.two_layout).setVisibility(View.VISIBLE);
 				EditText two_paste_text=findViewById(R.id.two_paste_text);
@@ -655,8 +629,7 @@ public class one extends AppCompatActivity{
 			db_count=i;
 		}catch(Exception ignored){}
 		handler1.post(new Runnable(){
-			@Override
-			public void run(){
+			@Override public void run(){
 				LinearLayout ll=findViewById(R.id.logger);
 				TextView txtv=new TextView(getApplicationContext());
 				if(db_count>0){
@@ -672,8 +645,7 @@ public class one extends AppCompatActivity{
 	}
 
 	public BroadcastReceiver rcv=new BroadcastReceiver(){
-		@Override
-		public void onReceive(Context context,Intent intent){
+		@Override public void onReceive(Context context,Intent intent){
 			try{
 				Bundle bundle=intent.getExtras();
 				if(bundle!=null){
@@ -692,7 +664,7 @@ public class one extends AppCompatActivity{
 					String ts_str=get_ts();
 					String stat=bundle.getString("stat");
 					String domain=bundle.getString("domain");
-					String stat_str=stat.equals("-1")?"000 \u00A0 ×":stat+" \u00A0 <";
+					String stat_str=stat.equals("-1")?"000 \u00A0 ×":(stat.equals("-2")?"bye \u00A0 ×":stat+" \u00A0 <");
 					String log=ts_str+" \u00A0 > \u00A0 "+stat_str+" \u00A0 "+domain+"\n";
 					TextView txtv=new TextView(getApplicationContext());
 					txtv.setSingleLine(true);

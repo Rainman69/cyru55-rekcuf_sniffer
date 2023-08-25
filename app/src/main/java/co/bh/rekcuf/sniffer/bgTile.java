@@ -35,15 +35,14 @@ public class bgTile extends TileService{
 	int session_counter=0;
 	int session_download=0;
 
-	@Override
-	public void onTileAdded(){
+	@Override public void onTileAdded(){
 		setTileStat(false);
 		super.onTileAdded();
 	}
 
-	@Override
-	public void onStartListening() {
+	@Override public void onStartListening() {
 		super.onStartListening();
+		Log.e("__L","@onStartListening");
 
 		if(db1==null){
 			Log.e("__L","bgTile > onStartListening: Try Open DB");
@@ -52,25 +51,23 @@ public class bgTile extends TileService{
 			}catch(Exception e){e.printStackTrace();}
 		}
 
-		String res1=db1.se1("select count(*) as x from host where valid>0;");
-		int db_count=Integer.parseInt(res1);
-		if(db_count<1){
-			Tile tile=getQsTile();
-			if(tile!=null){
-				tile.setState(Tile.STATE_UNAVAILABLE);
-				tile.updateTile();
-			}
+		Tile tile=getQsTile();
+		if(tile!=null){
+			String res1=db1.se1("select count(*) as x from host where valid>0;");
+			int db_count=Integer.parseInt(res1);
+			tile.setState(db_count<1?Tile.STATE_UNAVAILABLE:Tile.STATE_INACTIVE);
+			tile.updateTile();
 		}
 
 	}
 
-	@Override
-	public void onClick(){
+	@Override public void onClick(){
 		super.onClick();
+		Log.e("__L","@onClick");
 
 		Tile tile=getQsTile();
-		int tileStat=tile.getState();
 		if(tile!=null){
+			int tileStat=tile.getState();
 			tileSrv(tileStat==Tile.STATE_INACTIVE);
 		}
 

@@ -142,8 +142,9 @@ public class bgService extends Service{
 		public void run(){
 			while(one.switch_stat){
 				if(one.net_stat){
-					HashMap<String,String> addr=SQLite.se1row("select domain,status from host where valid>0 order by random() limit 1;");
+					HashMap<String,String> addr=SQLite.se1row("select domain,valid,status from host where valid>0 order by random() limit 1;");
 					String addr_domain=addr.get("domain");
+					int addr_valid=Integer.parseInt(addr.get("valid"));
 					int addr_status=Integer.parseInt(addr.get("status"));
 					if(addr_domain.length()>0){
 						if(addr_domain.length()>3){
@@ -161,7 +162,7 @@ public class bgService extends Service{
 								manager.notify(11, nb.build());
 							}
 							Intent i=new Intent("co.bh.rekcuf.sniffer");
-							i.putExtra("stat",Integer.toString(stat_int));
+							i.putExtra("stat",(addr_valid==1&&stat_int<200?"-2":Integer.toString(stat_int)));
 							i.putExtra("domain",addr_domain);
 							sendBroadcast(i);
 						}
