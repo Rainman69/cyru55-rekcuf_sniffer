@@ -85,7 +85,7 @@ public class one extends AppCompatActivity{
 			NetworkChangeReceiver.registerNetworkCallback(this);
 		}
 
-		String res1=SQLite.se1("select count(*) as x from host;");
+		String res1=SQLite.se1("select count(*) as x from host where valid>0;");
 		if(res1.length()>0){
 			db_count=Integer.parseInt(res1);
 			TextView txtv1=new TextView(getApplicationContext());
@@ -199,7 +199,7 @@ public class one extends AppCompatActivity{
 		Button two_btn_add=findViewById(R.id.two_btn_add);
 		ImageButton one_add_btn=findViewById(R.id.one_add_btn);
 
-		String res1=SQLite.se1("select count(*) as x from host;");
+		String res1=SQLite.se1("select count(*) as x from host where valid>0;");
 		if(res1.length()>0){
 			db_count=Integer.parseInt(res1);
 			inp1.setText(Integer.toString(db_count));
@@ -387,18 +387,13 @@ public class one extends AppCompatActivity{
 					String domain1=domain2.replaceAll("[:/]","");
 					String[] lines=domain1.split("\n");
 					int i=0;
-					boolean res;
 					for(String line: lines){
 						if(line.length()>3){
 							if(!line.matches("(\\.|\\-){2,}")){
 								if(!line.matches("^[\\.\\-]|[\\.\\-]$")){
 									if(line.matches("^[a-zA-Z0-9\\-\\.]{2,32}\\.[a-zA-Z]{2,9}$")){
 										++i;
-										int j=9;
-										do{// repeat insert if db file locked temporary
-											res=SQLite.ins("host",new String[]{"domain",line.toLowerCase()});
-											if(res==false) --j;
-										}while(res==false&&j>0);// ignore insert after max try
+										SQLite.ins("host",new String[]{"domain",line.toLowerCase(),"valid","5"});
 									}
 								}
 							}
@@ -523,10 +518,7 @@ public class one extends AppCompatActivity{
 		String txt=inp4.getText().toString();
 		if(txt.length()>0){
 			int num=Integer.parseInt(txt);
-			if(num>0){
-				return num;
-			}
-			return 0;
+			return Math.max(num,0);
 		}
 		return 0;
 	}
@@ -633,7 +625,6 @@ public class one extends AppCompatActivity{
 
 	public void updatedb(String targetURL){
 		String line;
-		boolean res;
 		int i=0;
 		try{
 			URL url=new URL(targetURL);
@@ -641,18 +632,12 @@ public class one extends AppCompatActivity{
 			while((line=in.readLine())!=null){
 				++i;
 				if(line.length()>3){
-					int j=9;
-					do{// repeat insert if db file locked temporary
-						res=SQLite.ins("host",new String[]{"domain",line});
-						if(res==false) --j;
-					}while(res==false&&j>0);// ignore insert after max try
+					SQLite.ins("host",new String[]{"domain",line,"valid","5"});
 				}
 			}
 			in.close();
 			db_count=i;
-		}catch(IOException e){//todo solve android4 ssl1.3 error stackoverflow.com/a/30302235
-			e.printStackTrace();
-		}
+		}catch(Exception ignored){}
 		handler1.post(new Runnable(){
 			@Override
 			public void run(){
@@ -679,7 +664,7 @@ public class one extends AppCompatActivity{
 					EditText inp2=findViewById(R.id.inp2);
 					String inp2_str=inp2.getText().toString();
 					int inp2_int=inp2_str.length()>0?Integer.parseInt(inp2_str):0;
-					inp2.setText((inp2_int+1)+"");
+					inp2.setText(String.valueOf(inp2_int+1));
 					LinearLayout ll=findViewById(R.id.logger);
 					int ll_count=ll.getChildCount();
 					if(ll_count>40){

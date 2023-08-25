@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 
 public class SQLite extends SQLiteOpenHelper{
 
@@ -18,7 +21,7 @@ public class SQLite extends SQLiteOpenHelper{
 
 	@Override
 	public void onCreate(SQLiteDatabase db){
-		db.execSQL("create table if not exists host (domain text unique);");
+		db.execSQL("create table if not exists host (domain text unique,valid integer default 5);");
 		db.execSQL("create table if not exists data (k text unique,v text);");
 		db.execSQL("create index i_k on data(k);");
 		db.execSQL("insert into data(k,v) values('sent_total',0);");
@@ -67,11 +70,18 @@ public class SQLite extends SQLiteOpenHelper{
 		}
 		return false;
 	}
-	public static String se1(String query){
+	public static Cursor sel(String query){
 		Cursor res=null;
 		try{
 			res=db1.rawQuery(query,null);
-		}catch(Exception ignored){}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return res;
+	}
+	public static String se1(String query){
+		String out="";
+		Cursor res=sel(query);
 		if(res!=null){
 			int count=0;
 			try{
@@ -79,11 +89,40 @@ public class SQLite extends SQLiteOpenHelper{
 			}catch(Exception ignored){}
 			if(count>0){
 				if(res.moveToNext()){
-					return res.getString(0);
+					try{
+						out=res.getString(0);
+					}catch(Exception ignored){}
 				}
 			}
+			res.close();
 		}
-		return "";
+		return out;
+	}
+	public static HashMap<String,String> se1row(String query){
+		HashMap<String,String> kv=new HashMap<>();
+		Cursor res=sel(query);
+		if(res!=null){
+			int count=0;
+			try{
+				count=res.getCount();
+			}catch(Exception ignored){}
+			if(count>0){
+				res.moveToFirst();
+				int rows=(int)res.getColumnCount();
+				for(int i=0; i<rows; i++){
+					String k="",v="-Exception-";
+					try{
+						k=res.getColumnName(i);
+						v=res.getString(i);
+					}catch(Exception ignored){}
+					if(k.length()>0){
+						kv.put(k,v);
+					}
+				}
+				res.close();
+			}
+		}
+		return kv;
 	}
 
 }

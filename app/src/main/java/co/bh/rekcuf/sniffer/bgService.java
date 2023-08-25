@@ -19,6 +19,7 @@ import androidx.core.app.NotificationCompat;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -141,13 +142,17 @@ public class bgService extends Service{
 		public void run(){
 			while(one.switch_stat){
 				if(one.net_stat){
-					String domain=SQLite.se1("select domain from host order by random() limit 1;");
-					if(domain.length()>0){
-						if(domain.length()>3){
-							String url="https://"+domain+"/";
+					HashMap<String,String> addr=SQLite.se1row("select domain,valid from host where valid>0 order by random() limit 1;");
+					String addr_domain=addr.get("domain");
+					int addr_valid=Integer.parseInt(addr.get("valid"));
+					if(addr_domain.length()>0){
+						if(addr_domain.length()>3){
+							if(Math.floor(Math.random()*2)==0)/*dice*/addr_domain="www."+addr_domain;
+							String url="https://"+addr_domain+"/";
 							int stat_int=send_http_request(url);
 							++session_counter;
 							SQLite.exe("update data set v=v+1 where k='sent_total';");
+							SQLite.exe("update host set valid=valid"+(stat_int<200?"-":"+")+"1 where k='sent_total';");
 							if(one.switch_stat && nb!=null && manager!=null){
 								int dl_size=session_download/10240;
 								float dl_mb=(float)dl_size/100;
@@ -156,7 +161,7 @@ public class bgService extends Service{
 							}
 							Intent i=new Intent("co.bh.rekcuf.sniffer");
 							i.putExtra("stat",Integer.toString(stat_int));
-							i.putExtra("domain",domain);
+							i.putExtra("domain",addr_domain);
 							sendBroadcast(i);
 						}
 					}
