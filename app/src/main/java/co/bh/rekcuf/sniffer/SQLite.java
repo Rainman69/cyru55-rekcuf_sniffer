@@ -63,10 +63,20 @@ public class SQLite extends SQLiteOpenHelper{
 				cv.put(arr[i],arr[++i]);
 			}
 			long res=-2;
-			try{
-				//res=db1.insert(table,String.valueOf(SQLiteDatabase.CONFLICT_IGNORE),cv);
-				res=db1.insertWithOnConflict(table, null, cv, SQLiteDatabase.CONFLICT_IGNORE);
-			}catch(Exception ignored){}
+			int retry=6;
+			boolean executed=false;
+			while(!executed && --retry>0){
+				try{
+					res=db1.insertWithOnConflict(table, null, cv, SQLiteDatabase.CONFLICT_IGNORE);
+					executed=true;
+				}catch(Exception e){
+					try{
+						Thread.sleep(200);
+					}catch(InterruptedException ex){
+						Thread.currentThread().interrupt();
+					}
+				}
+			}
 			return res!=-1;
 		}
 		return false;
