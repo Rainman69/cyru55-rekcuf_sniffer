@@ -13,9 +13,7 @@ public class NetworkUtil{
 			ConnectivityManager cm=(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo nInfo=cm.getActiveNetworkInfo();
 			connected=nInfo!=null&&nInfo.isAvailable()&&nInfo.isConnected();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+		}catch(Exception ignored){}
 		return connected;
 	}
 

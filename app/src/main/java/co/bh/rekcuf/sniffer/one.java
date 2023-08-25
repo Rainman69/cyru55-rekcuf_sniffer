@@ -36,7 +36,6 @@ import android.widget.ToggleButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -53,6 +52,7 @@ public class one extends AppCompatActivity{
 	public static int conc=0;
 	public static int timeout=5000;
 	public static boolean switch_stat=false;
+	public static boolean switch_by_user=false;
 	public static boolean notif=true;
 	public static boolean net_stat=false;
 	public int db_count=0;
@@ -108,8 +108,8 @@ public class one extends AppCompatActivity{
 			}
 		}
 
-		if (Build.VERSION.SDK_INT >= 32){ // Android 13 +
-			ActivityResultLauncher<String> launcher = registerForActivityResult(
+		if(Build.VERSION.SDK_INT>=32){// Android 13+
+			ActivityResultLauncher<String> launcher=registerForActivityResult(
 				new ActivityResultContracts.RequestPermission(),isGranted -> {}
 			);
 			launcher.launch(android.Manifest.permission.POST_NOTIFICATIONS);
@@ -121,21 +121,23 @@ public class one extends AppCompatActivity{
 				timeout=get_timeout();
 				notif=checkbox1.isChecked();
 				net_stat=NetworkUtil.isConnected(getApplicationContext());
-				handler1.post(new Runnable(){
-					@Override public void run(){
-						netstat.setChecked(net_stat);
-						togglev1.setChecked(isServiceRunning(bgService.class));
-						if(!net_stat&&switch1.isChecked()){
-							switch1.setChecked(false);
-							service(false);
-						}
-						EditText inp3=findViewById(R.id.inp3);
-						String sent_total=SQLite.se1("select v from data where k='sent_total';");
-						if(sent_total.length()>0){
-							inp3.setText(sent_total);
-						}
+				handler1.post(new Runnable(){@Override public void run(){
+					netstat.setChecked(net_stat);
+					togglev1.setChecked(isServiceRunning(bgService.class));
+					if(!net_stat&&switch1.isChecked()){
+						switch1.setChecked(false);
+						service(false);
 					}
-				});
+					if(net_stat&&!switch_stat&&switch_by_user){
+						switch1.setChecked(true);
+						service(true);
+					}
+					EditText inp3=findViewById(R.id.inp3);
+					String sent_total=SQLite.se1("select v from data where k='sent_total';");
+					if(sent_total.length()>0){
+						inp3.setText(sent_total);
+					}
+				}});
 			}
 		},0,600);
 
@@ -271,6 +273,7 @@ public class one extends AppCompatActivity{
 									SQLite.exe("update data set v='"+conc+"' where k='last_conc';");
 									SQLite.exe("update data set v='"+timeout+"' where k='last_timeout';");
 									SQLite.exe("update data set v='"+(checkbox1.isChecked()?"1":"0")+"' where k='last_notif';");
+									switch_by_user=true;
 									service(true);
 								}else{
 									toast_show(R.string.run_one_toast_updatefirst);
@@ -289,6 +292,7 @@ public class one extends AppCompatActivity{
 						switch1.setChecked(false);
 					}
 				}else{
+					switch_by_user=false;
 					service(false);
 				}
 			}
@@ -445,13 +449,13 @@ public class one extends AppCompatActivity{
 		try{
 			unregisterReceiver(rcv);
 		}catch(Exception e){e.printStackTrace();}
-		/*if(db1!=null){
+		if(db1!=null){
 			Log.e("__L","onDestroy: Try Close DB");
 			try{
 				db1.close();
 				db1=null;
-			}catch(Exception e){e.printStackTrace();}
-		}*/
+			}catch(Exception ignored){}
+		}
 	}
 
 

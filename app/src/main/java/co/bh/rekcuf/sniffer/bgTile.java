@@ -205,7 +205,7 @@ public class bgTile extends TileService{
 							++session_counter;
 							db1.exe("update data set v=v+1 where k='sent_total';");
 							if(rowid>0)
-								SQLite.exe("update host set status="+addr_status+",valid=valid"+(stat_int<200?"-":"+")+"1 where rowid="+rowid+";");
+								SQLite.exe("update host set status="+stat_int+", valid=valid"+(stat_int<200?"-":"+")+"1 where rowid="+rowid+";");
 							if(bgTile_start && nb!=null && manager!=null){
 								int dl_size=session_download/10240;
 								float dl_mb=(float)dl_size/100;
