@@ -21,7 +21,7 @@ public class SQLite extends SQLiteOpenHelper{
 
 	@Override
 	public void onCreate(SQLiteDatabase db){
-		db.execSQL("create table if not exists host (domain text unique,valid integer default 5);");
+		db.execSQL("create table if not exists host (domain text unique,valid integer,status integer);");
 		db.execSQL("create table if not exists data (k text unique,v text);");
 		db.execSQL("create index i_k on data(k);");
 		db.execSQL("insert into data(k,v) values('sent_total',0);");

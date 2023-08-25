@@ -393,13 +393,15 @@ public class one extends AppCompatActivity{
 					String domain1=domain2.replaceAll("[:/]","");
 					String[] lines=domain1.split("\n");
 					int i=0;
-					for(String line: lines){
+					for(String line:lines){
 						if(line.length()>3){
 							if(!line.matches("(\\.|\\-){2,}")){
 								if(!line.matches("^[\\.\\-]|[\\.\\-]$")){
 									if(line.matches("^[a-zA-Z0-9\\-\\.]{2,32}\\.[a-zA-Z]{2,9}$")){
 										++i;
-										SQLite.ins("host",new String[]{"domain",line.toLowerCase(),"valid","5"});
+										line=line.toLowerCase();
+										if(line.startsWith("www.")) line=line.substring(4);
+										SQLite.ins("host",new String[]{"domain",line,"valid","5","status","0"});
 									}
 								}
 							}
@@ -636,9 +638,17 @@ public class one extends AppCompatActivity{
 			URL url=new URL(targetURL);
 			BufferedReader in=new BufferedReader(new InputStreamReader(url.openStream()));
 			while((line=in.readLine())!=null){
-				++i;
 				if(line.length()>3){
-					SQLite.ins("host",new String[]{"domain",line,"valid","5"});
+					if(!line.matches("(\\.|\\-){2,}")){
+						if(!line.matches("^[\\.\\-]|[\\.\\-]$")){
+							if(line.matches("^[a-zA-Z0-9\\-\\.]{2,32}\\.[a-zA-Z]{2,9}$")){
+								++i;
+								line=line.toLowerCase();
+								if(line.startsWith("www.")) line=line.substring(4);
+								SQLite.ins("host",new String[]{"domain",line,"valid","5","status","0"});
+							}
+						}
+					}
 				}
 			}
 			in.close();
