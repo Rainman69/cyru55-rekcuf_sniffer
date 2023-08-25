@@ -390,8 +390,10 @@ public class one extends AppCompatActivity{
 											int added=i;
 											handler1.post(new Runnable(){@Override public void run(){
 												TextView txtv=new TextView(getApplicationContext());
+												txtv.setSingleLine(true);
 												txtv.setText(added+getString(R.string.run_one_log_added));
 												((LinearLayout)findViewById(R.id.logger)).addView(txtv);
+												((ScrollView)findViewById(R.id.logger_parent)).fullScroll(ScrollView.FOCUS_DOWN);
 											}});
 										}
 									}
@@ -632,8 +634,10 @@ public class one extends AppCompatActivity{
 									int added=i;
 									handler1.post(new Runnable(){@Override public void run(){
 										TextView txtv=new TextView(getApplicationContext());
+										txtv.setSingleLine(true);
 										txtv.setText(added+getString(R.string.run_one_log_added));
 										((LinearLayout)findViewById(R.id.logger)).addView(txtv);
+										((ScrollView)findViewById(R.id.logger_parent)).fullScroll(ScrollView.FOCUS_DOWN);
 									}});
 								}
 							}
