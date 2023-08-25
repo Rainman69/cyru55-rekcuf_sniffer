@@ -99,7 +99,13 @@ public class one extends AppCompatActivity{
 				txtv2.setText(getString(R.string.run_one_log_updated1)+db_count+getString(R.string.run_one_log_updated2));
 				ll.addView(txtv2);
 			}else{
-				prompt_updatedb();
+				res1=SQLite.se1("select count(*) as x from host;");
+				db_count=Integer.parseInt(res1);
+				if(db_count>0){// reset `valid` column at all rows
+					SQLite.exe("update host set valid=5;");
+				}else{
+					prompt_updatedb();
+				}
 			}
 		}
 
