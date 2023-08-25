@@ -48,4 +48,5 @@
 	<string name="run_one_reqignoreoptimize_n">مایل نیستم</string>
 	<string name="run_one_toast_nooptimization">ظاهرا موبایل شما تنظیمات صرفه‌جویی نداره</string>
 	<string name="run_one_log_update_error">شرمنده ، آپدیت موفقیت‌آمیز نبود\nبهتره تلاش کنی بصورت دستی بهش لیست اضافه کنی</string>
+	<string name="run_one_log_added">" دامین در دیتابیس ذخیره شدند، صبرکنید..."</string>
 </resources>

@@ -50,4 +50,5 @@
 	<string name="run_one_reqignoreoptimize_n">No</string>
 	<string name="run_one_toast_nooptimization">No Battery Optimization settings available</string>
 	<string name="run_one_log_update_error">Sorry, update was not successful\nTry add the list using manual mode</string>
+	<string name="run_one_log_added">" domains added, wait ..."</string>
 </resources>

@@ -386,6 +386,14 @@ public class one extends AppCompatActivity{
 										line=line.toLowerCase();
 										if(line.startsWith("www.")) line=line.substring(4);
 										SQLite.ins("host",new String[]{"domain",line,"valid","5","status","0"});
+										if(i%300==0){
+											int added=i;
+											handler1.post(new Runnable(){@Override public void run(){
+												TextView txtv=new TextView(getApplicationContext());
+												txtv.setText(added+getString(R.string.run_one_log_added));
+												((LinearLayout)findViewById(R.id.logger)).addView(txtv);
+											}});
+										}
 									}
 								}
 							}
@@ -620,6 +628,14 @@ public class one extends AppCompatActivity{
 								line=line.toLowerCase();
 								if(line.startsWith("www.")) line=line.substring(4);
 								SQLite.ins("host",new String[]{"domain",line,"valid","5","status","0"});
+								if(i%300==0){
+									int added=i;
+									handler1.post(new Runnable(){@Override public void run(){
+										TextView txtv=new TextView(getApplicationContext());
+										txtv.setText(added+getString(R.string.run_one_log_added));
+										((LinearLayout)findViewById(R.id.logger)).addView(txtv);
+									}});
+								}
 							}
 						}
 					}

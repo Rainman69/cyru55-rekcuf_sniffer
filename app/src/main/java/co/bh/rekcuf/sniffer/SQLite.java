@@ -64,7 +64,8 @@ public class SQLite extends SQLiteOpenHelper{
 			}
 			long res=-2;
 			try{
-				res=db1.insert(table,String.valueOf(db1.CONFLICT_IGNORE),cv);
+				//res=db1.insert(table,String.valueOf(SQLiteDatabase.CONFLICT_IGNORE),cv);
+				res=db1.insertWithOnConflict(table, null, cv, SQLiteDatabase.CONFLICT_IGNORE);
 			}catch(Exception ignored){}
 			return res!=-1;
 		}
