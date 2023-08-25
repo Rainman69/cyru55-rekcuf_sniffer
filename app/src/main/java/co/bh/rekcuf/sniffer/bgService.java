@@ -142,7 +142,8 @@ public class bgService extends Service{
 		public void run(){
 			while(one.switch_stat){
 				if(one.net_stat){
-					HashMap<String,String> addr=SQLite.se1row("select domain,valid,status from host where valid>0 order by random() limit 1;");
+					HashMap<String,String> addr=SQLite.se1row("select rowid,domain,valid,status from host where valid>0 order by random() limit 1;");
+					int rowid=Integer.parseInt(addr.get("rowid"));
 					String addr_domain=addr.get("domain");
 					int addr_valid=Integer.parseInt(addr.get("valid"));
 					int addr_status=Integer.parseInt(addr.get("status"));
@@ -154,7 +155,8 @@ public class bgService extends Service{
 							int stat_int=send_http_request(url);
 							++session_counter;
 							SQLite.exe("update data set v=v+1 where k='sent_total';");
-							SQLite.exe("update host set status="+addr_status+",valid=valid"+(stat_int<200?"-":"+")+"1 where k='sent_total';");
+							if(rowid>0)
+								SQLite.exe("update host set status="+addr_status+", valid=valid"+(stat_int<200?"-":"+")+"1 where rowid="+rowid+";");
 							if(one.switch_stat && nb!=null && manager!=null){
 								int dl_size=session_download/10240;
 								float dl_mb=(float)dl_size/100;

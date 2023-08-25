@@ -192,7 +192,8 @@ public class bgTile extends TileService{
 			while(bgTile_start){
 				boolean net_stat=NetworkUtil.isConnected(getApplicationContext());
 				if(net_stat){
-					HashMap<String,String> addr=SQLite.se1row("select domain,status from host where valid>0 order by random() limit 1;");
+					HashMap<String,String> addr=SQLite.se1row("select rowid,domain,status from host where valid>0 order by random() limit 1;");
+					int rowid=Integer.parseInt(addr.get("rowid"));
 					String addr_domain=addr.get("domain");
 					int addr_status=Integer.parseInt(addr.get("status"));
 					if(addr_domain.length()>0){
@@ -203,7 +204,8 @@ public class bgTile extends TileService{
 							int stat_int=send_http_request(url);
 							++session_counter;
 							db1.exe("update data set v=v+1 where k='sent_total';");
-							SQLite.exe("update host set status="+addr_status+",valid=valid"+(stat_int<200?"-":"+")+"1 where k='sent_total';");
+							if(rowid>0)
+								SQLite.exe("update host set status="+addr_status+",valid=valid"+(stat_int<200?"-":"+")+"1 where rowid="+rowid+";");
 							if(bgTile_start && nb!=null && manager!=null){
 								int dl_size=session_download/10240;
 								float dl_mb=(float)dl_size/100;
@@ -227,6 +229,7 @@ public class bgTile extends TileService{
 
 	public int send_http_request(String str){
 		int responseCode=-1;
+		int http_status=0;
 		//String content="";
 		String last_timeout=db1.se1("select v from data where k='last_timeout';");
 		int timeout=Integer.parseInt(last_timeout);
@@ -243,8 +246,6 @@ public class bgTile extends TileService{
 			//BufferedReader br=new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
 			urlConn.connect();
 			responseCode=urlConn.getResponseCode();
-			Log.println(Log.ERROR,"","--------> "+responseCode);
-			int http_status=0;
 			String headerValue="";
 			for(String headerKey: urlConn.getHeaderFields().keySet()){
 				headerValue=urlConn.getHeaderField(headerKey);
@@ -255,7 +256,6 @@ public class bgTile extends TileService{
 			if(m.find()){
 				http_status=Integer.parseInt(m.group(1));
 			}
-			Log.println(Log.ERROR,"","--------> "+http_status);
 
 			if(responseCode==200){
 				int cl=urlConn.getContentLength();
@@ -278,6 +278,8 @@ public class bgTile extends TileService{
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+		Log.println(Log.ERROR,"__L","responseCode--------> "+responseCode);
+		Log.println(Log.ERROR,"__L","http_status--------> "+http_status);
 		return responseCode;
 	}
 
