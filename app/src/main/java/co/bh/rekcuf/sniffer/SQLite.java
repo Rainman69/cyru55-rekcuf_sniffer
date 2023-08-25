@@ -25,7 +25,7 @@ public class SQLite extends SQLiteOpenHelper{
 		db.execSQL("create table if not exists data (k text unique,v text);");
 		db.execSQL("create index i_k on data(k);");
 		db.execSQL("insert into data(k,v) values('sent_total',0);");
-		db.execSQL("insert into data(k,v) values('last_conc',4);");
+		db.execSQL("insert into data(k,v) values('last_conc',2);");
 		db.execSQL("insert into data(k,v) values('last_timeout',5000);");
 		db.execSQL("insert into data(k,v) values('last_notif',1);");
 		db.execSQL("insert into data(k,v) values('last_switch_stat',0);");
