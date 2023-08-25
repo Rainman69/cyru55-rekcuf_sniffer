@@ -78,16 +78,6 @@ public class bgTile extends TileService{
 			}catch(Exception e){e.printStackTrace();}
 		}
 
-		/*if(tileStat==Tile.STATE_ACTIVE){
-			if(db1!=null){
-				Log.e("__L","bgTile > onClick: Try Close DB");
-				try{
-					db1.close();
-					db1=null;
-				}catch(Exception e){e.printStackTrace();}
-			}
-		}*/
-
 	}
 
 	public void setTileStat(boolean stat){
@@ -101,7 +91,6 @@ public class bgTile extends TileService{
 	public void tileSrv(boolean turn){
 		boolean net_stat=NetworkUtil.isConnected(getApplicationContext());
 		if(net_stat){
-			//try{one.switch_stat=turn;}catch(Exception e){}
 			//db1.exe("update data set v='"+(turn?"1":"0")+"' where k='last_switch_stat';");
 			bgTile_start=turn;
 			setTileStat(turn);
@@ -141,14 +130,14 @@ public class bgTile extends TileService{
 	}
 
 	public void srvStop(){
-		for(Thread t: T){
+		for(Thread t:T){
 			t.interrupt();
 		}
 		stopForeground(true);
 		if(manager!=null){
 			try{
 				manager.cancel(12);
-			}catch(Exception e){}
+			}catch(Exception ignored){}
 		}
 	}
 
