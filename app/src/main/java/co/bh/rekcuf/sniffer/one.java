@@ -415,6 +415,7 @@ public class one extends AppCompatActivity{
 							}else{
 								toast_show(R.string.run_one_toast_nodomainfound);
 							}
+							((ScrollView)findViewById(R.id.logger_parent)).fullScroll(ScrollView.FOCUS_DOWN);
 						}
 					});
 				}else{
@@ -660,6 +661,7 @@ public class one extends AppCompatActivity{
 					txtv.setText(R.string.run_one_log_update_error);
 				}
 				ll.addView(txtv);
+				((ScrollView)findViewById(R.id.logger_parent)).fullScroll(ScrollView.FOCUS_DOWN);
 			}
 		});
 	}
