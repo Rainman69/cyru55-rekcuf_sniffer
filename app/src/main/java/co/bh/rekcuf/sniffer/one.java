@@ -319,31 +319,35 @@ public class one extends AppCompatActivity{
 			}
 		});
 
-		two_btn_auto.setOnClickListener(new View.OnClickListener(){
-			@Override public void onClick(View view){
-				if(net_stat){
-					handler1.post(new Runnable(){
-						@Override public void run(){
-							LinearLayout ll=findViewById(R.id.logger);
-							ll.removeAllViews();
-							ll.invalidate();
-							TextView txtv=new TextView(getApplicationContext());
-							txtv.setText(R.string.run_one_log_updating);
-							ll.addView(txtv);
-							findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
-						}
-					});
-					new Thread(new Runnable(){
-						@Override public void run(){
-							updatedb(getString(R.string.update_url));
-						}
-					}).start();
-				}else{
-					toast_show(R.string.run_one_toast_turnon);
-					finish();
+		if(db_count>999){
+			two_btn_auto.setVisibility(View.INVISIBLE);
+		}else{
+			two_btn_auto.setOnClickListener(new View.OnClickListener(){
+				@Override public void onClick(View view){
+					if(net_stat){
+						handler1.post(new Runnable(){
+							@Override public void run(){
+								LinearLayout ll=findViewById(R.id.logger);
+								ll.removeAllViews();
+								ll.invalidate();
+								TextView txtv=new TextView(getApplicationContext());
+								txtv.setText(R.string.run_one_log_updating);
+								ll.addView(txtv);
+								findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
+							}
+						});
+						new Thread(new Runnable(){
+							@Override public void run(){
+								updatedb(getString(R.string.update_url));
+							}
+						}).start();
+					}else{
+						toast_show(R.string.run_one_toast_turnon);
+						finish();
+					}
 				}
-			}
-		});
+			});
+		}
 
 		two_btn_add.setOnClickListener(new View.OnClickListener(){
 			@Override public void onClick(View view){
