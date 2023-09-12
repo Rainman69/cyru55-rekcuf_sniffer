@@ -675,7 +675,6 @@ public class one extends AppCompatActivity{
 		}catch(Exception ignored){}
 		handler1.post(new Runnable(){
 			@Override public void run(){
-				LinearLayout ll=findViewById(R.id.logger);
 				TextView txtv=new TextView(getApplicationContext());
 				if(db_count>0){
 					EditText inp1=findViewById(R.id.inp1);
@@ -684,7 +683,7 @@ public class one extends AppCompatActivity{
 				}else{
 					txtv.setText(R.string.run_one_log_update_error);
 				}
-				ll.addView(txtv);
+				((LinearLayout)findViewById(R.id.logger)).addView(txtv);
 				((ScrollView)findViewById(R.id.logger_parent)).fullScroll(ScrollView.FOCUS_DOWN);
 			}
 		});
@@ -723,6 +722,7 @@ public class one extends AppCompatActivity{
 				e.printStackTrace();
 				Log.e("__L","catch @ BroadcastReceiver");
 			}
+			if(!switch_stat) service(false);
 		}
 	};
 

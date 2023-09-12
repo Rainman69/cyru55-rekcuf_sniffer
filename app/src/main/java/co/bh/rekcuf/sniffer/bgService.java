@@ -169,7 +169,7 @@ public class bgService extends Service{
 						}
 					}
 				}else{
-					one.switch_stat=false;
+					one.switch_stat=one.switch_by_user=false;
 					srvStop();
 				}
 			}
