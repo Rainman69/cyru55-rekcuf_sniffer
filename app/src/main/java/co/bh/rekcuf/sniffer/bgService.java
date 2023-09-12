@@ -79,9 +79,8 @@ public class bgService extends Service{
 					startNotif26();
 				}else{
 					startNotif();
-					//startForeground(12,new Notification());
 				}
-			}catch(Exception e){}
+			}catch(Exception ignored){}
 		}
 		for(int i=0;i<conc;i++){
 			Thread t=new Thread(new ServiceRunner(),"Runner"+i);
@@ -92,14 +91,14 @@ public class bgService extends Service{
 
 	public void srvStop(){
 		if(wl1!=null&&wl1.isHeld()) wl1.release();
-		for(Thread t: T){
+		for(Thread t:T){
 			t.interrupt();
 		}
 		stopForeground(true);
 		if(manager!=null){
 			try{
 				manager.cancel(11);
-			}catch(Exception e){}
+			}catch(Exception ignored){}
 		}
 	}
 

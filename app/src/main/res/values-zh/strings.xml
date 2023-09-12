@@ -49,4 +49,6 @@
 	<string name="run_one_toast_nooptimization">设备中没有电池优化设置</string>
 	<string name="run_one_log_update_error">抱歉，更新未成功\n尝试使用手动模式添加列表</string>
 	<string name="run_one_log_added">" 个域名已添加到数据库中，等待..."</string>
+	<string name="tile_killed_bg_toast">您的设备杀死了后台运行的应用程序</string>
+	<string name="tile_killed_bg_dialog">您的设备后台限制模式在后台活动时杀死了该应用程序\u00A0\u00A0您可以尝试删除该应用程序的电池优化或省电功能</string>
 </resources>

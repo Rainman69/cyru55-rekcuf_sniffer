@@ -37,6 +37,8 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -210,7 +212,7 @@ public class one extends AppCompatActivity{
 					String res2=SQLite.se1("select v from data where k='ask_ignore_battery';");
 					int ask_ignore_battery=Integer.parseInt(res2);
 					if(ask_ignore_battery>0){
-						SQLite.exe("update data set v="+(ask_ignore_battery-1)+" where k='ask_ignore_battery';");
+						SQLite.exe("update data set v='"+(ask_ignore_battery-1)+"' where k='ask_ignore_battery';");
 						reqIgnoreBatteryOptimize();
 					}
 				}
@@ -242,6 +244,11 @@ public class one extends AppCompatActivity{
 
 		String last_net_stat=SQLite.se1("select v from data where k='last_net_stat';");
 		netstat.setChecked(!last_net_stat.equals("0"));
+
+		String tile_killed_bg_str=SQLite.se1("select v from data where k='tile_killed_bg';");
+		boolean tile_killed_bg=Integer.parseInt(tile_killed_bg_str)>0;
+		if(tile_killed_bg)
+			alert_box(getString(R.string.tile_killed_bg_dialog));
 
 		inp4.setOnKeyListener(new View.OnKeyListener(){
 			@Override public boolean onKey(View view,int i,KeyEvent keyEvent){
@@ -449,7 +456,7 @@ public class one extends AppCompatActivity{
 		try{
 			unregisterReceiver(rcv);
 		}catch(Exception e){e.printStackTrace();}
-		if(db1!=null){
+		if(db1!=null&&!switch_stat){
 			Log.e("__L","onDestroy: Try Close DB");
 			try{
 				db1.close();
@@ -613,6 +620,15 @@ public class one extends AppCompatActivity{
 			startService(srv);
 		}else{
 			stopService(srv);
+			boolean loc_bgTile_start=false;
+			try{
+				if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
+					loc_bgTile_start=bgTile.bgTile_start;
+					if(isStaticVarDefined("bgTile","bgTile_start")&&loc_bgTile_start){
+						bgTile.bgTile_start=false;
+					}
+				}
+			}catch(Exception ignored){}
 		}
 		LinearLayout ll=findViewById(R.id.logger);
 		TextView txtv=new TextView(getApplicationContext());
@@ -705,5 +721,15 @@ public class one extends AppCompatActivity{
 			}
 		}
 	};
+
+	public boolean isStaticVarDefined(String className,String varName){
+		try{
+			Class<?> clazz=Class.forName(app_pack_name+"."+className);
+			Field field=clazz.getDeclaredField(varName);
+			return Modifier.isStatic(field.getModifiers());
+		}catch(Exception e){
+			return false;
+		}
+	}
 
 }

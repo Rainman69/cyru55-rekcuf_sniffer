@@ -49,4 +49,6 @@
 	<string name="run_one_toast_nooptimization">ظاهرا موبایل شما تنظیمات صرفه‌جویی نداره</string>
 	<string name="run_one_log_update_error">شرمنده ، آپدیت موفقیت‌آمیز نبود\nبهتره تلاش کنی بصورت دستی بهش لیست اضافه کنی</string>
 	<string name="run_one_log_added">" دامین در دیتابیس ذخیره شدند، صبرکنید..."</string>
+	<string name="tile_killed_bg_toast">موبایلت فعالیت اپ رو می‌بنده</string>
+	<string name="tile_killed_bg_dialog">دستگاه شما فعالیت اپ را در پس‌زمینه متوقف کرد درحالیکه شما آنرا روشن کرده بودید\u00A0\u00A0درصورت تمایل میتوانید صرفه‌جویی‌باطری یا حالت‌بهینه‌شده را برای این اپ غیرفعال کنید که حین فعالیت در پس‌زمینه متوقف نشود</string>
 </resources>
