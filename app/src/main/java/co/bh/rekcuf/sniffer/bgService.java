@@ -12,6 +12,7 @@ import android.os.Build.VERSION_CODES;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
+import android.widget.EditText;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
@@ -75,11 +76,7 @@ public class bgService extends Service{
 		int conc=one.conc;
 		if(one.notif){
 			try{
-				if(Build.VERSION.SDK_INT>Build.VERSION_CODES.O){
-					startNotif26();
-				}else{
-					startNotif();
-				}
+				startNotif();
 			}catch(Exception ignored){}
 		}
 		for(int i=0;i<conc;i++){
@@ -90,25 +87,33 @@ public class bgService extends Service{
 	}
 
 	public void srvStop(){
-		if(wl1!=null&&wl1.isHeld()) wl1.release();
-		for(Thread t:T){
-			t.interrupt();
-		}
-		stopForeground(true);
+		if(wl1!=null/*&&wl1.isHeld()*/)
+			try{wl1.release();}catch(Exception ignored){}
+		for(Thread t:T) t.interrupt();
 		if(manager!=null){
 			try{
 				manager.cancel(11);
+				manager.cancelAll();
+				manager=null;
 			}catch(Exception ignored){}
 		}
+		stopForeground(true);
 	}
 
 	public void startNotif(){
 		manager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-		nb=new NotificationCompat.Builder(this,"rekcuf.notif1")
+		if(Build.VERSION.SDK_INT>Build.VERSION_CODES.O){
+			NotificationChannel chan=new NotificationChannel("rekcuf.notif2","BgTileService",NotificationManager.IMPORTANCE_DEFAULT);
+			chan.enableLights(false);
+			chan.setSound(null, null);
+			manager.createNotificationChannel(chan);
+		}
+		nb=new NotificationCompat.Builder(this,"rekcuf.notif2")
 			.setOngoing(true)
 			.setContentTitle(getString(R.string.tile_title))
 			.setContentText("Starting ...")
-			.setSmallIcon(R.drawable.ic_tile);
+			.setSmallIcon(R.drawable.ic_tile)
+			.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_tile));
 		if(Build.VERSION.SDK_INT>Build.VERSION_CODES.N){
 			nb.setPriority(NotificationManager.IMPORTANCE_HIGH)
 			.setCategory(Notification.CATEGORY_SERVICE);
@@ -116,30 +121,10 @@ public class bgService extends Service{
 		startForeground(11,nb.build());
 	}
 
-	@RequiresApi(Build.VERSION_CODES.O)
-	public void startNotif26(){
-		String CHANNEL_ID="rekcuf.notif1";
-		NotificationChannel chan=new NotificationChannel(CHANNEL_ID,"BgTileService",NotificationManager.IMPORTANCE_NONE);
-		chan.enableLights(false);
-		chan.setSound(null, null);
-		manager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-		assert manager!=null;
-		manager.createNotificationChannel(chan);
-		nb=new NotificationCompat.Builder(this,CHANNEL_ID)
-			.setOngoing(true)
-			.setContentTitle(getString(R.string.tile_title))
-			.setContentText("Starting ...")
-			.setSmallIcon(R.drawable.ic_tile)
-			.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_tile))
-			.setPriority(NotificationManager.IMPORTANCE_HIGH)
-			.setCategory(Notification.CATEGORY_SERVICE);
-		startForeground(11,nb.build());
-	}
-
 	class ServiceRunner implements Runnable{
 
 		public void run(){
-			while(one.switch_stat){
+			while(mem("switch").equals("1")){
 				if(one.net_stat){
 					HashMap<String,String> addr=SQLite.se1row("select rowid,domain,valid,status from host where valid>0 order by random() limit 1;");
 					int rowid=Integer.parseInt(addr.get("rowid"));
@@ -153,10 +138,16 @@ public class bgService extends Service{
 							String url="https://"+addr_domain+"/";
 							int stat_int=send_http_request(url);
 							++session_counter;
-							SQLite.exe("update data set v=v+1 where k='sent_total';");
+							int sent_total_int=0;
+							String sent_total=mem("sent_total");
+							if(sent_total.equals("")) sent_total=SQLite.se1("select v from data where k='sent_total';");
+							if(sent_total.length()>0) sent_total_int=Integer.parseInt(sent_total);
+							++sent_total_int;
+							mem("sent_total",String.valueOf(sent_total_int));
+							SQLite.exe("update data set v="+sent_total_int+" where k='sent_total';");
 							if(rowid>0)
 								SQLite.exe("update host set status="+stat_int+", valid=valid"+(stat_int<200?"-":"+")+"1 where rowid="+rowid+";");
-							if(one.switch_stat && nb!=null && manager!=null){
+							if(mem("switch").equals("1") && nb!=null && manager!=null){
 								int dl_size=session_download/10240;
 								float dl_mb=(float)dl_size/100;
 								nb.setContentText(getString(R.string.tile_txt_sent)+": "+session_counter+"  "+getString(R.string.tile_txt_dl)+": "+dl_mb+"MB");
@@ -169,12 +160,24 @@ public class bgService extends Service{
 						}
 					}
 				}else{
-					one.switch_stat=one.switch_by_user=false;
+					mem("switch","0");
 					srvStop();
 				}
 			}
 		}
 
+	}
+
+	public String mem(String key){
+		String sw="";
+		try{sw=SQLite.mem.get(key);}catch(Exception ignored){}
+		return sw!=null&&sw.length()>0?sw:"";
+	}
+	public String mem(String key,String val){
+		if(key.length()>0){
+			Log.e("__E","bg ServiceRunner > SET mem["+key+"]="+val);
+			try{SQLite.mem.put(key,val);}catch(Exception ignored){}
+		}return val;
 	}
 
 	public int send_http_request(String str){
@@ -193,7 +196,7 @@ public class bgService extends Service{
 			//BufferedReader br=new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
 			urlConn.connect();
 			responseCode=urlConn.getResponseCode();
-			Log.println(Log.ERROR,"","--------> "+responseCode);
+			//Log.println(Log.ERROR,"","--------> "+responseCode);
 			int http_status=0;
 			String headerValue="";
 			for(String headerKey: urlConn.getHeaderFields().keySet()){
@@ -205,7 +208,7 @@ public class bgService extends Service{
 			if(m.find()){
 				http_status=Integer.parseInt(m.group(1));
 			}
-			Log.println(Log.ERROR,"","=====> "+http_status);
+			//Log.println(Log.ERROR,"","=====> "+http_status);
 
 			if(responseCode==200){
 				int cl=urlConn.getContentLength();

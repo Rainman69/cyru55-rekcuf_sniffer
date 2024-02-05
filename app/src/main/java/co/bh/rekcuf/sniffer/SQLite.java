@@ -12,6 +12,9 @@ import java.util.HashMap;
 public class SQLite extends SQLiteOpenHelper{
 
 	public static SQLiteDatabase db1;
+	public static HashMap<String,String> mem=new HashMap<>(){{
+		put("switch","0");
+	}};
 
 	public SQLite(Context cx){
 		super(cx,"host.db",null,1);
@@ -30,7 +33,6 @@ public class SQLite extends SQLiteOpenHelper{
 		db.execSQL("insert into data(k,v) values('last_switch_stat',0);");
 		db.execSQL("insert into data(k,v) values('last_net_stat',0);");
 		db.execSQL("insert into data(k,v) values('ask_ignore_battery',5);");
-		db.execSQL("insert into data(k,v) values('tile_killed_bg',0);");
 	}
 
 	@Override

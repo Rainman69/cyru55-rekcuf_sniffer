@@ -57,29 +57,21 @@ public class bgTile extends TileService{
 		Tile tile=getQsTile();
 		if(tile!=null){
 			setTileStat(Tile.STATE_UNAVAILABLE);
-			String last_switch_stat=db1.se1("select v from data where k='last_switch_stat';");
-			boolean switch_stat=!last_switch_stat.equals("0");
 			int tileStat=0;
-			if(switch_stat){
-				boolean loc_switch_stat=false;
-				boolean act_one=isStaticVarDefined("one","switch_stat");
-				try{ loc_switch_stat=one.switch_stat; }catch(Exception ignored){}
-				if(act_one){
-					tileStat=loc_switch_stat?Tile.STATE_ACTIVE:(bgTile_start?Tile.STATE_ACTIVE:Tile.STATE_INACTIVE);
-				}else{
-					if(bgTile_start){
-						tileStat=Tile.STATE_ACTIVE;
-					}else{
-						db1.exe("update data set v='1' where k='tile_killed_bg';");
-						db1.exe("update data set v='0' where k='last_switch_stat';");
-						Toast.makeText(getApplicationContext(),R.string.tile_killed_bg_toast,Toast.LENGTH_LONG).show();
-						if(!T.isEmpty()) srvStop();
-						tileStat=Tile.STATE_INACTIVE;
-					}
-				}
+			if(mem("switch").equals("1")){
+				tileStat=Tile.STATE_ACTIVE;
 			}else{
-				String res1=db1.se1("select count(*) as x from host where valid>0;");
-				tileStat=Integer.parseInt(res1)<1?Tile.STATE_UNAVAILABLE:Tile.STATE_INACTIVE;
+				//String last_switch_stat=db1.se1("select v from data where k='last_switch_stat';");
+				//boolean switch_stat=!last_switch_stat.equals("0");
+				//db1.exe("update data set v='0' where k='last_switch_stat';");//CHECK
+				if(bgTile_start){
+					tileStat=Tile.STATE_ACTIVE;
+				}else{
+					mem("switch","0");
+					if(!T.isEmpty()) srvStop();
+					String res1=db1.se1("select count(*) as x from host where valid>0;");
+					tileStat=Integer.parseInt(res1)<1?Tile.STATE_UNAVAILABLE:Tile.STATE_INACTIVE;
+				}
 			}
 			setTileStat(tileStat);
 		}
@@ -90,19 +82,36 @@ public class bgTile extends TileService{
 		super.onClick();
 		Log.e("__L","@onClick");
 
-		boolean loc_switch_stat=false;
-		boolean act_one=isStaticVarDefined("one","switch_stat");
-		try{ loc_switch_stat=one.switch_stat; }catch(Exception ignored){}
-
-		if(act_one&&loc_switch_stat)
-			one.switch_stat=one.switch_by_user=false;
+		if(db1==null){
+			Log.e("__L","bgTile > onClick: Try Open DB");
+			try{
+				db1=new SQLite(getApplicationContext());
+			}catch(Exception e){e.printStackTrace();}
+		}
 
 		Tile tile=getQsTile();
 		if(tile!=null){
 			int tileStat=tile.getState();
+			Log.e("__L","bgTile > onClick: TILE = "+(tileStat==Tile.STATE_INACTIVE?"ON":"OFF"));
 			tileSrv(tileStat==Tile.STATE_INACTIVE);
 		}
 
+	}
+
+
+
+
+
+	public String mem(String key){
+		String sw="";
+		try{sw=SQLite.mem.get(key);}catch(Exception ignored){}
+		return sw!=null&&sw.length()>0?sw:"";
+	}
+	public String mem(String key,String val){
+		if(key.length()>0){
+			Log.e("__E","Tile > SET mem["+key+"]="+val);
+			try{SQLite.mem.put(key,val);}catch(Exception ignored){}
+		}return val;
 	}
 
 	public void setTileStat(int stat){
@@ -115,32 +124,15 @@ public class bgTile extends TileService{
 
 	public void tileSrv(boolean turn){
 		boolean net_stat=NetworkUtil.isConnected(getApplicationContext());
-		if(db1==null){
-			Log.e("__L","bgTile > onClick> tileSrv: Try Open DB");
-			try{
-				db1=new SQLite(getApplicationContext());
-			}catch(Exception e){e.printStackTrace();}
-		}
+		mem("switch_by_user",turn?"1":"0");
 		if(net_stat){
 			db1.exe("update data set v='"+(turn?"1":"0")+"' where k='last_switch_stat';");
 			bgTile_start=turn;
-			if(turn){
-				srvStart();
-			}else{
-				srvStop();
-				if(db1!=null&&!bgTile_start){
-					Log.e("__L","Tile Stop, Close DB");
-					try{
-						db1.close();
-						db1=null;
-					}catch(Exception ignored){}
-				}
-			}
+			mem("switch",turn?"1":"0");
+			if(turn) srvStart();else srvStop();
 		}else{
 			Toast.makeText(getApplicationContext(),R.string.run_tile_toast_turnon,Toast.LENGTH_LONG).show();
-			if(bgTile_start){
-				srvStop();
-			}
+			if(bgTile_start){bgTile_start=false;mem("switch","0");srvStop();}
 		}
 	}
 
@@ -151,11 +143,7 @@ public class bgTile extends TileService{
 		int notif=Integer.parseInt(last_notif);
 		if(notif>0){
 			try{
-				if(Build.VERSION.SDK_INT>Build.VERSION_CODES.O){
-					startNotif26();
-				}else{
-					startNotif();
-				}
+				startNotif();
 			}catch(Exception ignored){}
 		}
 		setTileStat(Tile.STATE_ACTIVE);
@@ -167,25 +155,32 @@ public class bgTile extends TileService{
 	}
 
 	public void srvStop(){
-		for(Thread t:T){
-			t.interrupt();
-		}
-		stopForeground(true);
+		for(Thread t:T) t.interrupt();
 		setTileStat(Tile.STATE_INACTIVE);
 		if(manager!=null){
 			try{
 				manager.cancel(12);
+				manager.cancelAll();
+				manager=null;
 			}catch(Exception ignored){}
 		}
+		stopForeground(true);
 	}
 
 	public void startNotif(){
 		manager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+		if(Build.VERSION.SDK_INT>Build.VERSION_CODES.O){
+			NotificationChannel chan=new NotificationChannel("rekcuf.notif2","BgTileService",NotificationManager.IMPORTANCE_DEFAULT);
+			chan.enableLights(false);
+			chan.setSound(null, null);
+			manager.createNotificationChannel(chan);
+		}
 		nb=new NotificationCompat.Builder(this,"rekcuf.notif2")
 			.setOngoing(true)
 			.setContentTitle(getString(R.string.tile_title))
 			.setContentText("Starting ...")
-			.setSmallIcon(R.drawable.ic_tile);
+			.setSmallIcon(R.drawable.ic_tile)
+			.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_tile));
 		if(Build.VERSION.SDK_INT>Build.VERSION_CODES.N){
 			nb.setPriority(NotificationManager.IMPORTANCE_HIGH)
 			.setCategory(Notification.CATEGORY_SERVICE);
@@ -193,29 +188,10 @@ public class bgTile extends TileService{
 		startForeground(12,nb.build());
 	}
 
-	@RequiresApi(Build.VERSION_CODES.O)
-	public void startNotif26(){
-		String CHANNEL_ID="rekcuf.notif2";
-		NotificationChannel chan=new NotificationChannel(CHANNEL_ID,"BgTileService",NotificationManager.IMPORTANCE_DEFAULT);
-		chan.enableLights(false);
-		chan.setSound(null, null);
-		manager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-		assert manager!=null;
-		manager.createNotificationChannel(chan);
-		nb=new NotificationCompat.Builder(this,CHANNEL_ID)
-			.setOngoing(true)
-			.setContentTitle(getString(R.string.tile_title))
-			.setContentText("Starting ...")
-			.setSmallIcon(R.drawable.ic_tile)
-			.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_tile))
-			.setPriority(NotificationManager.IMPORTANCE_HIGH)
-			.setCategory(Notification.CATEGORY_SERVICE);
-		startForeground(12,nb.build());
-	}
-
 	class TileRunner implements Runnable{
 
 		public void run(){
+			Log.e("__E","bgTile > TileRunner: bgTile_start="+(bgTile_start?"1":"0")+", mem[switch]="+mem("switch"));
 			while(bgTile_start){
 				boolean net_stat=NetworkUtil.isConnected(getApplicationContext());
 				if(net_stat){
@@ -247,6 +223,7 @@ public class bgTile extends TileService{
 					}
 				}else{
 					bgTile_start=false;
+					mem("switch","0");
 					srvStop();
 				}
 			}
@@ -311,7 +288,7 @@ public class bgTile extends TileService{
 		return responseCode;
 	}
 
-	public boolean isStaticVarDefined(String className,String varName){
+	/*public boolean isStaticVarDefined(String className,String varName){
 		try{
 			Class<?> clazz=Class.forName("co.bh.rekcuf.sniffer."+className);
 			Field field=clazz.getDeclaredField(varName);
@@ -319,6 +296,6 @@ public class bgTile extends TileService{
 		}catch(Exception e){
 			return false;
 		}
-	}
+	}*/
 
 }

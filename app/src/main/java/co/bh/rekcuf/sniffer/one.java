@@ -53,8 +53,6 @@ public class one extends AppCompatActivity{
 	public SQLite db1=null;
 	public static int conc=0;
 	public static int timeout=5000;
-	public static boolean switch_stat=false;
-	public static boolean switch_by_user=false;
 	public static boolean notif=true;
 	public static boolean net_stat=false;
 	public int db_count=0;
@@ -130,15 +128,15 @@ public class one extends AppCompatActivity{
 						switch1.setChecked(false);
 						service(false);
 					}
-					if(net_stat&&!switch_stat&&switch_by_user){
+					if(net_stat&&mem("switch").equals("0")&&mem("switch_by_user").equals("1")){
 						switch1.setChecked(true);
 						service(true);
 					}
-					EditText inp3=findViewById(R.id.inp3);
-					String sent_total=SQLite.se1("select v from data where k='sent_total';");
-					if(sent_total.length()>0){
-						inp3.setText(sent_total);
-					}
+					int sent_total_int=0;
+					String sent_total=mem("sent_total");
+					if(sent_total.equals("")) sent_total=SQLite.se1("select v from data where k='sent_total';");
+					if(sent_total.length()>0) sent_total_int=Integer.parseInt(sent_total);
+					((EditText)findViewById(R.id.inp3)).setText(String.valueOf(sent_total_int));
 				}});
 			}
 		},0,600);
@@ -221,9 +219,9 @@ public class one extends AppCompatActivity{
 
 		String last_switch_stat=SQLite.se1("select v from data where k='last_switch_stat';");
 		int switch_stat_int=Integer.parseInt(last_switch_stat);
-		switch_stat=switch_stat_int>0;
-		switch1.setChecked(switch_stat);
-		if(switch_stat){
+		mem("switch",switch_stat_int>0?"1":"0");
+		switch1.setChecked(switch_stat_int>0);
+		if(switch_stat_int>0){
 			inp4.setEnabled(false);
 			inp5.setEnabled(false);
 			checkbox1.setEnabled(false);
@@ -239,16 +237,20 @@ public class one extends AppCompatActivity{
 			inp5.setText(Integer.toString(last_timeout_int));
 		}
 
+		String sent_total=mem("sent_total");
+		if(sent_total.equals(""))
+			sent_total=SQLite.se1("select v from data where k='sent_total';");
+		if(sent_total.length()>0){
+			int sent_total_int=Integer.parseInt(sent_total);
+			mem("sent_total",String.valueOf(sent_total_int));
+			((EditText)findViewById(R.id.inp3)).setText(String.valueOf(sent_total_int));
+		}
+
 		String last_notif=SQLite.se1("select v from data where k='last_notif';");
 		checkbox1.setChecked(last_notif.equals("1"));
 
 		String last_net_stat=SQLite.se1("select v from data where k='last_net_stat';");
 		netstat.setChecked(!last_net_stat.equals("0"));
-
-		String tile_killed_bg_str=SQLite.se1("select v from data where k='tile_killed_bg';");
-		boolean tile_killed_bg=Integer.parseInt(tile_killed_bg_str)>0;
-		if(tile_killed_bg)
-			alert_box(getString(R.string.tile_killed_bg_dialog));
 
 		inp4.setOnKeyListener(new View.OnKeyListener(){
 			@Override public boolean onKey(View view,int i,KeyEvent keyEvent){
@@ -269,7 +271,7 @@ public class one extends AppCompatActivity{
 
 		switch1.setOnClickListener(new View.OnClickListener(){
 			@Override public void onClick(View view){
-				switch_stat=false;
+				mem("switch","0");
 				if(switch1.isChecked()){
 					if(net_stat){
 						conc=get_conc();
@@ -280,7 +282,7 @@ public class one extends AppCompatActivity{
 									SQLite.exe("update data set v='"+conc+"' where k='last_conc';");
 									SQLite.exe("update data set v='"+timeout+"' where k='last_timeout';");
 									SQLite.exe("update data set v='"+(checkbox1.isChecked()?"1":"0")+"' where k='last_notif';");
-									switch_by_user=true;
+									mem("switch_by_user","1");
 									service(true);
 								}else{
 									toast_show(R.string.run_one_toast_updatefirst);
@@ -299,7 +301,7 @@ public class one extends AppCompatActivity{
 						switch1.setChecked(false);
 					}
 				}else{
-					switch_by_user=false;
+					mem("switch_by_user","0");
 					service(false);
 				}
 			}
@@ -423,14 +425,14 @@ public class one extends AppCompatActivity{
 							inp1.setText(Integer.toString(db_count));
 							TextView txtv=new TextView(getApplicationContext());
 							txtv.setText(getString(R.string.run_one_log_updated_now1)+db_count+getString(R.string.run_one_log_updated_now2));
-							ll.addView(txtv);
+							((LinearLayout)findViewById(R.id.logger)).addView(txtv);
+							((ScrollView)findViewById(R.id.logger_parent)).fullScroll(ScrollView.FOCUS_DOWN);
 							two_paste_text.setText("");
 							if(added>0){
 								findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
 							}else{
 								toast_show(R.string.run_one_toast_nodomainfound);
 							}
-							((ScrollView)findViewById(R.id.logger_parent)).fullScroll(ScrollView.FOCUS_DOWN);
 						}
 					});
 				}else{
@@ -460,7 +462,7 @@ public class one extends AppCompatActivity{
 		try{
 			unregisterReceiver(rcv);
 		}catch(Exception e){e.printStackTrace();}
-		if(db1!=null&&!switch_stat){
+		if(db1!=null&&mem("switch").equals("0")){
 			Log.e("__L","onDestroy: Try Close DB");
 			try{
 				db1.close();
@@ -470,6 +472,18 @@ public class one extends AppCompatActivity{
 	}
 
 
+
+	public String mem(String key){
+		String sw="";
+		try{sw=SQLite.mem.get(key);}catch(Exception ignored){}
+		return sw!=null&&sw.length()>0?sw:"";
+	}
+	public String mem(String key,String val){
+		if(key.length()>0){
+			Log.e("__E","one > SET mem["+key+"]="+val);
+			try{SQLite.mem.put(key,val);}catch(Exception ignored){}
+		}return val;
+	}
 
 	public boolean isServiceRunning(Class<?> serviceClass){
 		ActivityManager manager=(ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
@@ -611,7 +625,8 @@ public class one extends AppCompatActivity{
 	}
 
 	public void service(boolean turn){
-		switch_stat=turn;
+		Log.e("__E","one > service SET mem[switch]="+(turn?"1":"0"));
+		mem("switch",turn?"1":"0");
 		SQLite.exe("update data set v='"+(turn?"1":"0")+"' where k='last_switch_stat';");
 		EditText inp4=findViewById(R.id.inp4);
 		EditText inp5=findViewById(R.id.inp5);
@@ -673,20 +688,21 @@ public class one extends AppCompatActivity{
 			in.close();
 			db_count=i;
 		}catch(Exception ignored){}
-		handler1.post(new Runnable(){
-			@Override public void run(){
-				TextView txtv=new TextView(getApplicationContext());
-				if(db_count>0){
-					EditText inp1=findViewById(R.id.inp1);
-					inp1.setText(Integer.toString(db_count));
-					txtv.setText(getString(R.string.run_one_log_updated_now1)+db_count+getString(R.string.run_one_log_updated_now2));
-				}else{
-					txtv.setText(R.string.run_one_log_update_error);
-				}
-				((LinearLayout)findViewById(R.id.logger)).addView(txtv);
-				((ScrollView)findViewById(R.id.logger_parent)).fullScroll(ScrollView.FOCUS_DOWN);
+		handler1.post(new Runnable(){@Override public void run(){
+			LinearLayout ll=(LinearLayout)findViewById(R.id.logger);
+			ll.removeAllViews();
+			ll.invalidate();
+			TextView txtv=new TextView(getApplicationContext());
+			if(db_count>0){
+				EditText inp1=findViewById(R.id.inp1);
+				inp1.setText(Integer.toString(db_count));
+				txtv.setText(getString(R.string.run_one_log_updated_now1)+db_count+getString(R.string.run_one_log_updated_now2));
+			}else{
+				txtv.setText(R.string.run_one_log_update_error);
 			}
-		});
+			ll.addView(txtv);
+			//ScrollView sv=(ScrollView)findViewById(R.id.logger_parent);sv.post(new Runnable(){public void run(){sv.fullScroll(View.FOCUS_DOWN);}});
+		}});
 	}
 
 	public BroadcastReceiver rcv=new BroadcastReceiver(){
@@ -703,8 +719,6 @@ public class one extends AppCompatActivity{
 					if(ll_count>40){
 						ll.removeView(ll.getChildAt(0));
 					}
-					//ll.removeAllViews();
-					//ll.invalidate();
 					ScrollView sv=findViewById(R.id.logger_parent);
 					String ts_str=get_ts();
 					String stat=bundle.getString("stat");
@@ -722,7 +736,7 @@ public class one extends AppCompatActivity{
 				e.printStackTrace();
 				Log.e("__L","catch @ BroadcastReceiver");
 			}
-			if(!switch_stat) service(false);
+			if(mem("switch").equals("0")) service(false);
 		}
 	};
 
