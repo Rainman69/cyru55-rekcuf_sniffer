@@ -201,7 +201,7 @@ public class bgTile extends TileService{
 							if(addr_status>=300&&addr_status<400)
 								addr_domain="www."+addr_domain;
 							String url="https://"+addr_domain+"/";
-							int stat_int=send_http_request(url);
+							int stat_int=http_request(url);
 							++session_counter;
 							db1.exe("update data set v=v+1 where k='sent_total';");
 							if(rowid>0)
@@ -224,7 +224,8 @@ public class bgTile extends TileService{
 
 	}
 
-	public int send_http_request(String str){
+	public int http_request(String str){ return http_request(str,0); }
+	public int http_request(String str,int fake){
 		int responseCode=-1;
 		int http_status=0;
 		//String content="";

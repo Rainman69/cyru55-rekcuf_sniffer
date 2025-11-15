@@ -7,137 +7,19 @@
     android:layout_margin="16dp"
     android:background="@color/white"
     tools:context=".one"
-    android:layoutDirection="ltr">
-
-    <ToggleButton
-        android:id="@+id/netstat"
-        style="@style/toggleButton"
-        android:layout_width="128px"
-        android:layout_height="128px"
-        android:background="@drawable/net_toggle_bg"
-        android:enabled="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="DuplicateSpeakableTextCheck"
-        />
-
-    <ImageButton
-        android:id="@+id/one_add_btn"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@android:drawable/ic_input_add"
-        app:layout_constraintEnd_toStartOf="@+id/netstat"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/netstat"
-        android:layout_marginTop="16dp"
-        >
-    </ImageButton>
-
-    <LinearLayout
-        android:id="@+id/row2"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bgradius"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingVertical="0dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/netstat"
-        >
-
-        <EditText
-            android:id="@+id/inp1"
-            android:layout_width="32dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:ems="3"
-            android:gravity="center_horizontal"
-            android:inputType="number"
-            android:maxLength="6"
-            android:importantForAutofill="no"
-            android:hint="0"
-            android:clickable="false"
-            android:cursorVisible="false"
-            android:focusable="false"
-            android:textColor="@android:color/darker_gray"
-            />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/ui_one_domain"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            />
-
-        <EditText
-            android:id="@+id/inp2"
-            android:layout_width="32dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:ems="3"
-            android:gravity="center_horizontal"
-            android:text="0"
-            android:importantForAutofill="no"
-            android:inputType="number"
-            android:maxLength="5"
-            android:clickable="false"
-            android:cursorVisible="false"
-            android:focusable="false"
-            android:textColor="@android:color/darker_gray"
-            />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/ui_one_sent"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            />
-
-        <EditText
-            android:id="@+id/inp3"
-            android:layout_width="32dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:ems="3"
-            android:gravity="center_horizontal"
-            android:inputType="number"
-            android:maxLength="6"
-            android:hint="0"
-            android:importantForAutofill="no"
-            android:clickable="false"
-            android:cursorVisible="false"
-            android:focusable="false"
-            android:textColor="@android:color/darker_gray"
-            />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/ui_one_total"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            />
-
-    </LinearLayout>
+    android:layoutDirection="ltr"
+    >
 
     <LinearLayout
         android:id="@+id/row3"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="4dp"
         android:background="@drawable/bgradius"
         android:orientation="horizontal"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/row2">
+        android:paddingHorizontal="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        >
 
         <EditText
             android:id="@+id/inp4"
@@ -213,7 +95,6 @@
         android:id="@+id/logger_parent"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
         android:paddingRight="16dp"
         android:paddingLeft="16dp"
         app:layout_constraintBottom_toTopOf="@+id/row7"
@@ -231,54 +112,135 @@
 
     </ScrollView>
 
+    <ImageButton
+        android:id="@+id/one_add_btn"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="32dp"
+        android:background="@android:drawable/ic_input_add"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/logger_parent"
+        >
+    </ImageButton>
+
     <LinearLayout
         android:id="@+id/row7"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginBottom="16dp"
+        android:layout_height="120dp"
         android:background="@drawable/bgradius"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         >
-
-            <TextView
-                android:id="@+id/text_r7_1"
-                android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="3"
+            android:paddingEnd="32dp"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/ui_one_bgservice"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                />
-            <ToggleButton
-                android:id="@+id/togglev1"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/togglev1"
-                android:enabled="false"
-                android:text="ToggleButton"
-                android:textAllCaps="false"
-                android:textOn="@string/ui_one_togglev1_on"
-                android:textOff="@string/ui_one_togglev1_off"
-                />
-
+                android:orientation="horizontal"
+                >
+                <EditText
+                    android:id="@+id/inp_domain"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:hint="0"
+                    android:textSize="14sp"
+                    android:enabled="false"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ui_one_domain"
+                    android:textSize="16sp"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <EditText
+                    android:id="@+id/inp_total"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:hint="0"
+                    android:textSize="14sp"
+                    android:enabled="false"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ui_one_total"
+                    android:textSize="16sp"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <EditText
+                    android:id="@+id/inp_sent"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="0"
+                    android:inputType="number"
+                    android:maxLength="5"
+                    android:textSize="14sp"
+                    android:enabled="false"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ui_one_sent"
+                    android:textSize="16sp"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+        <ToggleButton
+            android:id="@+id/netstat"
+            style="@style/toggleButton"
+            android:layout_width="48dp"
+            android:layout_height="64dp"
+            android:layout_weight="1"
+            android:background="@drawable/net_toggle_bg"
+            android:enabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="DuplicateSpeakableTextCheck"
+            />
+        <ToggleButton
+            android:id="@+id/togglev1"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/togglev1"
+            android:enabled="false"
+            android:textAllCaps="false"
+            android:textOn="@string/ui_one_togglev1_on"
+            android:textOff="@string/ui_one_togglev1_off"
+            />
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switch1"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:paddingStart="-40dp"
-            android:paddingEnd="40dp"
-            android:paddingRight="40dp"
-            android:paddingLeft="-40dp"
-            android:scaleX="1.4"
-            android:scaleY="1.4"
+            android:paddingEnd="16dp"
+            android:layout_weight="1"
+            android:scaleX="1.2"
+            android:scaleY="1.2"
             />
-
     </LinearLayout>
 
     <RelativeLayout

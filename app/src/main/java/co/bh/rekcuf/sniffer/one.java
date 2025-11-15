@@ -131,7 +131,7 @@ public class one extends AppCompatActivity{
 					service(true);
 				}
 				//if(sent_total.equals("")) sent_total=SQLite.se1("select v from data where k='sent_total';");
-				((EditText)findViewById(R.id.inp3)).setText(mem("sent_total"));
+				((EditText)findViewById(R.id.inp_total)).setText(mem("sent_total"));
 			});
 		}},0,500);
 
@@ -173,13 +173,12 @@ public class one extends AppCompatActivity{
 		}
 
 		ToggleButton netstat=findViewById(R.id.netstat);
-		EditText inp1=findViewById(R.id.inp1);
+		EditText inp_domain=findViewById(R.id.inp_domain);
 		EditText inp4=findViewById(R.id.inp4);
 		EditText inp5=findViewById(R.id.inp5);
 		SwitchMaterial switch1=findViewById(R.id.switch1);
 		CheckBox checkbox1=findViewById(R.id.checkbox1);
 		LinearLayout ll=findViewById(R.id.logger);
-		TextView text_r7_1=findViewById(R.id.text_r7_1);
 		Button two_btn_auto=findViewById(R.id.two_btn_auto);
 		Button two_btn_add=findViewById(R.id.two_btn_add);
 		ImageButton one_add_btn=findViewById(R.id.one_add_btn);
@@ -187,7 +186,7 @@ public class one extends AppCompatActivity{
 		String res1=SQLite.se1("select count(*) as x from host where valid>0;");
 		if(res1.length()>0){
 			db_count=Integer.parseInt(res1);
-			inp1.setText(Integer.toString(db_count));
+			inp_domain.setText(res1);
 			if(db_count<1){
 				if(!isIgnoreBatteryOptimize()){
 					String res2=SQLite.se1("select v from data where k='ask_ignore_battery';");
@@ -226,7 +225,7 @@ public class one extends AppCompatActivity{
 		if(sent_total.length()>0){
 			int sent_total_int=Integer.parseInt(sent_total);
 			mem("sent_total",String.valueOf(sent_total_int));
-			((EditText)findViewById(R.id.inp3)).setText(String.valueOf(sent_total_int));
+			((EditText)findViewById(R.id.inp_total)).setText(String.valueOf(sent_total_int));
 		}
 
 		String last_notif=SQLite.se1("select v from data where k='last_notif';");
@@ -290,7 +289,7 @@ public class one extends AppCompatActivity{
 			}
 		});
 
-		text_r7_1.setOnLongClickListener(new View.OnLongClickListener(){
+		switch1.setOnLongClickListener(new View.OnLongClickListener(){
 			@Override public boolean onLongClick(View view){
 				String ved=getString(R.string.ved).replace("E","@").replace("ver","c")+"r";
 				Toast.makeText(getApplicationContext(),ved+"u"+(61-6),Toast.LENGTH_LONG).show();
@@ -396,7 +395,7 @@ public class one extends AppCompatActivity{
 					int added=i;
 					db_count+=added;
 					runOnUiThread(()->{
-						inp1.setText(Integer.toString(db_count));
+						inp_domain.setText(String.valueOf(db_count));
 						TextView txtv=new TextView(getApplicationContext());
 						txtv.setText(getString(R.string.run_one_log_updated_now1)+db_count+getString(R.string.run_one_log_updated_now2));
 						((LinearLayout)findViewById(R.id.logger)).addView(txtv);
@@ -659,8 +658,8 @@ public class one extends AppCompatActivity{
 			ll.invalidate();
 			TextView txtv=new TextView(getApplicationContext());
 			if(db_count>0){
-				EditText inp1=findViewById(R.id.inp1);
-				inp1.setText(String.valueOf(db_count));
+				EditText inp_domain=findViewById(R.id.inp_domain);
+				inp_domain.setText(String.valueOf(db_count));
 				txtv.setText(getString(R.string.run_one_log_updated_now1)+db_count+getString(R.string.run_one_log_updated_now2));
 			}else{
 				txtv.setText(R.string.run_one_log_update_error);
@@ -686,13 +685,13 @@ public class one extends AppCompatActivity{
 			weakActivity = new WeakReference<>(activity);
 		}
 		@Override public void handleMessage(@NonNull Message msg) {
-			one act = weakActivity.get();
-			if (act == null) return;
+			one act=weakActivity.get();
+			if(act==null) return;
 			HashMap hm = (HashMap)msg.obj;
-			EditText inp2=act.findViewById(R.id.inp2);
-			String inp2_str=inp2.getText().toString();
-			int inp2_int=inp2_str.length()>0?Integer.parseInt(inp2_str):0;
-			inp2.setText(String.valueOf(inp2_int+1));
+			EditText inp_sent=act.findViewById(R.id.inp_sent);
+			String inp_sent_str=inp_sent.getText().toString();
+			int inp_sent_int=inp_sent_str.length()>0?Integer.parseInt(inp_sent_str):0;
+			inp_sent.setText(String.valueOf(inp_sent_int+1));
 			LinearLayout ll=act.findViewById(R.id.logger);
 			int ll_count=ll.getChildCount();
 			if(ll_count>40){
