@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-	compileSdk 33
+	compileSdk 36
 	defaultConfig {
 		applicationId "co.bh.rekcuf.sniffer"
 		minSdk 16
-		targetSdk 33
-		versionCode 56
-		versionName "9.1"
+		targetSdk 36
+		versionCode 57
+		versionName "10.0"
 	}
 	buildTypes {
 		release {

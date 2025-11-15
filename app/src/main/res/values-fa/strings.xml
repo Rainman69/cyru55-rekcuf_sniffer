@@ -2,7 +2,7 @@
 <resources>
 	<string name="app_name">ضد شنود</string>
 	<string name="app_tile_name">ضدشنود</string>
-	<string name="update_url">https://rentry.co/rekcuf1fa/raw</string>
+	<string name="update_url">https://raw.githubusercontent.com/bootmortis/iran-hosted-domains/main/src/data/adsl_tci.txt</string>
 	<string name="ui_one_domain">دامین</string>
 	<string name="ui_one_sent">ارسالی</string>
 	<string name="ui_one_total">جمعا</string>
@@ -17,6 +17,7 @@
 	<string name="tile_txt_dl">دانلود</string>
 	<string name="run_one_log_dev">برنامه‌نویس:\u00A0 cyru55@</string>
 	<string name="run_one_log_updating">پایگاه‌داده در حال آپدیت ...</string>
+	<string name="run_one_log_updating_break">بیش از ۵۰.۰۰۰ اضافه نکن\n\nهم باعث کندی اپ میشه\nهم باعث افزایش مصرف باطری</string>
 	<string name="run_one_log_updated1">پایگاه‌داده اکنون\u00A0</string>
 	<string name="run_one_log_updated2">\u00A0دامین دارد\nروشن کن بریم\n</string>
 	<string name="run_one_log_updated_now1">پایگاه‌داده باموفقیت آپدیت شد\nاکنون شامل\u00A0</string>

@@ -4,7 +4,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
@@ -16,8 +15,6 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -215,10 +212,6 @@ public class bgTile extends TileService{
 								nb.setContentText(getString(R.string.tile_txt_sent)+": "+session_counter+"  "+getString(R.string.tile_txt_dl)+": "+dl_mb+"MB");
 								manager.notify(12, nb.build());
 							}
-							Intent i=new Intent("co.bh.rekcuf.sniffer");
-							i.putExtra("stat",Integer.toString(stat_int));
-							i.putExtra("domain",addr_domain);
-							sendBroadcast(i);
 						}
 					}
 				}else{

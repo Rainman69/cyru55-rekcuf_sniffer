@@ -9,20 +9,20 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
+import android.os.Messenger;
 import android.os.PowerManager;
 import android.util.Log;
-import android.widget.EditText;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public class bgService extends Service{
@@ -32,22 +32,22 @@ public class bgService extends Service{
 	ArrayList<Thread> T=new ArrayList<Thread>();
 	NotificationCompat.Builder nb=null;
 	NotificationManager manager=null;
+	public Handler h2;
+	public Messenger activityMessenger;
 	int session_counter=0;
 	int session_download=0;
 
-	@Override
-	public IBinder onBind(Intent intent){
+	@Override public IBinder onBind(Intent intent){
 		return null;
 	}
 
-	@Override
-	public int onStartCommand(Intent intent,int flags,int startId){
+	@Override public int onStartCommand(Intent intent,int flags,int startId){
+		activityMessenger = intent.getParcelableExtra("messenger");
 		srvStart();
 		return super.onStartCommand(intent,flags,startId);
 	}
 
-	@Override
-	public void onCreate(){
+	@Override public void onCreate(){
 		super.onCreate();
 		if(db1==null){
 			Log.e("__L","bgService > onCreate: Try Open DB");
@@ -55,14 +55,14 @@ public class bgService extends Service{
 				db1=new SQLite(getApplicationContext());
 			}catch(Exception e){e.printStackTrace();}
 		}
+		h2=new Handler(Looper.getMainLooper());
 		try{
 			PowerManager pm1=(PowerManager)getSystemService(Context.POWER_SERVICE);
 			wl1=pm1.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK,"pm:wake1");
 		}catch(Exception e){e.printStackTrace();}
 	}
 
-	@Override
-	public void onDestroy(){
+	@Override public void onDestroy(){
 		super.onDestroy();
 		Intent broadcastIntent=new Intent();
 		broadcastIntent.setAction("restartservice");
@@ -122,7 +122,6 @@ public class bgService extends Service{
 	}
 
 	class ServiceRunner implements Runnable{
-
 		public void run(){
 			while(mem("switch").equals("1")){
 				if(one.net_stat){
@@ -140,23 +139,25 @@ public class bgService extends Service{
 							++session_counter;
 							int sent_total_int=0;
 							String sent_total=mem("sent_total");
-							if(sent_total.equals("")) sent_total=SQLite.se1("select v from data where k='sent_total';");
+							if(sent_total.isEmpty()) sent_total=SQLite.se1("select v from data where k='sent_total';");
 							if(sent_total.length()>0) sent_total_int=Integer.parseInt(sent_total);
 							++sent_total_int;
 							mem("sent_total",String.valueOf(sent_total_int));
 							SQLite.exe("update data set v="+sent_total_int+" where k='sent_total';");
-							if(rowid>0)
-								SQLite.exe("update host set status="+stat_int+", valid=valid"+(stat_int<200?"-":"+")+"1 where rowid="+rowid+";");
+							SQLite.exe("update host set status="+stat_int+", valid=valid"+(stat_int<200?"-":"+")+"1 where rowid="+rowid+";");
 							if(mem("switch").equals("1") && nb!=null && manager!=null){
 								int dl_size=session_download/10240;
 								float dl_mb=(float)dl_size/100;
 								nb.setContentText(getString(R.string.tile_txt_sent)+": "+session_counter+"  "+getString(R.string.tile_txt_dl)+": "+dl_mb+"MB");
 								manager.notify(11, nb.build());
 							}
-							Intent i=new Intent("co.bh.rekcuf.sniffer");
-							i.putExtra("stat",(addr_valid==1&&stat_int<200?"-2":Integer.toString(stat_int)));
-							i.putExtra("domain",addr_domain);
-							sendBroadcast(i);
+							if (activityMessenger != null) {
+								final String domain=addr_domain;
+								final String stat=(addr_valid==1&&stat_int<200?"-2":Integer.toString(stat_int));
+								Message msg = Message.obtain();
+								msg.obj = new HashMap<>(){{ put("domain",domain);put("stat",stat); }};
+								try{ activityMessenger.send(msg); }catch(Exception e){}
+							}
 						}
 					}
 				}else{
@@ -186,7 +187,7 @@ public class bgService extends Service{
 		try{
 			URL url=new URL(str);
 			HttpURLConnection urlConn=(HttpURLConnection)url.openConnection();
-			urlConn.setFollowRedirects(false);
+			HttpURLConnection.setFollowRedirects(false);
 			urlConn.setConnectTimeout(timeout);
 			urlConn.setReadTimeout(timeout);
 			urlConn.setUseCaches(false);
@@ -196,7 +197,7 @@ public class bgService extends Service{
 			//BufferedReader br=new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
 			urlConn.connect();
 			responseCode=urlConn.getResponseCode();
-			//Log.println(Log.ERROR,"","--------> "+responseCode);
+			/*Log.println(Log.ERROR,"","--------> "+responseCode);
 			int http_status=0;
 			String headerValue="";
 			for(String headerKey: urlConn.getHeaderFields().keySet()){
@@ -208,7 +209,7 @@ public class bgService extends Service{
 			if(m.find()){
 				http_status=Integer.parseInt(m.group(1));
 			}
-			//Log.println(Log.ERROR,"","=====> "+http_status);
+			//Log.println(Log.ERROR,"","=====> "+http_status);*/
 
 			if(responseCode==200){
 				int cl=urlConn.getContentLength();

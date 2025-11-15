@@ -1,7 +1,7 @@
 <resources>
 	<string name="app_name">rekcuF Sniffer</string>
 	<string name="app_tile_name">rekcuF</string>
-	<string name="update_url">https://rentry.co/rekcuf1/raw</string>
+	<string name="update_url">https://raw.githubusercontent.com/vysecurity/DomainFrontingLists/master/Cloudfront.txt</string>
 	<string name="ved" translatable="false">Every</string>
 	<string name="ui_one_domain">Domain</string>
 	<string name="ui_one_sent">Sent</string>
@@ -17,6 +17,7 @@
 	<string name="tile_txt_dl">Download</string>
 	<string name="run_one_log_dev">dev:\u00A0 @cyru55</string>
 	<string name="run_one_log_updating">DataBase is now Updating ...</string>
+	<string name="run_one_log_updating_break">Do not add more than 50.000\n\nit will decrease app performance\nand increase battery usage</string>
 	<string name="run_one_log_updated1">your DataBase have\u00A0</string>
 	<string name="run_one_log_updated2">\u00A0domains\nLets Go\n</string>
 	<string name="run_one_log_updated_now1">DataBase Updated Successfully\nyour DataBase have\u00A0</string>

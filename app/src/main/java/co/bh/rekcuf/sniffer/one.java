@@ -1,47 +1,50 @@
 package co.bh.rekcuf.sniffer;
 
 import android.app.ActivityManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.os.Messenger;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -49,22 +52,18 @@ import java.util.TimerTask;
 public class one extends AppCompatActivity{
 
 	public String app_pack_name="co.bh.rekcuf.sniffer";
-	public static Handler handler1=new Handler();
 	public SQLite db1=null;
 	public static int conc=0;
 	public static int timeout=5000;
 	public static boolean notif=true;
 	public static boolean net_stat=false;
 	public int db_count=0;
+	public static Handler handler1 = new Handler();
 
 	@Override protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		Log.e("__A","onCreate");
 		setContentView(R.layout.one);
-
-		try{
-			registerReceiver(rcv,new IntentFilter(app_pack_name));
-		}catch(Exception e){e.printStackTrace();}
 
 		if(db1==null){
 			Log.e("__L","onCreate: Try Open DB");
@@ -115,40 +114,32 @@ public class one extends AppCompatActivity{
 			launcher.launch(android.Manifest.permission.POST_NOTIFICATIONS);
 		}
 
-		new Timer().scheduleAtFixedRate(new TimerTask(){
-			@Override public void run(){
-				conc=get_conc();
-				timeout=get_timeout();
-				notif=checkbox1.isChecked();
-				net_stat=NetworkUtil.isConnected(getApplicationContext());
-				handler1.post(new Runnable(){@Override public void run(){
-					netstat.setChecked(net_stat);
-					togglev1.setChecked(isServiceRunning(bgService.class));
-					if(!net_stat&&switch1.isChecked()){
-						switch1.setChecked(false);
-						service(false);
-					}
-					if(net_stat&&mem("switch").equals("0")&&mem("switch_by_user").equals("1")){
-						switch1.setChecked(true);
-						service(true);
-					}
-					int sent_total_int=0;
-					String sent_total=mem("sent_total");
-					if(sent_total.equals("")) sent_total=SQLite.se1("select v from data where k='sent_total';");
-					if(sent_total.length()>0) sent_total_int=Integer.parseInt(sent_total);
-					((EditText)findViewById(R.id.inp3)).setText(String.valueOf(sent_total_int));
-				}});
-			}
-		},0,600);
+		new Timer().schedule(new TimerTask(){@Override public void run(){
+			conc=get_conc();
+			timeout=get_timeout();
+			notif=checkbox1.isChecked();
+			net_stat=NetworkUtil.isConnected(getApplicationContext());
+			runOnUiThread(()->{
+				netstat.setChecked(net_stat);
+				togglev1.setChecked(isServiceRunning(bgService.class));
+				if(!net_stat&&switch1.isChecked()){
+					switch1.setChecked(false);
+					service(false);
+				}
+				if(net_stat&&mem("switch").equals("0")&&mem("switch_by_user").equals("1")){
+					switch1.setChecked(true);
+					service(true);
+				}
+				//if(sent_total.equals("")) sent_total=SQLite.se1("select v from data where k='sent_total';");
+				((EditText)findViewById(R.id.inp3)).setText(mem("sent_total"));
+			});
+		}},0,500);
+
 
 	}
 	@Override public void onStart(){
 		super.onStart();
 		Log.e("__A","onStart");
-
-		try{
-			registerReceiver(rcv,new IntentFilter(app_pack_name));
-		}catch(Exception e){e.printStackTrace();}
 
 		if(db1==null){
 			Log.e("__L","onCreate: Try Open DB");
@@ -162,10 +153,6 @@ public class one extends AppCompatActivity{
 		super.onRestart();
 		Log.e("__A","onRestart");
 
-		try{
-			registerReceiver(rcv,new IntentFilter(app_pack_name));
-		}catch(Exception e){e.printStackTrace();}
-
 		if(db1==null){
 			Log.e("__L","onRestart: Try Open DB");
 			try{
@@ -177,10 +164,6 @@ public class one extends AppCompatActivity{
 	@Override protected void onResume(){
 		super.onResume();
 		Log.e("__A","onResume");
-
-		try{
-			registerReceiver(rcv,new IntentFilter(app_pack_name));
-		}catch(Exception e){e.printStackTrace();}
 
 		if(db1==null){
 			Log.e("__L","onResume: Try Open DB");
@@ -327,22 +310,18 @@ public class one extends AppCompatActivity{
 			two_btn_auto.setOnClickListener(new View.OnClickListener(){
 				@Override public void onClick(View view){
 					if(net_stat){
-						handler1.post(new Runnable(){
-							@Override public void run(){
-								LinearLayout ll=findViewById(R.id.logger);
-								ll.removeAllViews();
-								ll.invalidate();
-								TextView txtv=new TextView(getApplicationContext());
-								txtv.setText(R.string.run_one_log_updating);
-								ll.addView(txtv);
-								findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
-							}
+						runOnUiThread(()->{
+							LinearLayout ll=findViewById(R.id.logger);
+							ll.removeAllViews();
+							ll.invalidate();
+							TextView txtv=new TextView(getApplicationContext());
+							txtv.setText(R.string.run_one_log_updating);
+							ll.addView(txtv);
+							findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
 						});
-						new Thread(new Runnable(){
-							@Override public void run(){
-								updatedb(getString(R.string.update_url));
-							}
-						}).start();
+						new Thread(new Runnable(){@Override public void run(){
+							updatedb(getString(R.string.update_url));
+						}}).start();
 					}else{
 						toast_show(R.string.run_one_toast_turnon);
 						finish();
@@ -365,24 +344,20 @@ public class one extends AppCompatActivity{
 					}
 					if(raw_len>14&&raw.matches("^((http|https)://).+/.+")){
 						if(net_stat){
-							handler1.post(new Runnable(){
-								@Override public void run(){
-									LinearLayout ll=findViewById(R.id.logger);
-									ll.removeAllViews();
-									ll.invalidate();
-									TextView txtv=new TextView(getApplicationContext());
-									txtv.setText(getString(R.string.run_one_log_updating)+getString(R.string.run_one_log_updating_customurl)+raw);
-									ll.addView(txtv);
-									toast_show(R.string.run_one_toast_wait4customurl);
-									two_paste_text.setText("");
-									findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
-								}
+							runOnUiThread(()->{
+								LinearLayout ll=findViewById(R.id.logger);
+								ll.removeAllViews();
+								ll.invalidate();
+								TextView txtv=new TextView(getApplicationContext());
+								txtv.setText(getString(R.string.run_one_log_updating)+getString(R.string.run_one_log_updating_customurl)+raw);
+								ll.addView(txtv);
+								toast_show(R.string.run_one_toast_wait4customurl);
+								two_paste_text.setText("");
+								findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
 							});
-							new Thread(new Runnable(){
-								@Override public void run(){
-									updatedb(raw);
-								}
-							}).start();
+							new Thread(new Runnable(){@Override public void run(){
+								updatedb(raw);
+							}}).start();
 						}else{
 							toast_show(R.string.run_one_toast_turnon);
 							finish();
@@ -405,13 +380,13 @@ public class one extends AppCompatActivity{
 										SQLite.ins("host",new String[]{"domain",line,"valid","5","status","0"});
 										if(i%300==0){
 											int added=i;
-											handler1.post(new Runnable(){@Override public void run(){
+											runOnUiThread(()->{
 												TextView txtv=new TextView(getApplicationContext());
 												txtv.setSingleLine(true);
 												txtv.setText(added+getString(R.string.run_one_log_added));
 												((LinearLayout)findViewById(R.id.logger)).addView(txtv);
 												((ScrollView)findViewById(R.id.logger_parent)).fullScroll(ScrollView.FOCUS_DOWN);
-											}});
+											});
 										}
 									}
 								}
@@ -420,19 +395,17 @@ public class one extends AppCompatActivity{
 					}
 					int added=i;
 					db_count+=added;
-					handler1.post(new Runnable(){
-						@Override public void run(){
-							inp1.setText(Integer.toString(db_count));
-							TextView txtv=new TextView(getApplicationContext());
-							txtv.setText(getString(R.string.run_one_log_updated_now1)+db_count+getString(R.string.run_one_log_updated_now2));
-							((LinearLayout)findViewById(R.id.logger)).addView(txtv);
-							((ScrollView)findViewById(R.id.logger_parent)).fullScroll(ScrollView.FOCUS_DOWN);
-							two_paste_text.setText("");
-							if(added>0){
-								findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
-							}else{
-								toast_show(R.string.run_one_toast_nodomainfound);
-							}
+					runOnUiThread(()->{
+						inp1.setText(Integer.toString(db_count));
+						TextView txtv=new TextView(getApplicationContext());
+						txtv.setText(getString(R.string.run_one_log_updated_now1)+db_count+getString(R.string.run_one_log_updated_now2));
+						((LinearLayout)findViewById(R.id.logger)).addView(txtv);
+						((ScrollView)findViewById(R.id.logger_parent)).fullScroll(ScrollView.FOCUS_DOWN);
+						two_paste_text.setText("");
+						if(added>0){
+							findViewById(R.id.two_layout).setVisibility(View.INVISIBLE);
+						}else{
+							toast_show(R.string.run_one_toast_nodomainfound);
 						}
 					});
 				}else{
@@ -445,23 +418,14 @@ public class one extends AppCompatActivity{
 	@Override protected void onPause(){
 		super.onPause();
 		Log.e("__A","onPause");
-		try{
-			unregisterReceiver(rcv);
-		}catch(Exception e){e.printStackTrace();}
 	}
 	@Override protected void onStop(){
 		super.onStop();
 		Log.e("__A","onStop");
-		try{
-			unregisterReceiver(rcv);
-		}catch(Exception e){e.printStackTrace();}
 	}
 	@Override public void onDestroy(){
 		super.onDestroy();
 		Log.e("__A","onDestroy");
-		try{
-			unregisterReceiver(rcv);
-		}catch(Exception e){e.printStackTrace();}
 		if(db1!=null&&mem("switch").equals("0")){
 			Log.e("__L","onDestroy: Try Close DB");
 			try{
@@ -589,21 +553,17 @@ public class one extends AppCompatActivity{
 			@Override public void onClick(DialogInterface dialog,int which){
 				if(net_stat){
 					dialog.dismiss();
-					handler1.post(new Runnable(){
-						@Override public void run(){
-							LinearLayout ll=findViewById(R.id.logger);
-							ll.removeAllViews();
-							ll.invalidate();
-							TextView txtv=new TextView(getApplicationContext());
-							txtv.setText(R.string.run_one_log_updating);
-							ll.addView(txtv);
-						}
+					runOnUiThread(()->{
+						LinearLayout ll=findViewById(R.id.logger);
+						ll.removeAllViews();
+						ll.invalidate();
+						TextView txtv=new TextView(getApplicationContext());
+						txtv.setText(R.string.run_one_log_updating);
+						ll.addView(txtv);
 					});
-					new Thread(new Runnable(){
-						@Override public void run(){
-							updatedb(getString(R.string.update_url));
-						}
-					}).start();
+					new Thread(new Runnable(){@Override public void run(){
+						updatedb(getString(R.string.update_url));
+					}}).start();
 				}else{
 					toast_show(R.string.run_one_toast_turnon);
 					finish();
@@ -632,6 +592,7 @@ public class one extends AppCompatActivity{
 		EditText inp5=findViewById(R.id.inp5);
 		CheckBox checkbox1=findViewById(R.id.checkbox1);
 		Intent srv=new Intent(getApplication(),bgService.class);
+		srv.putExtra("messenger",new Messenger(new iHandler(this)));
 		inp4.setEnabled(!turn);
 		inp5.setEnabled(!turn);
 		checkbox1.setEnabled(!turn);
@@ -670,15 +631,19 @@ public class one extends AppCompatActivity{
 								line=line.toLowerCase();
 								if(line.startsWith("www.")) line=line.substring(4);
 								SQLite.ins("host",new String[]{"domain",line,"valid","5","status","0"});
+								if(i>64000){
+									alert_box(getString(R.string.run_one_log_updating_break));
+									break;
+								}
 								if(i%300==0){
 									int added=i;
-									handler1.post(new Runnable(){@Override public void run(){
+									runOnUiThread(()->{
 										TextView txtv=new TextView(getApplicationContext());
 										txtv.setSingleLine(true);
 										txtv.setText(added+getString(R.string.run_one_log_added));
 										((LinearLayout)findViewById(R.id.logger)).addView(txtv);
 										((ScrollView)findViewById(R.id.logger_parent)).fullScroll(ScrollView.FOCUS_DOWN);
-									}});
+									});
 								}
 							}
 						}
@@ -688,57 +653,22 @@ public class one extends AppCompatActivity{
 			in.close();
 			db_count=i;
 		}catch(Exception ignored){}
-		handler1.post(new Runnable(){@Override public void run(){
+		runOnUiThread(()->{
 			LinearLayout ll=(LinearLayout)findViewById(R.id.logger);
 			ll.removeAllViews();
 			ll.invalidate();
 			TextView txtv=new TextView(getApplicationContext());
 			if(db_count>0){
 				EditText inp1=findViewById(R.id.inp1);
-				inp1.setText(Integer.toString(db_count));
+				inp1.setText(String.valueOf(db_count));
 				txtv.setText(getString(R.string.run_one_log_updated_now1)+db_count+getString(R.string.run_one_log_updated_now2));
 			}else{
 				txtv.setText(R.string.run_one_log_update_error);
 			}
 			ll.addView(txtv);
 			//ScrollView sv=(ScrollView)findViewById(R.id.logger_parent);sv.post(new Runnable(){public void run(){sv.fullScroll(View.FOCUS_DOWN);}});
-		}});
+		});
 	}
-
-	public BroadcastReceiver rcv=new BroadcastReceiver(){
-		@Override public void onReceive(Context context,Intent intent){
-			try{
-				Bundle bundle=intent.getExtras();
-				if(bundle!=null){
-					EditText inp2=findViewById(R.id.inp2);
-					String inp2_str=inp2.getText().toString();
-					int inp2_int=inp2_str.length()>0?Integer.parseInt(inp2_str):0;
-					inp2.setText(String.valueOf(inp2_int+1));
-					LinearLayout ll=findViewById(R.id.logger);
-					int ll_count=ll.getChildCount();
-					if(ll_count>40){
-						ll.removeView(ll.getChildAt(0));
-					}
-					ScrollView sv=findViewById(R.id.logger_parent);
-					String ts_str=get_ts();
-					String stat=bundle.getString("stat");
-					String domain=bundle.getString("domain");
-					String stat_str=stat.equals("-1")?"000 \u00A0 ×":(stat.equals("-2")?"bye \u00A0 ×":stat+" \u00A0 <");
-					String log=ts_str+" \u00A0 > \u00A0 "+stat_str+" \u00A0 "+domain+"\n";
-					TextView txtv=new TextView(getApplicationContext());
-					txtv.setSingleLine(true);
-					//txtv.setMaxLines(1);
-					txtv.setText(log);
-					ll.addView(txtv);
-					sv.fullScroll(ScrollView.FOCUS_DOWN);
-				}
-			}catch(Exception e){
-				e.printStackTrace();
-				Log.e("__L","catch @ BroadcastReceiver");
-			}
-			if(mem("switch").equals("0")) service(false);
-		}
-	};
 
 	public boolean isStaticVarDefined(String className,String varName){
 		try{
@@ -747,6 +677,39 @@ public class one extends AppCompatActivity{
 			return Modifier.isStatic(field.getModifiers());
 		}catch(Exception e){
 			return false;
+		}
+	}
+	public static class iHandler extends Handler {
+		private final WeakReference<one> weakActivity;
+		iHandler(one activity) {
+			super(Looper.getMainLooper());
+			weakActivity = new WeakReference<>(activity);
+		}
+		@Override public void handleMessage(@NonNull Message msg) {
+			one act = weakActivity.get();
+			if (act == null) return;
+			HashMap hm = (HashMap)msg.obj;
+			EditText inp2=act.findViewById(R.id.inp2);
+			String inp2_str=inp2.getText().toString();
+			int inp2_int=inp2_str.length()>0?Integer.parseInt(inp2_str):0;
+			inp2.setText(String.valueOf(inp2_int+1));
+			LinearLayout ll=act.findViewById(R.id.logger);
+			int ll_count=ll.getChildCount();
+			if(ll_count>40){
+				ll.removeView(ll.getChildAt(0));
+			}
+			ScrollView sv=act.findViewById(R.id.logger_parent);
+			String ts=new SimpleDateFormat("HH:mm:ss").format(new Date());
+			String stat=hm.get("stat").toString();
+			String domain=hm.get("domain").toString();
+			String stat_str=stat.equals("-1")?"000 \u00A0 ×":(stat.equals("-2")?"bye \u00A0 ×":stat+" \u00A0 <");
+			String log=ts+" \u00A0 > \u00A0 "+stat_str+" \u00A0 "+domain+"\n";
+			TextView txtv=new TextView(weakActivity.get());
+			txtv.setSingleLine(true);
+			txtv.setMaxLines(1);
+			txtv.setText(log);
+			ll.addView(txtv);
+			sv.fullScroll(ScrollView.FOCUS_DOWN);
 		}
 	}
 

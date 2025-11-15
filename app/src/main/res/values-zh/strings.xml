@@ -2,7 +2,7 @@
 <resources>
 	<string name="app_name">反间谍</string>
 	<string name="app_tile_name">反间谍</string>
-	<string name="update_url">https://rentry.co/rekcuf1zh/raw</string>
+	<string name="update_url">https://raw.githubusercontent.com/carrnot/china-domain-list/release/domain.txt</string>
 	<string name="ui_one_domain">领域</string>
 	<string name="ui_one_sent">发送</string>
 	<string name="ui_one_total">全部的</string>
@@ -17,6 +17,7 @@
 	<string name="tile_txt_dl">下载</string>
 	<string name="run_one_log_dev">开发人员:\u00A0 @cyru55</string>
 	<string name="run_one_log_updating">数据库现在正在更新...</string>
+	<string name="run_one_log_updating_break">请勿添加超过50,000\n\n这将降低应用性能\n并增加电池消耗</string>
 	<string name="run_one_log_updated1">您的数据库有</string>
 	<string name="run_one_log_updated2">域\n我们走吧\n</string>
 	<string name="run_one_log_updated_now1">数据库成功更新\n您的数据库有</string>
