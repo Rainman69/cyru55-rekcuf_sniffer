@@ -19,11 +19,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '11'
           cache: 'gradle'
 
       - name: Grant execute permission for gradlew
@@ -32,13 +32,13 @@ jobs:
       - name: Build Release APK and log
         run: |
           ./gradlew assembleRelease --stacktrace
-          ls -l app/build/outputs/apk/release/
-          find . -name "*.apk"
+          ls -l app/build/outputs/apk/release/ || true
+          find . -name "*.apk" || true
 
-      - name: Upload Release APK
+      - name: Upload all APKs
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
+          name: app-apks
           path: app/build/outputs/apk/release/*.apk
           retention-days: 90
 
