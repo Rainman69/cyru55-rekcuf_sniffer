@@ -1,13 +1,9 @@
-name: Build and Release Android APK
+name: Build and Release Signed APK
+
 on:
   push:
-    branches:
-      - main
     tags:
       - 'v*'
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
@@ -24,29 +20,33 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Grant execute permission for gradlew
+      - name: Decode Keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
+
+      - name: Grant execute permission
         run: chmod +x gradlew
 
-      - name: Build Release APK and log
+      - name: Build Signed Release APK
         run: |
-          ./gradlew assembleRelease --stacktrace
-          ls -l app/build/outputs/apk/release/ || true
-          find . -name "*.apk" || true
+          ./gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file=${{ github.workspace }}/keystore.jks \
+            -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASSWORD }} \
+            -Pandroid.injected.signing.key.alias=${{ secrets.KEY_ALIAS }} \
+            -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }} \
+            --stacktrace
 
-      - name: Upload all APKs
+      - name: Upload Signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-apks
+          name: signed-release-apk
           path: app/build/outputs/apk/release/*.apk
           retention-days: 90
-          
+
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           files: app/build/outputs/apk/release/*.apk
           generate_release_notes: true
-          draft: false
-          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
